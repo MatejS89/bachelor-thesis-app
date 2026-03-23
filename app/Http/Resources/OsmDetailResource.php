@@ -18,6 +18,14 @@ class OsmDetailResource extends JsonResource
             'street' => $this->street,
             'city' => $this->city,
             'geom' => json_decode($this->geom),
+            'gallery_images' => $this->getMedia('gallery')->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                    'thumb_url' => $media->getUrl('thumb'),
+                    'order' => $media->order_column,
+                ];
+            })->toArray(),
         ];
     }
 }
