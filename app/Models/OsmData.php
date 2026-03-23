@@ -6,12 +6,30 @@ use App\Data\BoundingBox;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class OsmData extends Model
+class OsmData extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $table = 'osm_data';
 
     public $timestamps = false;
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('gallery');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(300)
+            ->height(300)
+            ->nonQueued();
+    }
 
     protected static function booted(): void
     {
@@ -23,7 +41,7 @@ class OsmData extends Model
             }
 
             if (empty($query->columns)) {
-                $builder->select($builder->getModel()->getTable().'.*');
+                $builder->select($builder->getModel()->getTable() . '.*');
                 $builder->addSelect(DB::raw('ST_AsGeoJSON(geom, 6) as geom'));
 
                 return;
@@ -33,7 +51,7 @@ class OsmData extends Model
             $geomRequested = false;
 
             foreach ($columns as $key => $column) {
-                if ($column === 'geom' || $column === $builder->getModel()->getTable().'.geom') {
+                if ($column === 'geom' || $column === $builder->getModel()->getTable() . '.geom') {
                     unset($columns[$key]);
                     $geomRequested = true;
                 }
