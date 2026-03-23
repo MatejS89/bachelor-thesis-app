@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 export const data = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ data.definition = {
 
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 data.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ data.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::data
-* @see app/Http/Controllers/MapController.php:14
+* @see app/Http/Controllers/MapController.php:17
 * @route '/map-data'
 */
 dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,9 +79,3 @@ dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 })
 
 data.form = dataForm
-
-const map = {
-    data: Object.assign(data, data),
-}
-
-export default map

@@ -1,4 +1,4 @@
-import { createInertiaApp } from '@inertiajs/svelte';
+import { createInertiaApp, router } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import '../css/app.css';
 import { initializeTheme } from '@/lib/theme.svelte';
@@ -28,6 +28,14 @@ createInertiaApp({
     progress: {
         color: '#4B5563',
     },
+});
+
+router.on('before', (event) => {
+    const isMapRoute = window.location.pathname.startsWith('/map');
+
+    if (isMapRoute && window.location.hash) {
+        event.detail.visit.url.hash = window.location.hash;
+    }
 });
 
 // This will set light / dark mode on page load...
