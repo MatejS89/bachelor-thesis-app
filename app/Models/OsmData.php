@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Data\BoundingBox;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -12,9 +13,39 @@ class OsmData extends Model
 
     public $timestamps = false;
 
-    /**
-     * Scope a query to only include features within a given bounding box.
-     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope('geom', function (Builder $builder) {
+            $query = $builder->getQuery();
+
+            if ($query->aggregate) {
+                return;
+            }
+
+            if (empty($query->columns)) {
+                $builder->select($builder->getModel()->getTable().'.*');
+                $builder->addSelect(DB::raw('ST_AsGeoJSON(geom, 6) as geom'));
+
+                return;
+            }
+
+            $columns = $query->columns;
+            $geomRequested = false;
+
+            foreach ($columns as $key => $column) {
+                if ($column === 'geom' || $column === $builder->getModel()->getTable().'.geom') {
+                    unset($columns[$key]);
+                    $geomRequested = true;
+                }
+            }
+
+            if ($geomRequested) {
+                $columns[] = DB::raw('ST_AsGeoJSON(geom, 6) as geom');
+                $builder->select(array_values($columns));
+            }
+        });
+    }
+
     public function scopeWithinBoundingBox($query, BoundingBox $box)
     {
         return $query->whereRaw(
