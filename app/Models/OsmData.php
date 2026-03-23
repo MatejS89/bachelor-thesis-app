@@ -61,4 +61,12 @@ class OsmData extends Model
             [$lng, $lat, $meters]
         );
     }
+
+    public function scopeOrderByDistance($query, $lat, $lng, $direction = 'asc')
+    {
+        return $query->orderByRaw(
+            "ST_Distance(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)) $direction",
+            [$lng, $lat]
+        );
+    }
 }
