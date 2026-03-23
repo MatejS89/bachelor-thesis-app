@@ -5,23 +5,18 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OsmFeatureResource extends JsonResource
+class OsmGeoJSONResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         $properties = $this->resource->toArray();
 
+        $geometry = json_decode($properties['geom']);
         unset($properties['geom']);
-        unset($properties['geometry']);
 
         return [
             'type' => 'Feature',
-            'geometry' => json_decode($this->resource->geometry),
+            'geometry' => $geometry,
             'properties' => $properties,
         ];
     }

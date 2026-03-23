@@ -12,8 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
 
-Route::inertia('map', component: 'Map')->name('map');
+Route::get('map-data', [MapController::class, 'index'])->name('map.data');
+Route::get('map/{feature?}', [MapController::class, 'show'])->name('map');
 
-Route::get('/map-data', [MapController::class, 'index'])->name('map.data');
-
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
