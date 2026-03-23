@@ -14,5 +14,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('map-data', [MapController::class, 'index'])->name('map.data');
 Route::get('map/{feature?}', [MapController::class, 'show'])->name('map');
+Route::post('map/{feature}', [MapController::class, 'update'])->name('map.update');
 
 require __DIR__ . '/settings.php';
