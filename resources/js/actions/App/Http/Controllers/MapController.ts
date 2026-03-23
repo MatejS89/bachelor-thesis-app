@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:17
+* @see app/Http/Controllers/MapController.php:20
 * @route '/map-data'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 export const show = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 show.url = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -134,7 +134,7 @@ show.url = (args?: { feature?: number | { id: number } } | [feature: number | { 
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 show.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -144,7 +144,7 @@ show.get = (args?: { feature?: number | { id: number } } | [feature: number | { 
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 show.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -154,7 +154,7 @@ show.head = (args?: { feature?: number | { id: number } } | [feature: number | {
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 const showForm = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -164,7 +164,7 @@ const showForm = (args?: { feature?: number | { id: number } } | [feature: numbe
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 showForm.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -174,7 +174,7 @@ showForm.get = (args?: { feature?: number | { id: number } } | [feature: number 
 
 /**
 * @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 showForm.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -189,6 +189,86 @@ showForm.head = (args?: { feature?: number | { id: number } } | [feature: number
 
 show.form = showForm
 
-const MapController = { index, show }
+/**
+* @see \App\Http\Controllers\MapController::update
+* @see app/Http/Controllers/MapController.php:39
+* @route '/map/{feature}'
+*/
+export const update = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: update.url(args, options),
+    method: 'post',
+})
+
+update.definition = {
+    methods: ["post"],
+    url: '/map/{feature}',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\MapController::update
+* @see app/Http/Controllers/MapController.php:39
+* @route '/map/{feature}'
+*/
+update.url = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { feature: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { feature: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            feature: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        feature: typeof args.feature === 'object'
+        ? args.feature.id
+        : args.feature,
+    }
+
+    return update.definition.url
+            .replace('{feature}', parsedArgs.feature.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\MapController::update
+* @see app/Http/Controllers/MapController.php:39
+* @route '/map/{feature}'
+*/
+update.post = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: update.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MapController::update
+* @see app/Http/Controllers/MapController.php:39
+* @route '/map/{feature}'
+*/
+const updateForm = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MapController::update
+* @see app/Http/Controllers/MapController.php:39
+* @route '/map/{feature}'
+*/
+updateForm.post = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, options),
+    method: 'post',
+})
+
+update.form = updateForm
+
+const MapController = { index, show, update }
 
 export default MapController

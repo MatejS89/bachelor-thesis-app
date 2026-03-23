@@ -381,7 +381,7 @@ dashboard.form = dashboardForm
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 export const map = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -396,7 +396,7 @@ map.definition = {
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 map.url = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -433,7 +433,7 @@ map.url = (args?: { feature?: number | { id: number } } | [feature: number | { i
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 map.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -443,7 +443,7 @@ map.get = (args?: { feature?: number | { id: number } } | [feature: number | { i
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 map.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -453,7 +453,7 @@ map.head = (args?: { feature?: number | { id: number } } | [feature: number | { 
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 const mapForm = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -463,7 +463,7 @@ const mapForm = (args?: { feature?: number | { id: number } } | [feature: number
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 mapForm.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -473,7 +473,7 @@ mapForm.get = (args?: { feature?: number | { id: number } } | [feature: number |
 
 /**
 * @see \App\Http\Controllers\MapController::map
-* @see app/Http/Controllers/MapController.php:25
+* @see app/Http/Controllers/MapController.php:28
 * @route '/map/{feature?}'
 */
 mapForm.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
