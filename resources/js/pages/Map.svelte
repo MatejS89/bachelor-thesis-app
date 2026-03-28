@@ -3,25 +3,38 @@
     import MapComponent from '@/components/MapComponent.svelte';
     import MapSidebar from '@/components/MapSidebar.svelte';
     import MapLayout from '@/layouts/MapLayout.svelte';
-    import { selectPlace } from '@/utils/mapNavigation';
+    import type { MapState } from '@/state/mapState.svelte';
+    import { setMapContext } from '@/state/mapState.svelte';
+
+    type OsmDetailData = App.Data.OsmDetailData;
 
     interface Props {
-        selectedFeature?: any;
+        selectedFeature?: OsmDetailData;
     }
 
     let { selectedFeature }: Props = $props();
 
-    let visibleFeatures = $state<any[]>([]);
+    let mapContext = $state<MapState>
+    ({
+        visibleFeatures: { type: 'FeatureCollection', features: [] },
+        selectedFeature
+    });
+
+    setMapContext(mapContext);
+
+    $effect(() => {
+        mapContext.selectedFeature = selectedFeature;
+    });
 </script>
 
 <AppHead title="Map" />
 
 <MapLayout>
     <div class="flex h-full w-full overflow-hidden">
-        <MapSidebar {visibleFeatures} {selectedFeature} {selectPlace} />
+        <MapSidebar />
 
         <div class="grow relative h-full">
-            <MapComponent bind:visibleFeatures {selectedFeature} {selectPlace} />
+            <MapComponent {selectedFeature} />
         </div>
     </div>
 </MapLayout>
