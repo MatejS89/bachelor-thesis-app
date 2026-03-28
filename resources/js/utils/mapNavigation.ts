@@ -1,19 +1,16 @@
 import { router } from '@inertiajs/svelte';
+import { show } from '@/routes/feature';
 
 export function selectPlace(id: number | null) {
-    const params = new URLSearchParams(window.location.search);
+    const url = show.url(id ? { feature: id } : {});
 
-    const url = id
-        ? `/map/${id}?${params.toString()}`
-        : `/map?${params.toString()}`;
-
-    router.get(
-        url,
-        {},
-        {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['selectedFeature'],
-        },
+    const currentParams = Object.fromEntries(
+        new URLSearchParams(window.location.search),
     );
+
+    router.get(url, currentParams, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['selectedFeature'],
+    });
 }
