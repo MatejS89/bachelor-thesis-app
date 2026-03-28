@@ -1,17 +1,19 @@
 <script lang="ts">
     import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
-    import type { Map as MapLibreMap, GeoJSONSource } from 'maplibre-gl';
+    import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
     import maplibregl from 'maplibre-gl';
     import { onMount } from 'svelte';
     import 'maplibre-gl/dist/maplibre-gl.css';
     import map from '@/routes/map';
+    import { getMapContext } from '@/state/mapState.svelte';
     import type { BoundingBox } from '@/types';
+    import { selectPlace } from '@/utils/mapNavigation';
     import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
-    let { visibleFeatures = $bindable([]), selectedFeature, selectPlace }: {
-        visibleFeatures?: any[],
+    const mapContext = getMapContext();
+
+    let { selectedFeature }: {
         selectedFeature?: any,
-        selectPlace: (id: number | null) => void
     } = $props();
 
     let mapContainer: HTMLDivElement;
@@ -136,7 +138,7 @@
     function addMapSourcesAndLayers() {
         mapLibre.addSource('osm-data', {
             type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] },
+            data: mapContext.visibleFeatures,
             cluster: true,
             clusterMaxZoom: 14,
             clusterRadius: 50
@@ -246,21 +248,14 @@
 
         try {
             const response = await fetch(route.url, {
-                method: route.method,
-                headers: {
-                    'Accept': 'application/json'
-                }
+                method: route.method
             });
 
             const source = mapLibre.getSource('osm-data') as GeoJSONSource;
 
             if (response.ok) {
-                const data = await response.json();
-                source.setData(data);
-
-                visibleFeatures = data.features.map((feature: any) => ({
-                    ...feature.properties
-                }));
+                mapContext.visibleFeatures = await response.json();
+                source.setData(mapContext.visibleFeatures);
             }
         } catch (error) {
             console.error('Error fetching map data via Wayfinder:', error);
