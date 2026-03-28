@@ -7,10 +7,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class OsmDetailResource extends JsonResource
 {
-    public static $wrap = null;
-
     public function toArray(Request $request): array
     {
+        self::withoutWrapping();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
