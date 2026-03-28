@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\MapController;
+use App\Http\Controllers\OsmDataController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -12,8 +12,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
 
-Route::get('map-data', [MapController::class, 'index'])->name('map.data');
-Route::get('map/{feature?}', [MapController::class, 'show'])->name('map');
-Route::post('map/{feature}', [MapController::class, 'update'])->name('map.update');
+Route::get('map-data', [OsmDataController::class, 'index'])->name('map.index');
 
-require __DIR__ . '/settings.php';
+Route::get('map/{feature?}', [OsmDataController::class, 'show'])->name('feature.show');
+Route::post('map/{feature}', [OsmDataController::class, 'update'])->name('feature.update');
+
+require __DIR__.'/settings.php';
