@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Data\BoundingBox;
 use App\Models\OsmData;
 use Illuminate\Database\Eloquent\Collection;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class OsmService
 {
@@ -15,7 +16,7 @@ class OsmService
 
         return OsmData::query()
             ->withinBoundingBox($box)
-            ->orderByDistance($centerLat, $centerLng)
+            ->orderByDistance('geom', new Point($centerLat, $centerLng), 'asc')
             ->get();
     }
 }
