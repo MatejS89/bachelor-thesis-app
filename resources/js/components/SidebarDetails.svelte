@@ -32,12 +32,14 @@
         <div class="w-full">
             <Carousel.Root class="w-full relative rounded-md overflow-hidden">
                 <Carousel.Content>
-                    {#each selectedFeature.gallery_images as image (image.id)}
+                    {#each selectedFeature.gallery_images as image, index (image.id)}
                         <Carousel.Item>
                             <div class="w-full aspect-video bg-muted relative">
                                 <img
-                                    src={image.thumb_url || image.url}
+                                    src={image.url}
                                     alt="Gallery"
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                    decoding="async"
                                     class="absolute inset-0 w-full h-full object-cover"
                                 />
                             </div>
@@ -102,7 +104,7 @@
             {/snippet}
         </Dialog.Trigger>
         <Dialog.Content class="sm:max-w-2xl border-none shadow-none bg-transparent p-0">
-            <PhotoUpload {selectedFeature} onSuccess={() => isUploadModalOpen = false} />
+            <PhotoUpload {selectedFeature} />
         </Dialog.Content>
     </Dialog.Root>
 
