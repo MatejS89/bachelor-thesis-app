@@ -11,12 +11,9 @@ class OsmGeoJSONResource extends JsonResource
     {
         $properties = $this->resource->toArray();
 
-        $geometry = json_decode($properties['geom']);
-        unset($properties['geom']);
-
         return [
             'type' => 'Feature',
-            'geometry' => $geometry,
+            'geometry' => $properties['geom'],
             'properties' => $properties,
         ];
     }
