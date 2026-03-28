@@ -16,6 +16,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
         "matanyadaev/laravel-eloquent-spatial": "^4.7",
+        "spatie/laravel-data": "^4.20",
         "spatie/laravel-medialibrary": "^11.21",
         "spatie/laravel-typescript-transformer": "^3.0"
     },
