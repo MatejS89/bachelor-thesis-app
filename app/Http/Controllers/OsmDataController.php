@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Actions\OsmData\UpdateOsmData;
 use App\Data\BoundingBox;
-use App\Http\Requests\Feature\UpdateFeatureRequest;
-use App\Http\Requests\Map\GetMapDataRequest;
+use App\Http\Requests\OsmData\GetBoundingBoxRequest;
+use App\Http\Requests\OsmData\UpdateFeatureRequest;
 use App\Http\Resources\OsmDetailResource;
 use App\Http\Resources\OsmGeoJSONCollection;
 use App\Models\OsmData;
@@ -17,7 +17,7 @@ use Inertia\Response;
 
 class OsmDataController extends Controller
 {
-    public function index(GetMapDataRequest $request, OsmService $osmService): JsonResponse
+    public function index(GetBoundingBoxRequest $request, OsmService $osmService): JsonResponse
     {
         $bbox = BoundingBox::fromArray($request->validated());
         $features = $osmService->getFeaturesInBoundingBox($bbox);
