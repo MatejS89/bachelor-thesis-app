@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\OsmData\UpdateOsmData;
 use App\Data\BoundingBox;
+use App\Http\Requests\Feature\UpdateFeatureRequest;
 use App\Http\Requests\Map\GetMapDataRequest;
 use App\Http\Resources\OsmDetailResource;
 use App\Http\Resources\OsmGeoJSONCollection;
@@ -12,10 +14,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
-use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
-class MapController extends Controller
+class OsmDataController extends Controller
 {
     public function index(GetMapDataRequest $request, OsmService $osmService): JsonResponse
     {
@@ -32,21 +32,10 @@ class MapController extends Controller
         ]);
     }
 
-    /**
-     * @throws FileDoesNotExist
-     * @throws FileIsTooBig
-     */
-    public function update(Request $request, OsmData $feature)
+    public function update(UpdateFeatureRequest $request, OsmData $feature, UpdateOsmData $addImagesAction)
     {
-        $request->validate([
-            'images' => ['required', 'array', 'max:10'],
-            'images.*' => ['image', 'max:5120'],
-        ]);
+        $feature = $addImagesAction->handle($feature, $request->file('images', []));
 
-        foreach ($request->file('images') as $image) {
-            $feature->addMedia($image)->toMediaCollection('gallery');
-        }
-
-        return back()->with('success', 'Gallery images added successfully.');
+        return to_route('feature.show', $feature);
     }
 }
