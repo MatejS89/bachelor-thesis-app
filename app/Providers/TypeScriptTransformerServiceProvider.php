@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Spatie\LaravelTypeScriptTransformer\LaravelData\LaravelDataTypeScriptTransformerExtension;
 use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerApplicationServiceProvider as BaseTypeScriptTransformerServiceProvider;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Transformers\AttributedClassTransformer;
@@ -19,6 +21,8 @@ class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServ
             ->transformDirectories(app_path())
             ->writer(new GlobalNamespaceWriter)
             ->outputDirectory(resource_path('js/types'))
-            ->formatter(PrettierFormatter::class);
+            ->formatter(PrettierFormatter::class)
+            ->extension(new LaravelDataTypeScriptTransformerExtension)
+            ->replaceType(Point::class, '{ type: "Point", coordinates: [number, number] }');
     }
 }
