@@ -1,8 +1,8 @@
-import MapController from './MapController'
+import OsmDataController from './OsmDataController'
 import Settings from './Settings'
 
 const Controllers = {
-    MapController: Object.assign(MapController, MapController),
+    OsmDataController: Object.assign(OsmDataController, OsmDataController),
     Settings: Object.assign(Settings, Settings),
 }
 

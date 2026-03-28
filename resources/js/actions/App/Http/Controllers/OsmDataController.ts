@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../../../wayfinder'
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,8 +15,8 @@ index.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -24,8 +24,8 @@ index.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,8 +34,8 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,8 +44,8 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,8 +54,8 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 })
 
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -64,8 +64,8 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\MapController::index
-* @see app/Http/Controllers/MapController.php:20
+* @see \App\Http\Controllers\OsmDataController::index
+* @see app/Http/Controllers/OsmDataController.php:20
 * @route '/map-data'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -81,8 +81,8 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 index.form = indexForm
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 export const show = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -96,8 +96,8 @@ show.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 show.url = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -133,8 +133,8 @@ show.url = (args?: { feature?: number | { id: number } } | [feature: number | { 
 }
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 show.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -143,8 +143,8 @@ show.get = (args?: { feature?: number | { id: number } } | [feature: number | { 
 })
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 show.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -153,8 +153,8 @@ show.head = (args?: { feature?: number | { id: number } } | [feature: number | {
 })
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 const showForm = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,8 +163,8 @@ const showForm = (args?: { feature?: number | { id: number } } | [feature: numbe
 })
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 showForm.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -173,8 +173,8 @@ showForm.get = (args?: { feature?: number | { id: number } } | [feature: number 
 })
 
 /**
-* @see \App\Http\Controllers\MapController::show
-* @see app/Http/Controllers/MapController.php:28
+* @see \App\Http\Controllers\OsmDataController::show
+* @see app/Http/Controllers/OsmDataController.php:28
 * @route '/map/{feature?}'
 */
 showForm.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -190,8 +190,8 @@ showForm.head = (args?: { feature?: number | { id: number } } | [feature: number
 show.form = showForm
 
 /**
-* @see \App\Http\Controllers\MapController::update
-* @see app/Http/Controllers/MapController.php:39
+* @see \App\Http\Controllers\OsmDataController::update
+* @see app/Http/Controllers/OsmDataController.php:35
 * @route '/map/{feature}'
 */
 export const update = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -205,8 +205,8 @@ update.definition = {
 } satisfies RouteDefinition<["post"]>
 
 /**
-* @see \App\Http\Controllers\MapController::update
-* @see app/Http/Controllers/MapController.php:39
+* @see \App\Http\Controllers\OsmDataController::update
+* @see app/Http/Controllers/OsmDataController.php:35
 * @route '/map/{feature}'
 */
 update.url = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -238,8 +238,8 @@ update.url = (args: { feature: number | { id: number } } | [feature: number | { 
 }
 
 /**
-* @see \App\Http\Controllers\MapController::update
-* @see app/Http/Controllers/MapController.php:39
+* @see \App\Http\Controllers\OsmDataController::update
+* @see app/Http/Controllers/OsmDataController.php:35
 * @route '/map/{feature}'
 */
 update.post = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -248,8 +248,8 @@ update.post = (args: { feature: number | { id: number } } | [feature: number | {
 })
 
 /**
-* @see \App\Http\Controllers\MapController::update
-* @see app/Http/Controllers/MapController.php:39
+* @see \App\Http\Controllers\OsmDataController::update
+* @see app/Http/Controllers/OsmDataController.php:35
 * @route '/map/{feature}'
 */
 const updateForm = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -258,8 +258,8 @@ const updateForm = (args: { feature: number | { id: number } } | [feature: numbe
 })
 
 /**
-* @see \App\Http\Controllers\MapController::update
-* @see app/Http/Controllers/MapController.php:39
+* @see \App\Http\Controllers\OsmDataController::update
+* @see app/Http/Controllers/OsmDataController.php:35
 * @route '/map/{feature}'
 */
 updateForm.post = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -269,6 +269,6 @@ updateForm.post = (args: { feature: number | { id: number } } | [feature: number
 
 update.form = updateForm
 
-const MapController = { index, show, update }
+const OsmDataController = { index, show, update }
 
-export default MapController
+export default OsmDataController
