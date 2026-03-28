@@ -17,7 +17,7 @@ class OsmDetailResource extends JsonResource
             'cuisine' => $this->cuisine,
             'street' => $this->street,
             'city' => $this->city,
-            'geom' => json_decode($this->geom),
+            'geom' => $this->geom,
             'gallery_images' => $this->getMedia('gallery')->map(function ($media) {
                 return [
                     'id' => $media->id,
