@@ -2,11 +2,17 @@
 
 namespace App\Data;
 
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
+
+#[TypeScript]
 readonly class BoundingBox
 {
     public float $north;
+
     public float $south;
+
     public float $east;
+
     public float $west;
 
     public function __construct(
@@ -34,4 +40,3 @@ readonly class BoundingBox
         );
     }
 }
-
