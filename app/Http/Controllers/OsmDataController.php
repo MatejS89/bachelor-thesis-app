@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Actions\OsmData\UpdateOsmData;
 use App\Data\BoundingBox;
 use App\Data\OsmDetailData;
-use App\Data\OsmGeoJSONCollectionData;
 use App\Http\Requests\OsmData\GetBoundingBoxRequest;
 use App\Http\Requests\OsmData\UpdateFeatureRequest;
 use App\Models\OsmData;
@@ -21,7 +20,7 @@ class OsmDataController extends Controller
         $bbox = BoundingBox::fromArray($request->validated());
         $features = $osmService->getFeaturesInBoundingBox($bbox);
 
-        return OsmGeoJSONCollectionData::fromModels($features);
+        response($features, 200)->header('Content-Type', 'application/json');
     }
 
     public function show(Request $request, ?OsmData $feature = null): Response
