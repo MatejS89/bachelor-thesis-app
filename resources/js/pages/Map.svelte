@@ -1,5 +1,6 @@
 <script lang="ts">
     import AppHead from '@/components/AppHead.svelte';
+    import AppHeader from '@/components/AppHeader.svelte';
     import MapComponent from '@/components/MapComponent.svelte';
     import type { MapState } from '@/state/mapState.svelte';
     import { setMapContext } from '@/state/mapState.svelte';
@@ -25,12 +26,15 @@
 
 <AppHead title="Map" />
 
-<MapLayout>
-    <div class="flex h-full w-full overflow-hidden">
-        <MapSidebar />
+<div class="flex h-dvh flex-col">
+    <AppHeader />
+    <main class="flex flex-1 h-full w-full overflow-hidden">
+        <!--        <section>-->
+        <!--            <MapSidebar />-->
+        <!--        </section>-->
 
-        <div class="grow relative h-full">
+        <section class="grow relative h-full">
             <MapComponent {selectedFeature} />
-        </div>
-    </div>
-</MapLayout>
+        </section>
+    </main>
+</div>
