@@ -1,8 +1,6 @@
 <script lang="ts">
     import AppHead from '@/components/AppHead.svelte';
     import MapComponent from '@/components/MapComponent.svelte';
-    import MapSidebar from '@/components/MapSidebar.svelte';
-    import MapLayout from '@/layouts/MapLayout.svelte';
     import type { MapState } from '@/state/mapState.svelte';
     import { setMapContext } from '@/state/mapState.svelte';
 
@@ -17,14 +15,12 @@
     let mapContext = $state<MapState>
     ({
         visibleFeatures: { type: 'FeatureCollection', features: [] },
-        selectedFeature
+        get selectedFeature() {
+            return selectedFeature;
+        }
     });
 
     setMapContext(mapContext);
-
-    $effect(() => {
-        mapContext.selectedFeature = selectedFeature;
-    });
 </script>
 
 <AppHead title="Map" />
