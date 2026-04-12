@@ -1,3 +1,4 @@
+import type { LinkComponentBaseProps } from '@inertiajs/core';
 import { clsx } from 'clsx';
 import type { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -14,3 +15,9 @@ export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & {
     ref?: U | null;
 };
+
+export function toUrl(
+    href: NonNullable<LinkComponentBaseProps['href']>,
+): string {
+    return typeof href === 'string' ? href : href.url;
+}
