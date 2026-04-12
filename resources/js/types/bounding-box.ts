@@ -1,7 +1,6 @@
-export interface BoundingBox {
+export type BoundingBox = {
     west: number;
     south: number;
-    east: number;
     north: number;
-}
-
+    east: number;
+};
