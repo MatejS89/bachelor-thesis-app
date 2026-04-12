@@ -1,8 +1,8 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -11,13 +11,13 @@ export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 index.definition = {
     methods: ["get","head"],
-    url: '/map-data',
+    url: '/map',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 index.url = (options?: RouteQueryOptions) => {
     return index.definition.url + queryParams(options)
@@ -25,8 +25,8 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -35,8 +35,8 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
@@ -45,8 +45,8 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(options),
@@ -55,8 +55,8 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(options),
@@ -65,8 +65,8 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:19
-* @route '/map-data'
+* @see app/Http/Controllers/OsmDataController.php:30
+* @route '/map'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url({
@@ -81,104 +81,76 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 index.form = indexForm
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-export const show = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
+export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: search.url(options),
     method: 'get',
 })
 
-show.definition = {
+search.definition = {
     methods: ["get","head"],
-    url: '/map/{feature?}',
+    url: '/map/search',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-show.url = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { feature: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { feature: args.id }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            feature: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    validateParameters(args, [
-        "feature",
-    ])
-
-    const parsedArgs = {
-        feature: typeof args?.feature === 'object'
-        ? args.feature.id
-        : args?.feature,
-    }
-
-    return show.definition.url
-            .replace('{feature?}', parsedArgs.feature?.toString() ?? '')
-            .replace(/\/+$/, '') + queryParams(options)
+search.url = (options?: RouteQueryOptions) => {
+    return search.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-show.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
+search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: search.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-show.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: show.url(args, options),
+search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: search.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-const showForm = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
+const searchForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: search.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-showForm.get = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
+searchForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: search.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:27
-* @route '/map/{feature?}'
+* @see \App\Http\Controllers\OsmDataController::search
+* @see app/Http/Controllers/OsmDataController.php:18
+* @route '/map/search'
 */
-showForm.head = (args?: { feature?: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
+searchForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: search.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -187,88 +159,8 @@ showForm.head = (args?: { feature?: number | { id: number } } | [feature: number
     method: 'get',
 })
 
-show.form = showForm
+search.form = searchForm
 
-/**
-* @see \App\Http\Controllers\OsmDataController::update
-* @see app/Http/Controllers/OsmDataController.php:34
-* @route '/map/{feature}'
-*/
-export const update = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: update.url(args, options),
-    method: 'post',
-})
-
-update.definition = {
-    methods: ["post"],
-    url: '/map/{feature}',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\OsmDataController::update
-* @see app/Http/Controllers/OsmDataController.php:34
-* @route '/map/{feature}'
-*/
-update.url = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { feature: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { feature: args.id }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            feature: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        feature: typeof args.feature === 'object'
-        ? args.feature.id
-        : args.feature,
-    }
-
-    return update.definition.url
-            .replace('{feature}', parsedArgs.feature.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\OsmDataController::update
-* @see app/Http/Controllers/OsmDataController.php:34
-* @route '/map/{feature}'
-*/
-update.post = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: update.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\OsmDataController::update
-* @see app/Http/Controllers/OsmDataController.php:34
-* @route '/map/{feature}'
-*/
-const updateForm = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\OsmDataController::update
-* @see app/Http/Controllers/OsmDataController.php:34
-* @route '/map/{feature}'
-*/
-updateForm.post = (args: { feature: number | { id: number } } | [feature: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, options),
-    method: 'post',
-})
-
-update.form = updateForm
-
-const OsmDataController = { index, show, update }
+const OsmDataController = { index, search }
 
 export default OsmDataController
