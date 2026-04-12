@@ -5,10 +5,10 @@ namespace App\Actions\OsmData;
 use App\Models\OsmData;
 use Illuminate\Validation\ValidationException;
 
-class UpdateOsmData
+class Update
 {
     public function __construct(
-        public PhotoUpdateOsmData $photoUpdateOsmData,
+        public PhotoUpdate $photoUpdateOsmData,
     ) {}
 
     /**

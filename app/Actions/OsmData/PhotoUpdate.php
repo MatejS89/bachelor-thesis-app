@@ -7,7 +7,7 @@ use Illuminate\Validation\ValidationException;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
-class PhotoUpdateOsmData
+class PhotoUpdate
 {
     public function handle(OsmData $feature, array $images): OsmData
     {
