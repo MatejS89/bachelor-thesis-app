@@ -1,0 +1,34 @@
+<script lang="ts">
+    import { Link, page } from '@inertiajs/svelte';
+    import * as Avatar from '@/components/ui/avatar/index';
+    import { getInitials } from '@/lib/initials';
+
+    const auth = $derived(page.props.auth);
+</script>
+
+<header class="sticky top-0 z-50 w-full border-b border-border shrink-0">
+    <div class="px-4 md:px-8 flex h-14 items-center justify-between">
+        <Link class="flex items-center space-x-2">
+                <span class="font-bold text-2xl sm:inline-block">
+                    Haven
+                </span>
+        </Link>
+
+        <Avatar.Root
+            class="size-8 overflow-hidden rounded-full"
+        >
+            <!--{#if auth.user.avatar}-->
+            <!--    <Avatar.Image-->
+            <!--        src={auth.user.avatar}-->
+            <!--        alt={auth.user.name}-->
+            <!--    />-->
+            <!--{/if}-->
+            <Avatar.Fallback
+                class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
+            >
+                <!--{getInitials(auth.user?.name)}-->
+                TU
+            </Avatar.Fallback>
+        </Avatar.Root>
+    </div>
+</header>
