@@ -6,23 +6,47 @@
 </script>
 
 <script lang="ts">
-    import { InfiniteScroll, Link, page } from '@inertiajs/svelte';
+    import { Link, InfiniteScroll, page } from '@inertiajs/svelte';
     import SearchNav from '@/components/SearchNav.svelte';
     import * as Item from '@/components/ui/item/index';
     import * as ToggleGroup from '@/components/ui/toggle-group';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
 
-
-    let { visibleFeatures, filters, allergens } = $props();
-    let allergenArr = $derived(filters?.allergens ?? []);
+    let { visibleFeatures, filters, allergens, mapFeatures } = $props();
+    let allergenArr = $derived((filters?.allergens ?? []).map(String));
 
     let navigationManager = getAppContext().navigationManager;
     let mapManager = getAppContext().mapManager;
 
     function filterAllergens(newAllergenArray: string[]) {
-        navigationManager.updateAllergens(newAllergenArray);
+        const bounds = mapManager.getBounds();
+
+        navigationManager.updateAllergens(newAllergenArray, bounds);
     }
+
+    let featureStatsMap = $derived(
+        new Map(
+            (Array.isArray(mapFeatures?.data)
+                    ? mapFeatures.data
+                    : (mapFeatures?.data?.features ?? [])
+            ).map((feature: any) => [
+                feature.id ?? feature.properties?.id,
+                {
+                    total_items_count: feature.total_items_count ?? feature.properties?.total_items_count,
+                    safe_items_count: feature.safe_items_count ?? feature.properties?.safe_items_count
+                }
+            ])
+        )
+    );
+
+    $effect(() => {
+        const featuresCollection = mapFeatures?.data;
+
+        if (featuresCollection) {
+            mapManager.setFeatures(featuresCollection);
+        }
+    });
 </script>
 
 <nav>
@@ -36,9 +60,9 @@
         class="flex flex-wrap p-3"
         variant="outline"
     >
-        {#each allergens as allergen (allergen.name)}
+        {#each allergens as allergen (allergen.id)}
             <ToggleGroup.Item
-                value={allergen.name}
+                value={allergen.id.toString()}
                 aria-label="Toggle {allergen.name}"
                 class="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground hover:data-[state=on]:bg-primary/90"
             >
@@ -79,8 +103,10 @@
                                 <Item.Description
                                     class="flex flex-col gap-0.5 mt-1 text-sm"
                                 >
-                                    <span>Total menu items: {feature?.total_items_count}</span>
-                                    <span>Safe menu items: {feature?.safe_items_count}</span>
+                                    <span>Total menu items: {featureStatsMap.get(feature.id)?.total_items_count}</span>
+                                    <span>Safe menu items: {featureStatsMap.get(feature.id)?.safe_items_count}</span>
+                                    <span>Opening hours: {feature.opening_hours}</span>
+                                    <span>{feature.cuisine}</span>
                                 </Item.Description>
                             </Item.Content>
                         </Item.Root>
@@ -94,4 +120,3 @@
         {/if}
     </InfiniteScroll>
 </div>
-
