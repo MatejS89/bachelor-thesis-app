@@ -91,7 +91,7 @@ export class SearchManager {
             console.error('Combined geocoding request failed:', error);
             this.clear();
 
-            return []; // Added a return here so it consistently returns an array even on failure
+            return [];
         } finally {
             this.isSearching = false;
         }
