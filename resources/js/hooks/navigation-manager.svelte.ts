@@ -35,6 +35,8 @@ export class NavigationManager {
             {
                 preserveState: true,
                 preserveScroll: true,
+                reset: ['visibleFeatures'],
+                only: ['visibleFeatures', 'mapFeatures'],
             },
         );
     };
