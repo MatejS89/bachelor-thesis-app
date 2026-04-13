@@ -105,6 +105,19 @@ export class MapManager {
                         'circle-stroke-color': '#ffffff',
                     },
                 });
+
+                this.map!.addLayer({
+                    id: `${LAYERS.CUSTOM_FEATURES}-hover-layer`,
+                    type: 'circle',
+                    source: LAYERS.CUSTOM_FEATURES,
+                    paint: {
+                        'circle-radius': 10,
+                        'circle-color': '#ff4757',
+                        'circle-stroke-width': 3,
+                        'circle-stroke-color': '#000000',
+                    },
+                    filter: ['==', ['get', 'id'], ''],
+                });
             }
 
             this.toggleCustomFeatures(true);
@@ -114,6 +127,29 @@ export class MapManager {
             update();
         } else {
             this.map.once('load', update);
+        }
+    }
+
+    highlightFeature(id: string | number | null) {
+        if (
+            !this.map ||
+            !this.map.getLayer(`${LAYERS.CUSTOM_FEATURES}-hover-layer`)
+        ) {
+            return;
+        }
+
+        if (id === null) {
+            this.map.setFilter(`${LAYERS.CUSTOM_FEATURES}-hover-layer`, [
+                '==',
+                ['get', 'id'],
+                '',
+            ]);
+        } else {
+            this.map.setFilter(`${LAYERS.CUSTOM_FEATURES}-hover-layer`, [
+                '==',
+                ['get', 'id'],
+                id,
+            ]);
         }
     }
 
