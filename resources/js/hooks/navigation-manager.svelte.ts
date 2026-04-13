@@ -26,9 +26,12 @@ export class NavigationManager {
         });
     };
 
-    updateAllergens = (allergens: string[]) => {
+    updateAllergens = (
+        allergens: string[],
+        bounds: BoundingBox | undefined,
+    ) => {
         this.navigate(
-            { allergens },
+            { allergens, ...bounds },
             {
                 preserveState: true,
                 preserveScroll: true,
