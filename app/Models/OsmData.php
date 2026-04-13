@@ -28,6 +28,7 @@ class OsmData extends Model implements HasMedia
 
     protected $casts = [
         'geom' => Point::class,
+        'tags' => 'array',
     ];
 
     public function registerMediaConversions(?Media $media = null): void
