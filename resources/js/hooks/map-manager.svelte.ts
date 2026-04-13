@@ -140,14 +140,13 @@ export class MapManager {
 
         if (id === null) {
             this.map.setFilter(`${LAYERS.CUSTOM_FEATURES}-hover-layer`, [
-                '==',
-                ['get', 'id'],
-                '',
+                'boolean',
+                false,
             ]);
         } else {
             this.map.setFilter(`${LAYERS.CUSTOM_FEATURES}-hover-layer`, [
                 '==',
-                ['get', 'id'],
+                ['id'],
                 id,
             ]);
         }
