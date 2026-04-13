@@ -12,7 +12,10 @@ export class NavigationManager {
     navigate = (newParams: Record<string, any>, options: any = {}) => {
         this.currentParams = { ...this.currentParams, ...newParams };
 
-        router.get(index(), this.currentParams, options);
+        router.reload({
+            data: this.currentParams,
+            ...options,
+        });
     };
 
     updateBounds = (bounds: BoundingBox) => {
