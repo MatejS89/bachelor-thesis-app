@@ -62,7 +62,10 @@ export class MapManager {
 
         this.map.addControl(this.geolocateControl);
 
-        this.map.on('moveend', this.fetchFeaturesForCurrentBounds);
+        this.geolocateControl.on(
+            'geolocate',
+            this.fetchFeaturesForCurrentBounds,
+        );
     }
 
     toggleCustomFeatures(visible: boolean) {
