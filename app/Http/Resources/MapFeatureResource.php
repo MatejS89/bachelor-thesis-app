@@ -11,12 +11,13 @@ class MapFeatureResource extends JsonResource
     {
         return [
             'type' => 'Feature',
-            'properties' => [
-                'id' => $this->id,
-                'name' => $this->name,
-            ],
+            'id' => $this->id,
             'geometry' => $this->geom,
+            'properties' => [
+                'name' => $this->name,
+                'total_items_count' => $this->total_items_count,
+                'safe_items_count' => $this->safe_items_count,
+            ],
         ];
     }
 }
-
