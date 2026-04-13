@@ -41,13 +41,6 @@ class OsmDataController extends Controller
     {
         $query = $request['search'];
 
-        $bbox = $createPolygon->handle(
-            $request->input('south'),
-            $request->input('west'),
-            $request->input('north'),
-            $request->input('east')
-        );
-
         $results = OsmData::query()
             ->where('name', 'ilike', "%{$query}%")
             ->limit(5)
