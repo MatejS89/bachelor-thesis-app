@@ -13,11 +13,21 @@
     let showMapOnMobile = $state(false);
 
     let navigationManager = new NavigationManager();
+    let mapManager = new MapManager(navigationManager.updateBounds);
+
     setAppContext({
-        mapManager: new MapManager(navigationManager.updateBounds),
+        mapManager,
         navigationManager,
         searchManager: new SearchManager()
     });
+
+    function searchThisArea() {
+        const bounds = mapManager.getBounds();
+
+        if (bounds) {
+            navigationManager.updateBounds(bounds);
+        }
+    }
 </script>
 
 <AppHead title="Map" />
@@ -35,14 +45,17 @@
     {/if}
 </Button>
 
-<div class="flex w-full h-screen overflow-hidden">
+<div class="flex w-full h-dvh overflow-hidden">
     <section
-        class="absolute inset-y-0 left-0 z-10 flex flex-col w-full lg:static lg:w-[50%] lg:shadow-none lg:border-r bg-background {showMapOnMobile ? 'hidden' : 'flex'}"
+        class="flex flex-col min-h-0 w-full lg:static lg:w-[50%] lg:shadow-none lg:border-r bg-background {showMapOnMobile ? 'hidden' : 'flex'}"
     >
         {@render children()}
     </section>
 
-    <div class="flex-1 relative flex w-full h-full">
-        <MapComp class="absolute inset-0 w-full h-full" />
+    <div class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
+        <Button variant="secondary" class="absolute z-100 left-4 top-4" onclick={searchThisArea}>Search this area
+        </Button>
+
+        <MapComp class="w-full h-full" />
     </div>
 </div>
