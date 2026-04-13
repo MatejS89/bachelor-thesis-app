@@ -19,6 +19,10 @@ class MenuItem extends Model
 
     public function scopeWithoutAllergens($query, array $allergens)
     {
-        return $query->whereDoesntHave('allergens', fn ($allergenQuery) => $allergenQuery->whereIn('name', $allergens));
+        if (empty($allergens)) {
+            return $query;
+        }
+
+        return $query->whereDoesntHave('allergens', fn ($allergenQuery) => $allergenQuery->whereIn('allergens.id', $allergens));
     }
 }
