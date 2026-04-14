@@ -82,7 +82,7 @@ data.form = dataForm
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\OsmDataController::index
-* @see app/Http/Controllers/OsmDataController.php:82
+* @see app/Http/Controllers/OsmDataController.php:75
 * @route '/map'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -244,7 +244,7 @@ search.form = searchForm
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 export const show = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -259,7 +259,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 show.url = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -292,7 +292,7 @@ show.url = (args: { osmData: number | { id: number } } | [osmData: number | { id
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 show.get = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -302,7 +302,7 @@ show.get = (args: { osmData: number | { id: number } } | [osmData: number | { id
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 show.head = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -312,7 +312,7 @@ show.head = (args: { osmData: number | { id: number } } | [osmData: number | { i
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 const showForm = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -322,7 +322,7 @@ const showForm = (args: { osmData: number | { id: number } } | [osmData: number 
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 showForm.get = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -332,7 +332,7 @@ showForm.get = (args: { osmData: number | { id: number } } | [osmData: number | 
 
 /**
 * @see \App\Http\Controllers\OsmDataController::show
-* @see app/Http/Controllers/OsmDataController.php:59
+* @see app/Http/Controllers/OsmDataController.php:52
 * @route '/map/{osmData}'
 */
 showForm.head = (args: { osmData: number | { id: number } } | [osmData: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
