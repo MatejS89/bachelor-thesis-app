@@ -11,6 +11,6 @@
 </script>
 
 <main
-    class='mx-auto flex h-full w-full flex-col flex-1 gap-4 {className}'>
+    class='mx-auto flex h-full w-full flex-col flex-1 {className}'>
     {@render children?.()}
 </main>
