@@ -49,6 +49,7 @@
         "laravel-vite-plugin": "^2.0.0",
         "lucide-svelte": "^0.468.0",
         "maplibre-gl": "^5.20.2",
+        "opening_hours": "^3.12.0",
         "svelte": "^5.16.0",
         "tailwindcss": "^4.1.1",
         "tw-animate-css": "^1.2.5"
