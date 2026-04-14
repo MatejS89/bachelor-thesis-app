@@ -6,11 +6,10 @@
     let { children } = $props();
 </script>
 
-<AppShell class="flex h-screen w-full flex-col overflow-hidden text-foreground antialiased">
+<AppShell class="text-foreground flex-col">
     <AppHeader />
 
-    <AppContent>
+    <AppContent class="flex-row">
         {@render children?.()}
     </AppContent>
 </AppShell>
-
