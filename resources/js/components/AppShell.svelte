@@ -10,6 +10,6 @@
     } = $props();
 </script>
 
-<div class="w-screen h-screen overflow-hidden {className}">
+<div class="h-dvh w-dvw overflow-hidden {className}">
     {@render children?.()}
 </div>
