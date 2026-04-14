@@ -280,6 +280,7 @@ export class MapManager {
                 : (bbox as [number, number, number, number]);
 
         this.map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
+        this.fetchFeaturesForCurrentBounds();
     }
 
     triggerGeolocation() {
