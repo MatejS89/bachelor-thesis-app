@@ -51,14 +51,14 @@
 </Button>
 
 <section
-    class="overflow-hidden flex-col min-h-0 lg:static lg:w-[50%] {showMapOnMobile ? 'hidden' : 'flex'}"
+    class="overflow-hidden flex-col min-h-0 lg:static lg:w-1/2 {showMapOnMobile ? 'hidden' : 'flex'}"
 >
     {@render children()}
 </section>
 
-<div class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
+<aside aria-label="Map View" class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
     <Button variant="secondary" class="absolute z-100 left-4 top-4" onclick={searchThisArea}>Search this area
     </Button>
 
     <MapComp class="w-full h-full" />
-</div>
+</aside>
