@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page, router } from '@inertiajs/svelte';
     import { Map as MapIcon, List as ListIcon } from 'lucide-svelte';
     import AppHead from '@/components/AppHead.svelte';
     import MapComp from '@/components/MapComp.svelte';
@@ -25,7 +26,11 @@
         const bounds = mapManager.getBounds();
 
         if (bounds) {
-            navigationManager.updateBounds(bounds);
+            router.reload({
+                data: { ...page.props.filters, ...bounds },
+                only: ['visibleFeatures', 'mapFeatures'],
+                reset: ['visibleFeatures']
+            });
         }
     }
 </script>
@@ -45,17 +50,15 @@
     {/if}
 </Button>
 
-<div class="flex w-full h-dvh overflow-hidden">
-    <section
-        class="flex flex-col min-h-0 w-full lg:static lg:w-[50%] lg:shadow-none lg:border-r bg-background {showMapOnMobile ? 'hidden' : 'flex'}"
-    >
-        {@render children()}
-    </section>
+<section
+    class="overflow-hidden flex-col min-h-0 lg:static lg:w-[50%] {showMapOnMobile ? 'hidden' : 'flex'}"
+>
+    {@render children()}
+</section>
 
-    <div class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
-        <Button variant="secondary" class="absolute z-100 left-4 top-4" onclick={searchThisArea}>Search this area
-        </Button>
+<div class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
+    <Button variant="secondary" class="absolute z-100 left-4 top-4" onclick={searchThisArea}>Search this area
+    </Button>
 
-        <MapComp class="w-full h-full" />
-    </div>
+    <MapComp class="w-full h-full" />
 </div>
