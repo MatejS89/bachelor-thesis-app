@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { router } from '@inertiajs/svelte';
     import type { Feature } from 'geojson';
     import { Search, MapPin } from 'lucide-svelte';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import * as Item from '@/components/ui/item/index';
     import { Spinner } from '@/components/ui/spinner';
+    import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
     import getIconForFeature from '@/utils/get-osm_data-icons';
 
@@ -55,6 +57,14 @@
             mapManager.flyToLocation(lng, lat, 15);
         }
     }
+
+    function selectRestaurantResult(featureId: number) {
+        showDropdown = false;
+
+        mapManager.clearSearchResults();
+
+        router.get(show(featureId));
+    }
 </script>
 
 <nav class="border-b p-4 relative">
@@ -102,7 +112,7 @@
                     {#each searchManager.localResults as feature (feature.id)}
                         {@const FeatureIcon = getIconForFeature(feature)}
                         <Item.Root
-                            onclick={() => selectNominatimResult(feature)}
+                            onclick={() => selectRestaurantResult(feature.id)}
                         >
                             <Item.Media variant="icon">
                                 <FeatureIcon></FeatureIcon>
