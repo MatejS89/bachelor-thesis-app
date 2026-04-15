@@ -37,12 +37,12 @@
     });
 </script>
 
-<nav>
+<nav class="shrink-0">
     <SearchNav />
     <AllergenFilter {allergens} {filters} />
 </nav>
 
-<div class="overflow-y-auto flex-1 p-4" scroll-region="visibleFeatures">
+<div class="overflow-y-auto flex-1 p-4 min-h-0" scroll-region="visibleFeatures">
     <InfiniteScroll
         data="visibleFeatures"
         as="ol"
