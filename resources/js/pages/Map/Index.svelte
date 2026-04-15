@@ -18,10 +18,7 @@
 
     let featureStatsMap = $derived(
         new Map(
-            (Array.isArray(mapFeatures?.data)
-                    ? mapFeatures.data
-                    : (mapFeatures?.data?.features ?? [])
-            ).map((feature: any) => [
+            (mapFeatures?.data?.features ?? []).map((feature: any) => [
                 feature.id ?? feature.properties?.id,
                 {
                     total_items_count: feature.total_items_count ?? feature.properties?.total_items_count,
