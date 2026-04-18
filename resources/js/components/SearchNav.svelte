@@ -67,7 +67,7 @@
     }
 </script>
 
-<nav class="border-b p-4 relative">
+<nav class="border-b p-2 lg:p-4 relative">
     <div class="relative flex flex-row gap-2">
         <Input
             type="text"
