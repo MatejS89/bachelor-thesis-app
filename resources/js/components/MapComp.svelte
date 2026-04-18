@@ -5,7 +5,7 @@
     import type { MapManager } from '@/hooks/map-manager.svelte';
     import { getAppContext } from '@/state/appState.svelte';
 
-    let { class: className } = $props();
+    let { class: className = '' } = $props();
 
     let mapContainer: HTMLElement;
 
@@ -29,5 +29,5 @@
     });
 </script>
 
-<section bind:this={mapContainer} class="{className}">
+<section bind:this={mapContainer} class="w-full h-full {className}">
 </section>
