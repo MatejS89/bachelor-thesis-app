@@ -37,12 +37,13 @@
     });
 </script>
 
-<nav class="shrink-0">
+<nav
+    class="shrink-0 flex flex-col sticky top-14 z-40 bg-background border-b shadow-sm lg:static">
     <SearchNav />
     <AllergenFilter {allergens} {filters} />
 </nav>
 
-<div class="overflow-y-auto flex-1 p-4 min-h-0" scroll-region="visibleFeatures">
+<div class="p-2 lg:p-4 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain bg-sidebar" scroll-region="">
     <InfiniteScroll
         data="visibleFeatures"
         as="ol"
