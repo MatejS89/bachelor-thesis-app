@@ -53,8 +53,8 @@
                 alt={feature.name ? `Photo of ${feature.name}` : ''}
             />
 
-            <Item.Content class="py-2 flex flex-1 flex-col justify-center min-w-0 shrink-0">
-                <Item.Title class="text-lg font-semibold truncate">
+            <Item.Content class="flex flex-1 flex-col justify-center min-w-0 shrink-0">
+                <Item.Title class="text-md lg:text-lg font-semibold ">
                     {feature.name || 'Unnamed location'}
                 </Item.Title>
 
