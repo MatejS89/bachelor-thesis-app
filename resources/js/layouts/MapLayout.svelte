@@ -1,12 +1,14 @@
 <script lang="ts">
-    import { page, router } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
     import { Map as MapIcon, List as ListIcon } from 'lucide-svelte';
     import AppHead from '@/components/AppHead.svelte';
     import MapComp from '@/components/MapComp.svelte';
+    import MapLegend from '@/components/MapLegend.svelte';
     import { Button } from '@/components/ui/button';
     import { MapManager } from '@/hooks/map-manager.svelte';
     import { NavigationManager } from '@/hooks/navigation-manager.svelte';
     import { SearchManager } from '@/hooks/search-result-manager.svelte';
+    import { show } from '@/routes/map';
     import { setAppContext } from '@/state/appState.svelte';
 
     let { children } = $props();
@@ -14,7 +16,11 @@
     let showMapOnMobile = $state(false);
 
     let navigationManager = new NavigationManager();
-    let mapManager = new MapManager(navigationManager.updateBounds);
+    let mapManager = new MapManager(navigationManager.updateBounds, showDetail);
+
+    function showDetail(id: number) {
+        router.get(show(id), {}, { replace: true });
+    }
 
     setAppContext({
         mapManager,
@@ -27,7 +33,7 @@
 
         if (bounds) {
             router.reload({
-                data: { ...page.props.filters, ...bounds },
+                data: { ...bounds },
                 only: ['visibleFeatures', 'mapFeatures'],
                 reset: ['visibleFeatures']
             });
@@ -38,27 +44,29 @@
 <AppHead title="Map" />
 
 <Button
-    class="absolute bottom-6 right-6 z-50 rounded-full shadow-lg lg:hidden gap-2"
+    class="fixed bottom-4 right-4 z-50 rounded-full shadow-lg lg:hidden gap-2 touch-manipulation"
     onclick={() => (showMapOnMobile = !showMapOnMobile)}
 >
     {#if showMapOnMobile}
-        <ListIcon class="w-4 h-4" />
-        Show List
+        <ListIcon />
+        List
     {:else}
-        <MapIcon class="w-4 h-4" />
-        Show Map
+        <MapIcon />
+        Map
     {/if}
 </Button>
 
 <section
-    class="overflow-hidden flex-col min-h-0 lg:static lg:w-1/2 {showMapOnMobile ? 'hidden' : 'flex'}"
+    class="flex flex-1 flex-col w-full lg:static lg:h-full lg:min-h-0 lg:w-1/2 lg:overflow-y-auto {showMapOnMobile ? 'hidden' : 'flex'}"
 >
     {@render children()}
 </section>
 
 <aside aria-label="Map View" class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
-    <Button variant="secondary" class="absolute z-100 left-4 top-4" onclick={searchThisArea}>Search this area
-    </Button>
-
-    <MapComp class="w-full h-full" />
+    <nav class="absolute top-4 left-4 flex flex-col gap-2">
+        <Button variant="secondary" class="z-100" onclick={searchThisArea}>Search this area
+        </Button>
+        <MapLegend />
+    </nav>
+    <MapComp class="border-l" />
 </aside>
