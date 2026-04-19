@@ -2,9 +2,8 @@
 
 namespace App\Support;
 
-// use App\Models\MenuItem;
 use App\Models\OsmData;
-// use App\Models\Review;
+use App\Models\Review;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
 
@@ -14,8 +13,7 @@ class CustomPathGenerator implements PathGenerator
     {
         $rootFolder = match ($media->model_type) {
             OsmData::class => 'restaurants',
-            //            Review::class => 'reviews',
-            //            MenuItem::class => 'menu_items',
+            Review::class => 'reviews',
             default => 'misc',
         };
 
