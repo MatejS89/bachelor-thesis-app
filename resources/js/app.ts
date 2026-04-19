@@ -2,6 +2,7 @@ import { createInertiaApp, router } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import '../css/app.css';
 import FullScreenLayout from '@/layouts/FullScreenLayout.svelte';
+import MapLayout from '@/layouts/MapLayout.svelte';
 import { initializeTheme } from '@/lib/theme.svelte';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -15,7 +16,13 @@ createInertiaApp({
 
         return pages[`./pages/${name}.svelte`] as never;
     },
-    layout: () => FullScreenLayout,
+    layout: (name) => {
+        if (name.startsWith('map') || name.startsWith('review')) {
+            return [FullScreenLayout, MapLayout];
+        }
+
+        return [FullScreenLayout];
+    },
     setup({ el, App, props }) {
         if (!el) {
             return;
