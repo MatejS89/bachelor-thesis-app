@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Allergen;
+use App\Models\MenuItem;
 use Illuminate\Database\Seeder;
 
 class MenuItemSeeder extends Seeder
@@ -12,6 +13,15 @@ class MenuItemSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $allergenIds = Allergen::pluck('id');
+
+        MenuItem::factory()
+            ->count(10000)
+            ->afterCreating(function (MenuItem $menuItem) use ($allergenIds) {
+                $menuItem->allergens()->attach(
+                    $allergenIds->random(rand(1, 3))
+                );
+            })
+            ->create();
     }
 }
