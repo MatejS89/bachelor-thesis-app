@@ -1,7 +1,16 @@
 import type { FeatureCollection, Point, Feature, BBox } from 'geojson';
-import maplibregl, { GeolocateControl, NavigationControl } from 'maplibre-gl';
+import maplibregl, {
+    FullscreenControl,
+    GeolocateControl,
+    NavigationControl,
+} from 'maplibre-gl';
 import type { Map } from 'maplibre-gl';
 import type { BoundingBox } from '@/types';
+import {
+    buildRatioColorExpression,
+    getRatioColor,
+    RATIO_CONFIG,
+} from '@/utils/get_color';
 
 const LAYERS = {
     CUSTOM_FEATURES: 'custom-features',
@@ -9,15 +18,21 @@ const LAYERS = {
 };
 
 export class MapManager {
-    constructor(onBoundsChange: (bounds: BoundingBox) => void) {
+    constructor(
+        onBoundsChange: (bounds: BoundingBox) => void,
+        onFeatureClick: (id: number) => void,
+    ) {
         this.onBoundsChange = onBoundsChange;
+        this.onFeatureClick = onFeatureClick;
     }
 
-    private onBoundsChange: (bounds: any) => void;
+    private readonly onBoundsChange: (bounds: any) => void;
+    private readonly onFeatureClick: (id: number) => void;
     map: Map | undefined = $state<Map>();
     userLocation: { lat: number; lng: number } | null = $state(null);
 
     private geolocateControl: GeolocateControl | undefined;
+    private hoverMarker: maplibregl.Marker | null = null;
 
     private setLayerVisibility(layerId: string, isVisible: boolean) {
         if (!this.map) {
@@ -52,6 +67,7 @@ export class MapManager {
             container: container,
             style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
             hash: true,
+            attributionControl: { compact: true },
         });
 
         this.map.addControl(new NavigationControl());
@@ -66,6 +82,36 @@ export class MapManager {
             'geolocate',
             this.fetchFeaturesForCurrentBounds,
         );
+
+        this.map.addControl(new FullscreenControl());
+
+        this.attachLayerInteractions(`${LAYERS.CUSTOM_FEATURES}-layer`);
+        this.attachLayerInteractions(`${LAYERS.CUSTOM_FEATURES}-label-layer`);
+    }
+
+    private attachLayerInteractions(layerId: string) {
+        if (!this.map) {
+            return;
+        }
+
+        this.map.on('click', layerId, (e) => {
+            if (e.features && e.features.length > 0) {
+                const feature = e.features[0];
+                const featureId = feature.id ?? feature.properties?.id;
+
+                if (featureId !== undefined && featureId !== null) {
+                    this.onFeatureClick(featureId);
+                }
+            }
+        });
+
+        this.map.on('mouseenter', layerId, () => {
+            this.map!.getCanvas().style.cursor = 'pointer';
+        });
+
+        this.map.on('mouseleave', layerId, () => {
+            this.map!.getCanvas().style.cursor = '';
+        });
     }
 
     toggleCustomFeatures(visible: boolean) {
@@ -94,29 +140,49 @@ export class MapManager {
                     data: featureCollection,
                 });
 
+                const colorExpression = buildRatioColorExpression(
+                    'safe_items_count',
+                    'total_items_count',
+                );
+
                 this.map!.addLayer({
                     id: `${LAYERS.CUSTOM_FEATURES}-layer`,
                     type: 'circle',
                     source: LAYERS.CUSTOM_FEATURES,
                     paint: {
                         'circle-radius': 6,
-                        'circle-color': '#ff4757',
+                        'circle-color': colorExpression,
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#ffffff',
                     },
                 });
 
                 this.map!.addLayer({
-                    id: `${LAYERS.CUSTOM_FEATURES}-hover-layer`,
-                    type: 'circle',
+                    id: `${LAYERS.CUSTOM_FEATURES}-label-layer`,
+                    type: 'symbol',
                     source: LAYERS.CUSTOM_FEATURES,
-                    paint: {
-                        'circle-radius': 10,
-                        'circle-color': '#ff4757',
-                        'circle-stroke-width': 3,
-                        'circle-stroke-color': '#000000',
+                    minzoom: 14,
+                    layout: {
+                        'text-field': ['get', 'name'],
+                        'text-font': [
+                            'Open Sans Regular',
+                            'Arial Unicode MS Regular',
+                        ],
+                        'text-size': 12,
+                        'text-justify': 'auto',
+                        'text-variable-anchor-offset': [
+                            'top',
+                            [0, 1],
+                            'bottom',
+                            [0, -1],
+                        ],
+                        'text-max-width': 10,
                     },
-                    filter: ['==', ['get', 'id'], ''],
+                    paint: {
+                        'text-color': '#374151',
+                        'text-halo-color': '#ffffff',
+                        'text-halo-width': 2,
+                    },
                 });
             }
 
@@ -130,25 +196,48 @@ export class MapManager {
         }
     }
 
-    highlightFeature(id: string | number | null) {
-        if (
-            !this.map ||
-            !this.map.getLayer(`${LAYERS.CUSTOM_FEATURES}-hover-layer`)
-        ) {
+    highlightFeature(id: number | null) {
+        if (!this.map) {
             return;
         }
 
-        if (id === null) {
-            this.map.setFilter(`${LAYERS.CUSTOM_FEATURES}-hover-layer`, [
-                'boolean',
-                false,
-            ]);
-        } else {
-            this.map.setFilter(`${LAYERS.CUSTOM_FEATURES}-hover-layer`, [
-                '==',
-                ['id'],
-                id,
-            ]);
+        if (this.hoverMarker) {
+            this.hoverMarker.remove();
+            this.hoverMarker = null;
+        }
+
+        if (id !== null) {
+            const features = this.map.querySourceFeatures(
+                LAYERS.CUSTOM_FEATURES,
+                {
+                    filter: ['==', ['id'], id],
+                },
+            );
+
+            if (features && features.length > 0) {
+                const feature = features[0];
+                const properties = feature.properties;
+
+                if (feature.geometry.type === 'Point') {
+                    const coordinates = [...feature.geometry.coordinates] as [
+                        number,
+                        number,
+                    ];
+
+                    const safe = properties?.safe_items_count ?? 0;
+                    const total = properties?.total_items_count ?? 0;
+                    const status = getRatioColor(safe, total);
+
+                    const hexColor = RATIO_CONFIG.mapColors[status];
+
+                    this.hoverMarker = new maplibregl.Marker({
+                        color: hexColor,
+                        scale: 1.1,
+                    })
+                        .setLngLat(coordinates)
+                        .addTo(this.map!);
+                }
+            }
         }
     }
 
