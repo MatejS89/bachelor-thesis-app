@@ -6,6 +6,7 @@ use Database\Factories\MenuItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class MenuItem extends Model
 {
@@ -23,6 +24,11 @@ class MenuItem extends Model
             return $query;
         }
 
-        return $query->whereDoesntHave('allergens', fn ($allergenQuery) => $allergenQuery->whereIn('allergens.id', $allergens));
+        return $query->whereNotExists(function ($q) use ($allergens) {
+            $q->select(DB::raw(1))
+                ->from('allergen_menu_item')
+                ->whereColumn('allergen_menu_item.menu_item_id', 'menu_items.id')
+                ->whereIn('allergen_menu_item.allergen_id', $allergens);
+        });
     }
 }
