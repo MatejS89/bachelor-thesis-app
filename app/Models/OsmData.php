@@ -52,6 +52,11 @@ class OsmData extends Model implements HasMedia
         return $this->hasMany(MenuItem::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public function scopeWithinMapBounds(Builder $query, Polygon $bbox): void
     {
         $query->whereWithin('geom', $bbox);
