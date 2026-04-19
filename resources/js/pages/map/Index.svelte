@@ -1,10 +1,3 @@
-<script lang="ts" module>
-    import FullScreenLayout from '@/layouts/FullScreenLayout.svelte';
-    import MapLayout from '@/layouts/MapLayout.svelte';
-
-    export const layout = [FullScreenLayout, MapLayout];
-</script>
-
 <script lang="ts">
     import { InfiniteScroll } from '@inertiajs/svelte';
     import AllergenFilter from '@/components/AllergenFilter.svelte';
@@ -38,16 +31,16 @@
 </script>
 
 <nav
-    class="shrink-0 flex flex-col sticky top-14 z-40 bg-background border-b shadow-sm lg:static">
+    class="shrink-0 flex flex-col sticky top-0 z-40 bg-background border-b shadow-xs lg:static">
     <SearchNav />
     <AllergenFilter {allergens} {filters} />
 </nav>
 
-<div class="p-2 lg:p-4 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain bg-sidebar" scroll-region="">
+<div class="px-2 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain bg-sidebar" scroll-region="">
     <InfiniteScroll
         data="visibleFeatures"
         as="ol"
-        class="flex flex-col gap-4"
+        class="flex flex-col gap-4 pt-4"
     >
         {#if visibleFeatures.data.length > 0}
             {#each visibleFeatures.data as feature (feature.id)}
