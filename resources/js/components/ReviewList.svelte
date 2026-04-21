@@ -8,6 +8,7 @@
         reviews: App.Data.ReviewData[]
     } = $props();
 </script>
+
 <Card.Root>
     <Card.Header>
         <Card.Title>Community Reviews</Card.Title>
@@ -18,7 +19,7 @@
             {#each reviews as review (review.id)}
                 <div class="border-b border-border/50 pb-6 last:border-0 last:pb-0">
                     <div class="flex items-center justify-between mb-1">
-                        <span class="font-medium text-foreground">{review.user.name}</span>
+                        <span class="font-medium text-foreground">{review?.user?.name}</span>
                         <span
                             class="text-sm text-muted-foreground">{formatLocal(review.created_at)}</span>
                     </div>
@@ -43,6 +44,7 @@
                                                     src={photo}
                                                     alt="Review photo {j + 1}"
                                                     loading="lazy"
+                                                    decoding="async"
                                                     class="h-32 w-full object-cover transition-transform hover:scale-105"
                                                 />
                                             </div>
@@ -66,5 +68,4 @@
 
         </div>
     </Card.Content>
-
 </Card.Root>
