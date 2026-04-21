@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\OsmDataController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
@@ -17,10 +18,9 @@ Route::get('map/search', [OsmDataController::class, 'search'])->name('map.search
 
 Route::get('map/{osmData}', [OsmDataController::class, 'show'])->name('map.show');
 
-Route::middleware(['auth', 'verified', EncryptHistory::class])->group(function () {
-    Route::inertia('map/{osmData}/menu-item', 'menu-item/Create')->name('map.menu-item.create');
-});
+Route::resource('map/{osmData}/review', ReviewController::class)->names('map.review')->only(['create', 'store'])->middlewareFor(['create', 'store'], ['auth', 'verified', EncryptHistory::class]);
 
 Route::resource('map/{osmData}/review', ReviewController::class)->names('map.review')->middlewareFor(['create', 'store'], ['auth', 'verified', EncryptHistory::class]);
+Route::resource('map/{osmData}/menu-item', MenuItemController::class)->names('map.menu-item')->only(['create', 'store']);
 
 require __DIR__.'/settings.php';
