@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Review\CreateReviewAction;
+use App\Data\OsmFeatureData;
 use App\Http\Requests\StoreReviewRequest;
 use App\Models\OsmData;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class ReviewController extends Controller
@@ -23,10 +25,12 @@ class ReviewController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(OsmData $osmData)
+    public function create(OsmData $osmData, Request $request)
     {
+        Gate::authorize('create', Review::class);
+
         return Inertia::render('review/Create', [
-            'osmData' => $osmData,
+            'osmData' => OsmFeatureData::from($osmData),
         ]);
     }
 
@@ -35,6 +39,8 @@ class ReviewController extends Controller
      */
     public function store(StoreReviewRequest $request, OsmData $osmData, CreateReviewAction $createReviewAction): RedirectResponse
     {
+        Gate::authorize('create', Review::class);
+
         $review = $createReviewAction->execute(
             auth()->user(),
             $request->validated(),
