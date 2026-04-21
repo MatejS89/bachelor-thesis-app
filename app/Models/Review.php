@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Database\Factories\ReviewFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+#[Fillable(['rating', 'description', 'user_id', 'osm_data_id'])]
 class Review extends Model implements HasMedia
 {
     /** @use HasFactory<ReviewFactory> */
@@ -16,12 +18,12 @@ class Review extends Model implements HasMedia
 
     use InteractsWithMedia;
 
-    protected $fillable = [
-        'rating',
-        'description',
-        'user_id',
-        'osm_data_id',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+        ];
+    }
 
     public function osmData(): BelongsTo
     {
