@@ -18,6 +18,11 @@ class MenuItem extends Model
         return $this->belongsToMany(Allergen::class);
     }
 
+    public function dietaryTags(): BelongsToMany
+    {
+        return $this->belongsToMany(DietaryTag::class);
+    }
+
     public function scopeWithoutAllergens($query, array $allergens)
     {
         if (empty($allergens)) {
