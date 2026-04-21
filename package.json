@@ -40,6 +40,8 @@
         "vite": "^7.0.4"
     },
     "dependencies": {
+        "@dnd-kit/helpers": "^0.4.0",
+        "@dnd-kit/svelte": "^0.4.0",
         "@inertiajs/svelte": "^3.0.0",
         "@inertiajs/vite": "^3.0.0",
         "@maplibre/maplibre-gl-geocoder": "^1.9.4",
