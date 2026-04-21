@@ -1,16 +1,32 @@
 declare namespace App {
     namespace Data {
+        export type AllergenData = {
+            id: number;
+            name: string;
+        };
         export type BoundingBox = {
             readonly north: number;
             readonly south: number;
             readonly east: number;
             readonly west: number;
         };
+        export type DietaryTagData = {
+            id: number;
+            name: string;
+        };
         export type GalleryImageData = {
             id: number;
             url: string;
             thumb_url: string;
             order: number;
+        };
+        export type MenuItemData = {
+            id: number;
+            name: string;
+            description: string;
+            createdAt: string;
+            allergens?: App.Data.AllergenData[];
+            dietaryTags?: App.Data.DietaryTagData[];
         };
         export type OsmDetailData = {
             id: number;
@@ -21,16 +37,38 @@ declare namespace App {
             geom: { type: 'Point'; coordinates: [number, number] };
             gallery_images: App.Data.GalleryImageData[];
         };
+        export type OsmFeatureData = {
+            id: number;
+            osm_type: string;
+            osm_id: number;
+            name: string;
+            type: string | null;
+            tags: Array<any>;
+            geom: { type: 'Point'; coordinates: [number, number] };
+        };
         export type OsmGeoJSONCollectionData = {
             type: 'FeatureCollection';
-            features: App.Data.OsmGeoJSONData[];
+            features: unknown[];
         };
-        export type OsmGeoJSONData = {
-            type: 'Feature';
+        export type ReviewData = {
             id: number;
-            geometry: { type: 'Point'; coordinates: [number, number] };
-            properties: App.Data.OsmDetailData;
+            description: string | null;
+            rating: number;
+            created_at: string;
+            user?: App.Data.User.UserMinData;
+            photo_urls: Array<any>;
         };
+        namespace User {
+            export type UserData = {
+                id: number;
+                name: string;
+                email: string;
+                reviews?: App.Data.ReviewData[];
+            };
+            export type UserMinData = {
+                name: string;
+            };
+        }
     }
 }
 declare namespace Illuminate {
