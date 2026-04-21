@@ -20,47 +20,17 @@
     import * as Tabs from '@/components/ui/tabs/index';
     import { index } from '@/routes/map';
 
-    let { selectedFeature: restaurantData, reviews }: {
+
+    let { selectedFeature: restaurantData, reviews, menuItems }: {
         selectedFeature: App.Data.OsmFeatureData,
         reviews: App.Data.ReviewData[]
+        menuItems: App.Data.MenuItemData[]
     } = $props();
 
     let images = $state([
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80',
         'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200&q=80',
         'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=1200&q=80'
-    ]);
-
-
-    let menuItems = $state([
-        {
-            id: 1,
-            name: 'House Signature Burger',
-            description: 'Double beef patty, aged cheddar, caramelized onions, house sauce.',
-            price: '$16.50',
-            category: 'Mains'
-        },
-        {
-            id: 2,
-            name: 'Truffle Parmesan Fries',
-            description: 'Crispy cut fries tossed in white truffle oil and fresh parmesan.',
-            price: '$8.00',
-            category: 'Sides'
-        },
-        {
-            id: 3,
-            name: 'Heirloom Tomato Salad',
-            description: 'Fresh heirloom tomatoes, burrata, basil, balsamic glaze.',
-            price: '$12.00',
-            category: 'Starters'
-        },
-        {
-            id: 4,
-            name: 'Artisan Lemonade',
-            description: 'Freshly squeezed lemons with a hint of mint and agave.',
-            price: '$4.50',
-            category: 'Drinks'
-        }
     ]);
 
     let isOpenNow = $derived.by(() => {
