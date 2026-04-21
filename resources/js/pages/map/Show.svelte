@@ -7,21 +7,18 @@
         Clock,
         Utensils,
         Accessibility,
-        ArrowLeft,
-        Star,
-        UtensilsCrossed, SquarePen
+        ArrowLeft
     } from 'lucide-svelte';
     import opening_hours from 'opening_hours';
+    import ActionNav from '@/components/ActionNav.svelte';
+    import MenuItemList from '@/components/MenuItemList.svelte';
+    import ReviewList from '@/components/ReviewList.svelte';
     import { Badge } from '@/components/ui/badge/index.js';
     import { buttonVariants } from '@/components/ui/button';
-    import { Button } from '@/components/ui/button';
     import * as Card from '@/components/ui/card/index';
     import * as Carousel from '@/components/ui/carousel/index';
     import * as Tabs from '@/components/ui/tabs/index';
     import { index } from '@/routes/map';
-    import { create as createMenuItem } from '@/routes/map/menu-item';
-    import { create as createReview } from '@/routes/map/review';
-    import formatLocal from '@/utils/format-date';
 
     let { selectedFeature: restaurantData, reviews }: {
         selectedFeature: App.Data.OsmFeatureData,
@@ -139,8 +136,6 @@
             router.get(index(), queryData);
         }
     }
-
-    $inspect(reviews);
 </script>
 
 <div class="p-3 h-full w-full overflow-y-auto lg:p-4 flex flex-col gap-2 md:gap-4">
@@ -277,108 +272,26 @@
         </Card.Root>
     </div>
 
-    <nav class="w-full flex flex-row justify-between gap-1.5">
-        <Link
-            class={buttonVariants({ variant: "default", class: "flex-1 flex-col h-auto py-3 gap-1.5" })}
-            as="button"
-            href={createReview(restaurantData.id)}
-        >
-            <Star class="h-5 w-5" />
-            <span class="text-xs">Add review</span>
-        </Link>
-
-        <Link
-            href={createMenuItem(restaurantData.id)}
-            class={buttonVariants({ variant: "default", class: "flex-1 flex-col h-auto py-3 gap-1.5" })}
-            as="button"
-        >
-            <UtensilsCrossed class="h-5 w-5" />
-            <span class="text-xs">Add menu item</span>
-        </Link>
-
-        <Button class="flex-1 flex-col h-auto py-3 gap-1.5">
-            <SquarePen class="h-5 w-5" />
-            <span class="text-xs">Edit details</span>
-        </Button>
-    </nav>
+    <ActionNav {restaurantData} />
 
     <div class="w-full">
         <Tabs.Root value="menu" class="w-full">
-
             <Tabs.List class="w-full">
-                <Tabs.Trigger
-                    value="menu"
-                >
+                <Tabs.Trigger value="menu">
                     Menu
                 </Tabs.Trigger>
 
-                <Tabs.Trigger
-                    value="reviews"
-                >
+                <Tabs.Trigger value="reviews">
                     Reviews
                 </Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="menu">
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title>Our Menu</Card.Title>
-                        <Card.Description>Explore our delicious offerings</Card.Description>
-                    </Card.Header>
-                    <Card.Content>
-                        <div class="space-y-6">
-                            {#each menuItems as item (item.id)}
-                                <div
-                                    class="flex justify-between items-start border-b border-border/50 pb-4 last:border-0 last:pb-0">
-                                    <div class="pr-4">
-                                        <h4 class="font-medium text-foreground">{item.name}</h4>
-                                        <p class="text-sm text-muted-foreground mt-1 leading-relaxed">{item.description}</p>
-                                        <Badge variant="secondary"
-                                               class="mt-2 text-xs font-normal">{item.category}</Badge>
-                                    </div>
-                                    <span class="font-semibold whitespace-nowrap">{item.price}</span>
-                                </div>
-                            {/each}
-                            {#if menuItems.length === 0}
-                                <p class="text-sm text-muted-foreground italic">Menu coming soon.</p>
-                            {/if}
-                        </div>
-                    </Card.Content>
-                </Card.Root>
+                <MenuItemList {menuItems} />
             </Tabs.Content>
 
             <Tabs.Content value="reviews">
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title>Community Reviews</Card.Title>
-                    </Card.Header>
-                    <Card.Content>
-                        <div class="space-y-6">
-                            {#each reviews as review (review.id)}
-                                <div class="border-b border-border/50 pb-6 last:border-0 last:pb-0">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <span class="font-medium text-foreground">{review.user.name}</span>
-                                        <span
-                                            class="text-sm text-muted-foreground">{formatLocal(review.created_at)}</span>
-                                    </div>
-                                    <div class="flex items-center gap-0.5 text-yellow-500 mb-2">
-                                        {#each Array(5) as _, i(i)}
-                                            <Star
-                                                class="h-4 w-4 {i < review.rating ? 'fill-yellow-500' : 'text-muted/50 fill-muted/50'}"
-                                            />
-                                        {/each}
-                                    </div>
-                                    <p class="text-sm text-foreground/90">{review.description}</p>
-                                </div>
-                            {/each}
-
-                            {#if reviews.length === 0}
-                                <p class="text-sm text-muted-foreground italic">No reviews yet. Be the first to leave
-                                    one!</p>
-                            {/if}
-                        </div>
-                    </Card.Content>
-                </Card.Root>
+                <ReviewList {reviews} />
             </Tabs.Content>
         </Tabs.Root>
     </div>
