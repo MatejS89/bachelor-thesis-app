@@ -138,7 +138,7 @@
     }
 </script>
 
-<div class="p-3 h-full w-full overflow-y-auto lg:p-4 flex flex-col gap-2 md:gap-4">
+<div class="p-3 h-full w-full lg:p-4 flex flex-col gap-2 md:gap-4">
     <header>
         <div class="flex items-center gap-4">
             <Link
@@ -274,25 +274,23 @@
 
     <ActionNav {restaurantData} />
 
-    <div class="w-full">
-        <Tabs.Root value="menu" class="w-full">
-            <Tabs.List class="w-full">
-                <Tabs.Trigger value="menu">
-                    Menu
-                </Tabs.Trigger>
+    <Tabs.Root value="menu" class="w-full ">
+        <Tabs.List class="w-full">
+            <Tabs.Trigger value="menu">
+                Menu
+            </Tabs.Trigger>
 
-                <Tabs.Trigger value="reviews">
-                    Reviews
-                </Tabs.Trigger>
-            </Tabs.List>
+            <Tabs.Trigger value="reviews">
+                Reviews
+            </Tabs.Trigger>
+        </Tabs.List>
 
-            <Tabs.Content value="menu">
-                <MenuItemList {menuItems} />
-            </Tabs.Content>
+        <Tabs.Content value="menu">
+            <MenuItemList {menuItems} />
+        </Tabs.Content>
 
-            <Tabs.Content value="reviews">
-                <ReviewList {reviews} />
-            </Tabs.Content>
-        </Tabs.Root>
-    </div>
+        <Tabs.Content value="reviews">
+            <ReviewList {reviews} />
+        </Tabs.Content>
+    </Tabs.Root>
 </div>
