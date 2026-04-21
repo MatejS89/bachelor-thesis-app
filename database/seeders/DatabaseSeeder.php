@@ -18,6 +18,6 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        $this->call([OsmDataSeeder::class, AllergenSeeder::class, MenuItemSeeder::class]);
+        $this->call([OsmDataSeeder::class, AllergenSeeder::class, DietaryTagSeeder::class, MenuItemSeeder::class]);
     }
 }
