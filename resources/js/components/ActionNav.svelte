@@ -19,7 +19,7 @@
     </Link>
 
     <Link
-        href={createMenuItem(restaurantData.id)}
+        href={createMenuItem(restaurantData)}
         class={buttonVariants({ variant: "default", class: "flex-1 flex-col h-auto py-3 gap-1.5" })}
         as="button"
     >
