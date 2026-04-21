@@ -109,11 +109,9 @@
 
             {#if items.length === 0}
                 <div
-                    onclick={handleFileSelect}
                     class="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-lg bg-muted/10 text-muted-foreground">
                     <ImagePlus class="h-10 w-10 mb-4 opacity-20" />
                     <p class="text-sm">No photos added yet.</p>
-
                 </div>
             {/if}
         </Card.Content>
