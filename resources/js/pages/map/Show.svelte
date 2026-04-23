@@ -108,27 +108,26 @@
     }
 </script>
 
-<div class="p-3 h-full w-full lg:p-4 flex flex-col gap-2 md:gap-4">
-    <header>
-        <div class="flex items-center gap-4">
-            <Link
-                class={buttonVariants({ variant: "ghost", size: 'lg'})}
-                href={index()}
-            >
-                <ArrowLeft />
-            </Link>
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight">{restaurantData.name}</h1>
-            </div>
-        </div>
+<div class="p-3 h-full w-full flex flex-col gap-3 ">
+    <header class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+        <Link
+            class={buttonVariants({ variant: "ghost", size: "icon", class: "self-center" })}
+            href={index()}
+        >
+            <ArrowLeft class="w-6 h-6" />
+        </Link>
+        <h1 class="text-3xl font-bold tracking-tight self-center">
+            {restaurantData.name}
+        </h1>
 
-        <p class="text-muted-foreground flex items-center gap-2 mt-2 text-lg">
-            <MapPin class="h-5 w-5" />
+        <div class="flex justify-center items-start w-full self-center">
+            <MapPin class="h-5 w-5 text-muted-foreground" />
+        </div>
+        <p class="text-muted-foreground text-lg leading-snug self-center">
             {restaurantData.tags['addr:street']} {restaurantData.tags['addr:housenumber']}
             , {restaurantData.tags['addr:city']} {restaurantData.tags['addr:postcode']}
         </p>
     </header>
-
     <div class="w-full px-12">
         <Carousel.Root class="w-full">
             <Carousel.Content>
@@ -158,13 +157,13 @@
         <Card.Root>
             <Card.Header>
                 <Card.Title>Restaurant Details</Card.Title>
-                <Card.Description>OSM Node: {restaurantData.id}</Card.Description>
+                <Card.Description>OSM Node: {restaurantData.osm_type}{restaurantData.osm_id}</Card.Description>
             </Card.Header>
             <Card.Content class="space-y-6">
                 <div class="flex items-start gap-3">
-                    <Utensils class="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                    <Utensils class="h-5 w-5 text-muted-foreground shrink-0" />
                     <div>
-                        <p class="font-medium leading-none mb-2">Cuisine</p>
+                        <p class="font-medium leading-none">Cuisine</p>
                         <div class="flex gap-2 flex-wrap">
                             {#each restaurantData.tags?.cuisine?.split(';') || [] as cuisine(cuisine)}
                                 <Badge variant="secondary" class="capitalize">{cuisine}</Badge>
