@@ -79,8 +79,6 @@
                             <dd>
                                 <OpeningBadge
                                     hoursString={feature.tags.opening_hours}
-                                    lat={feature.geom[0]}
-                                    lon={feature.geom[1]}
                                 />
                             </dd>
                         </div>
@@ -89,7 +87,7 @@
                             <div class="mt-2 relative">
                                 <dt class="sr-only">Cuisines</dt>
                                 <dd class="flex flex-wrap gap-1.5">
-                                    {#each feature.tags.cuisine.split(';') as cuisine(cuisine + feature.id)}
+                                    {#each feature.tags.cuisine.split(';') as cuisine, i(cuisine + feature.id + i)}
                                         <Badge variant="secondary" class="capitalize font-medium text-xs">
                                             {cuisine.trim().replace(/_/g, ' ')}
                                         </Badge>
