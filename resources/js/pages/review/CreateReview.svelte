@@ -29,7 +29,7 @@
         form.transform((data) => ({
             ...data,
             photos: data.photos.map(item => item.file)
-        })).submit(store(osmData.id));
+        })).submit(store(osmData));
     }
 </script>
 
