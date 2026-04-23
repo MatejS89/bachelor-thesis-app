@@ -20,7 +20,7 @@
 </script>
 
 <div
-    class="flex w-full min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10"
+    class="flex w-full flex-col items-center justify-center gap-6 bg-muted"
 >
     <div class="flex w-full max-w-md flex-col gap-6">
         <div class="flex flex-col gap-6">
