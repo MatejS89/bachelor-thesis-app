@@ -32,7 +32,7 @@
     };
 </script>
 
-<Collapsible.Root bind:open={allergenDropdownState.isOpen} class="w-full p-2 lg:p-4">
+<Collapsible.Root bind:open={allergenDropdownState.isOpen} class="w-full px-3 py-2">
     <Collapsible.Trigger>
         <div class="flex items-center justify-between w-full">
             <h4 class="text-sm font-medium leading-none">
