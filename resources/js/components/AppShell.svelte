@@ -10,6 +10,6 @@
     } = $props();
 </script>
 
-<div class="flex min-h-dvh w-full lg:h-dvh lg:overflow-hidden {className}">
+<div class="flex h-full lg:h-svh w-full lg:overflow-hidden {className}">
     {@render children?.()}
 </div>
