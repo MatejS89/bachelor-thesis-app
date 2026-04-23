@@ -40,7 +40,7 @@
     <InfiniteScroll
         data="visibleFeatures"
         as="ol"
-        class="flex flex-col gap-4 pt-4"
+        class="flex flex-col gap-3 pt-3"
     >
         {#if visibleFeatures.data.length > 0}
             {#each visibleFeatures.data as feature (feature.id)}
