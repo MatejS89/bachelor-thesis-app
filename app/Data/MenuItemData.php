@@ -24,4 +24,6 @@ class MenuItemData extends Data
 
     /** @var Collection<DietaryTagData>|Lazy */
     public Lazy|Collection $dietaryTags;
+
+    public string $photoUrl;
 }
