@@ -14,14 +14,15 @@ class CreateReviewAction
     public function execute(User $user, array $data, OsmData $osmData, ?array $photos): Review
     {
         return DB::transaction(function () use ($photos, $user, $osmData, $data) {
-            $review = Review::make($data);
-
+            $review = $user->reviews()->make($data);
             $review->osmData()->associate($osmData);
-            $review->user()->associate($user);
-
             $review->save();
 
-            return $this->addPhotosToReviewAction->execute($review, $photos);
+            if (! empty($photos)) {
+                $review = $this->addPhotosToReviewAction->execute($review, $photos);
+            }
+
+            return $review;
         });
     }
 }
