@@ -57,7 +57,7 @@
 </Button>
 
 <section
-    class="flex flex-1 flex-col w-full lg:static lg:h-full lg:min-h-0 lg:w-1/2 lg:overflow-y-auto {showMapOnMobile ? 'hidden' : 'flex'}"
+    class="flex flex-col min-h-0 w-full lg:static h-full lg:w-2/5 lg:overflow-y-auto {showMapOnMobile ? 'hidden' : 'flex'}"
 >
     {@render children()}
 </section>
