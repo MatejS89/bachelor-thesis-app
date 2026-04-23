@@ -7,16 +7,15 @@
 
 <Card.Root>
     <Card.Header>
-        <Card.Title>Our Menu</Card.Title>
-        <Card.Description>Explore our delicious offerings</Card.Description>
+        <Card.Title>Menu</Card.Title>
     </Card.Header>
 
-    <Card.Content>
+    <Card.Content class="px-2">
         {#if menuItems.length > 0}
             <ul class="flex flex-col gap-4">
-                {#each menuItems as item (item.id)}
+                {#each menuItems as menuItem (menuItem.id)}
                     <li>
-                        <MenuItemCard {item} />
+                        <MenuItemCard {menuItem} />
                     </li>
                 {/each}
             </ul>
