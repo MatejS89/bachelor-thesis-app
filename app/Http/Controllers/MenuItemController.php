@@ -2,8 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\MenuItem\CreateMenuItemAction;
+use App\Data\AllergenData;
+use App\Data\DietaryTagData;
+use App\Data\OsmFeatureData;
+use App\Http\Requests\MenuItem\StoreMenuItemRequest;
+use App\Models\Allergen;
+use App\Models\DietaryTag;
+use App\Models\MenuItem;
 use App\Models\OsmData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 class MenuItemController extends Controller
 {
@@ -20,15 +30,25 @@ class MenuItemController extends Controller
      */
     public function create(OsmData $osmData)
     {
-        //
+        Gate::authorize('create', MenuItem::class);
+
+        return Inertia::render('menu-item/CreateMenuItem', [
+            'allergens' => AllergenData::collect(Allergen::all()),
+            'dietaryTags' => DietaryTagData::collect(DietaryTag::all()),
+            'osmData' => OsmFeatureData::from($osmData),
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(OsmData $osmData, StoreMenuItemRequest $request, CreateMenuItemAction $createMenuItemAction)
     {
-        //
+        Gate::authorize('create', MenuItem::class);
+
+        $menuItem = $createMenuItemAction->execute($request->validated(), $osmData, $request->file('photo'));
+
+        return redirect()->route('map.show', $osmData);
     }
 
     /**
