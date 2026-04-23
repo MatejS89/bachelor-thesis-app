@@ -29,7 +29,7 @@ class ReviewController extends Controller
     {
         Gate::authorize('create', Review::class);
 
-        return Inertia::render('review/Create', [
+        return Inertia::render('review/CreateReview', [
             'osmData' => OsmFeatureData::from($osmData),
         ]);
     }
