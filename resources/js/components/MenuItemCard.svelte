@@ -6,7 +6,7 @@
 
     let { menuItem }: { menuItem: App.Data.MenuItemData } = $props();
 
-    const baseBadgeClass = 'h-4 sm:h-5 md:h-6 px-1 sm:px-1.5 md:px-2 text-[8px] sm:text-[10px] md:text-xs uppercase font-semibold flex items-center';
+    const baseBadgeClass = 'px-1.5 text-xs md:text-sm uppercase font-semibold';
 
     interface TagItem {
         id: string | number;
@@ -43,7 +43,7 @@
     </Item.Media>
 
     <Item.Content class="flex-1 min-w-0">
-        <Item.Title class="flex flex-row gap-1 md:gap-2 items-center text-xs sm:text-sm md:text-base flex-wrap">
+        <Item.Title class="flex flex-row gap-1 md:gap-2 items-center text-sm md:text-base flex-wrap">
             <span class="truncate">{menuItem.name}</span>
 
             {@render badgeList(
