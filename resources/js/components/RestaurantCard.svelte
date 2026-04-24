@@ -41,7 +41,7 @@
     onmouseleave={() => mapManager.highlightFeature(null)}
     class="list-none"
 >
-    <Link href={show(feature)} data={filters} preserveState
+    <Link href={show(feature)} data={filters}
           class="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl">
 
         <Item.Root
@@ -49,6 +49,7 @@
         >
             <img
                 src="/400.svg"
+                loading="lazy"
                 class="object-cover aspect-square w-32 sm:w-40 border-r rounded-2xl"
                 alt={feature.name ? `Photo of ${feature.name}` : ''}
             />
