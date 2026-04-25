@@ -4,12 +4,13 @@
     import DragAndDropPhotoContainer from '@/components/DragAndDropPhotoContainer.svelte';
     import { Button, buttonVariants } from '@/components/ui/button';
     import * as Card from '@/components/ui/card';
+    import * as Field from '@/components/ui/field/index';
     import { Label } from '@/components/ui/label';
     import { Textarea } from '@/components/ui/textarea';
     import { show } from '@/routes/map';
     import { store } from '@/routes/map/review';
+    import type { ImageItem } from '@/types/imageitem';
 
-    type ImageItem = { id: string; file: File; url: string };
 
     const form = useForm({
         rating: 0,
@@ -39,7 +40,7 @@
         <div class="flex items-center gap-4">
             <Link
                 class={buttonVariants({ variant: "ghost", size: 'lg'})}
-                href={show(osmData.id)}
+                href={show(osmData)}
             >
                 <ArrowLeft />
             </Link>
