@@ -8,7 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
-class CreateMenuItemAction
+class StoreMenuItemAction
 {
     public function __construct(protected StoreMenuItemPhotoAction $storeMenuItemPhotosAction) {}
 
@@ -23,7 +23,7 @@ class CreateMenuItemAction
             $menuItem->dietaryTags()->sync($data['dietary_tags'] ?? []);
 
             if ($photo) {
-                $this->storeMenuItemPhotosAction->execute($menuItem, $photo);
+                $menuItem = $this->storeMenuItemPhotosAction->execute($menuItem, $photo);
             }
 
             return $menuItem;
