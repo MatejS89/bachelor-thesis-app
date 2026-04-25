@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Review\CreateReviewAction;
+use App\Actions\Review\StoreReviewAction;
 use App\Data\OsmFeatureData;
 use App\Http\Requests\StoreReviewRequest;
 use App\Models\OsmData;
@@ -37,7 +37,7 @@ class ReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreReviewRequest $request, OsmData $osmData, CreateReviewAction $createReviewAction): RedirectResponse
+    public function store(StoreReviewRequest $request, OsmData $osmData, StoreReviewAction $createReviewAction): RedirectResponse
     {
         Gate::authorize('create', Review::class);
 
