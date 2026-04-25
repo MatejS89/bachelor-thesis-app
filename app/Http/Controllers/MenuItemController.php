@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\MenuItem\CreateMenuItemAction;
+use App\Actions\MenuItem\StoreMenuItemAction;
 use App\Data\AllergenData;
 use App\Data\DietaryTagData;
 use App\Data\OsmFeatureData;
@@ -32,7 +32,7 @@ class MenuItemController extends Controller
     {
         Gate::authorize('create', MenuItem::class);
 
-        return Inertia::render('menu-item/CreateMenuItem', [
+        return Inertia::render('menuItem/CreateMenuItem', [
             'allergens' => AllergenData::collect(Allergen::all()),
             'dietaryTags' => DietaryTagData::collect(DietaryTag::all()),
             'osmData' => OsmFeatureData::from($osmData),
@@ -42,7 +42,7 @@ class MenuItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OsmData $osmData, StoreMenuItemRequest $request, CreateMenuItemAction $createMenuItemAction)
+    public function store(OsmData $osmData, StoreMenuItemRequest $request, StoreMenuItemAction $createMenuItemAction)
     {
         Gate::authorize('create', MenuItem::class);
 
