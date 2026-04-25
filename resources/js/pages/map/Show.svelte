@@ -1,24 +1,19 @@
 <script lang="ts">
-    import { router, Link } from '@inertiajs/svelte';
+    import { Link } from '@inertiajs/svelte';
     import {
         MapPin,
-        Phone,
-        Globe,
-        Clock,
-        Utensils,
-        Accessibility,
-        ArrowLeft
+        ArrowLeft, ImagePlus
     } from 'lucide-svelte';
-    import opening_hours from 'opening_hours';
     import ActionNav from '@/components/ActionNav.svelte';
     import MenuItemList from '@/components/MenuItemList.svelte';
+    import OsmDataDetailContainer from '@/components/OsmDataDetailContainer.svelte';
     import ReviewList from '@/components/ReviewList.svelte';
-    import { Badge } from '@/components/ui/badge/index.js';
     import { buttonVariants } from '@/components/ui/button';
     import * as Card from '@/components/ui/card/index';
     import * as Carousel from '@/components/ui/carousel/index';
+    import * as Empty from '@/components/ui/empty/index';
     import * as Tabs from '@/components/ui/tabs/index';
-    import { index } from '@/routes/map';
+    import { index, edit } from '@/routes/map';
 
 
     let { selectedFeature: restaurantData, reviews, menuItems }: {
@@ -26,89 +21,9 @@
         reviews: App.Data.ReviewData[]
         menuItems: App.Data.MenuItemData[]
     } = $props();
-
-    let images = $state([
-        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80',
-        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200&q=80',
-        'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=1200&q=80'
-    ]);
-
-    let isOpenNow = $derived.by(() => {
-        const rawHours = restaurantData?.tags?.opening_hours;
-
-        if (!rawHours) {
-            return null;
-        }
-
-        try {
-            const oh = new opening_hours(rawHours);
-
-            return oh.getState();
-        } catch (e) {
-            console.warn('Invalid opening hours format:', e);
-
-            return null;
-        }
-    });
-
-    let formattedHours = $derived.by(() => {
-        const rawHours = restaurantData?.tags?.opening_hours;
-
-        if (!rawHours) {
-            return [];
-        }
-
-        const rules = rawHours.split(';').map(r => r.trim()).filter(Boolean);
-        const dayMap: Record<string, string> = {
-            'Mo': 'Mon', 'Tu': 'Tue', 'We': 'Wed',
-            'Th': 'Thu', 'Fr': 'Fri', 'Sa': 'Sat',
-            'Su': 'Sun', 'PH': 'Holidays'
-        };
-
-        return rules.map(rule => {
-            let formattedRule = rule;
-            Object.entries(dayMap).forEach(([abbr, full]) => {
-                const regex = new RegExp(`\\b${abbr}\\b`, 'g');
-                formattedRule = formattedRule.replace(regex, full);
-            });
-
-            let days = formattedRule;
-            let times = '';
-
-            if (formattedRule.includes('off')) {
-                days = formattedRule.replace(/\boff\b/g, '').trim();
-                times = 'Closed';
-            } else {
-                const firstDigitIdx = formattedRule.search(/\d/);
-
-                if (firstDigitIdx !== -1) {
-                    days = formattedRule.substring(0, firstDigitIdx).trim();
-                    times = formattedRule.substring(firstDigitIdx).trim();
-                }
-            }
-
-            return {
-                days: days.replace(/[:,\s]+$/, ''),
-                times
-            };
-        });
-    });
-
-    function handleBack() {
-        const params = new URLSearchParams(window.location.search);
-        const queryData = Object.fromEntries(params);
-
-        const cameFromApp = document.referrer.includes(window.location.host);
-
-        if (cameFromApp && window.history.length > 1) {
-            window.history.back();
-        } else {
-            router.get(index(), queryData);
-        }
-    }
 </script>
 
-<div class="p-3 h-full w-full flex flex-col gap-3 ">
+<div class="p-3 h-full w-full flex flex-col gap-3 overflow-y-auto" scroll-region="">
     <header class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
         <Link
             class={buttonVariants({ variant: "ghost", size: "icon", class: "self-center" })}
@@ -128,118 +43,147 @@
             , {restaurantData.tags['addr:city']} {restaurantData.tags['addr:postcode']}
         </p>
     </header>
+
     <div class="w-full px-12">
-        <Carousel.Root class="w-full">
-            <Carousel.Content>
-                {#each images as img, i(img)}
-                    <Carousel.Item class="basis-[85%]">
-                        <Card.Root class="overflow-hidden border-0 shadow-none p-0">
-                            <Card.Content
-                                class="p-0 aspect-auto items-center justify-center rounded-xl overflow-hidden bg-muted">
-                                <img
-                                    src={img}
-                                    alt="Restaurant interior {i + 1}"
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="object-cover w-full h-full"
-                                />
-                            </Card.Content>
-                        </Card.Root>
-                    </Carousel.Item>
-                {/each}
-            </Carousel.Content>
-            <Carousel.Previous />
-            <Carousel.Next />
-        </Carousel.Root>
+        {#if restaurantData.photos && restaurantData.photos.length > 0}
+
+            <Carousel.Root class="w-full">
+                <Carousel.Content>
+                    {#each restaurantData.photos as img, i(img.id)}
+                        <Carousel.Item class="basis-[85%]">
+                            <Card.Root class="overflow-hidden border-0 shadow-none p-0">
+                                <Card.Content
+                                    class="p-0 aspect-auto items-center justify-center rounded-xl overflow-hidden bg-muted">
+                                    <img
+                                        src={img.url}
+                                        alt="Restaurant photo {i + 1}"
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="object-cover w-full h-full aspect-video"
+                                    />
+                                </Card.Content>
+                            </Card.Root>
+                        </Carousel.Item>
+                    {/each}
+                </Carousel.Content>
+
+                <Carousel.Previous />
+                <Carousel.Next />
+            </Carousel.Root>
+
+        {:else}
+
+            <Empty.Root>
+                <Empty.Header>
+                    <Empty.Media variant="icon">
+                        <ImagePlus />
+                    </Empty.Media>
+
+                    <Empty.Title>No photos yet</Empty.Title>
+                </Empty.Header>
+
+                <Empty.Content>
+                    <Link
+                        href={edit(restaurantData)}
+                        class={buttonVariants({ variant: 'outline' })}
+                    >
+                        Add a photo
+                    </Link>
+                </Empty.Content>
+            </Empty.Root>
+        {/if}
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <Card.Root>
-            <Card.Header>
-                <Card.Title>Restaurant Details</Card.Title>
-                <Card.Description>OSM Node: {restaurantData.osm_type}{restaurantData.osm_id}</Card.Description>
-            </Card.Header>
-            <Card.Content class="space-y-6">
-                <div class="flex items-start gap-3">
-                    <Utensils class="h-5 w-5 text-muted-foreground shrink-0" />
-                    <div>
-                        <p class="font-medium leading-none">Cuisine</p>
-                        <div class="flex gap-2 flex-wrap">
-                            {#each restaurantData.tags?.cuisine?.split(';') || [] as cuisine(cuisine)}
-                                <Badge variant="secondary" class="capitalize">{cuisine}</Badge>
-                            {/each}
-                        </div>
-                    </div>
-                </div>
+    <!--    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">-->
+    <!--        <Card.Root>-->
+    <!--            <Card.Header>-->
+    <!--                <Card.Title>Restaurant Details</Card.Title>-->
+    <!--                <Card.Description>OSM Node: {restaurantData.osm_type}{restaurantData.osm_id}</Card.Description>-->
+    <!--            </Card.Header>-->
+    <!--            <Card.Content class="space-y-6">-->
+    <!--                <div class="flex items-start gap-3">-->
+    <!--                    <Utensils class="h-5 w-5 text-muted-foreground shrink-0" />-->
+    <!--                    <div>-->
+    <!--                        <p class="font-medium leading-none">Cuisine</p>-->
+    <!--                        <div class="flex gap-2 flex-wrap">-->
+    <!--                            {#each restaurantData.tags?.cuisine?.split(';') || [] as cuisine(cuisine)}-->
+    <!--                                <Badge variant="secondary" class="capitalize">{cuisine}</Badge>-->
+    <!--                            {/each}-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                </div>-->
 
-                <div class="flex items-start gap-3">
-                    <Clock class="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                    <div class="w-full">
-                        <div class="flex items-center justify-between mb-3">
-                            <p class="font-medium leading-none">Opening Hours</p>
-                            {#if isOpenNow !== null}
-                                <Badge
-                                    variant={isOpenNow ? "default" : "secondary"}
-                                    class={isOpenNow ? "bg-green-600 hover:bg-green-700 text-white" : ""}
-                                >
-                                    {isOpenNow ? "Open Now" : "Closed"}
-                                </Badge>
-                            {/if}
-                        </div>
+    <!--                <div class="flex items-start gap-3">-->
+    <!--                    <Clock class="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />-->
+    <!--                    <div class="w-full">-->
+    <!--                        <div class="flex items-center justify-between mb-3">-->
+    <!--                            <p class="font-medium leading-none">Opening Hours</p>-->
+    <!--                            {#if isOpenNow !== null}-->
+    <!--                                <Badge-->
+    <!--                                    variant={isOpenNow ? "default" : "secondary"}-->
+    <!--                                    class={isOpenNow ? "bg-green-600 hover:bg-green-700 text-white" : ""}-->
+    <!--                                >-->
+    <!--                                    {isOpenNow ? "Open Now" : "Closed"}-->
+    <!--                                </Badge>-->
+    <!--                            {/if}-->
+    <!--                        </div>-->
 
-                        {#if formattedHours.length > 0}
-                            <div class="space-y-2 bg-muted/30 p-3 rounded-md">
-                                {#each formattedHours as { days, times }}
-                                    <div
-                                        class="flex items-start justify-between text-sm border-b border-border/40 pb-2 last:border-0 last:pb-0 gap-4">
-                                        <span class="font-medium text-foreground">{days}</span>
-                                        <span class="text-muted-foreground text-right">{times}</span>
-                                    </div>
-                                {/each}
-                            </div>
-                        {:else}
-                            <p class="text-sm text-muted-foreground">Hours not available</p>
-                        {/if}
-                    </div>
-                </div>
-            </Card.Content>
-        </Card.Root>
+    <!--                        {#if formattedHours.length > 0}-->
+    <!--                            <div class="space-y-2 bg-muted/30 p-3 rounded-md">-->
+    <!--                                {#each formattedHours as { days, times }}-->
+    <!--                                    <div-->
+    <!--                                        class="flex items-start justify-between text-sm border-b border-border/40 pb-2 last:border-0 last:pb-0 gap-4">-->
+    <!--                                        <span class="font-medium text-foreground">{days}</span>-->
+    <!--                                        <span class="text-muted-foreground text-right">{times}</span>-->
+    <!--                                    </div>-->
+    <!--                                {/each}-->
+    <!--                            </div>-->
+    <!--                        {:else}-->
+    <!--                            <p class="text-sm text-muted-foreground">Hours not available</p>-->
+    <!--                        {/if}-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </Card.Content>-->
+    <!--        </Card.Root>-->
 
-        <Card.Root>
-            <Card.Header>
-                <Card.Title>Features & Accessibility</Card.Title>
-            </Card.Header>
-            <Card.Content class="space-y-6">
-                {#if restaurantData.tags.wheelchair}
-                    <div class="flex items-center gap-3">
-                        <Accessibility class="h-5 w-5 text-muted-foreground shrink-0" />
-                        <div>
-                            <p class="font-medium leading-none mb-1">Wheelchair Accessible</p>
-                            <p class="text-sm text-muted-foreground capitalize">{restaurantData.tags.wheelchair}</p>
-                        </div>
-                    </div>
-                {/if}
 
-                <div class="pt-2">
-                    <p class="font-medium mb-3">Dietary Options</p>
-                    <div class="flex gap-2">
-                        {#if restaurantData.tags['diet:vegetarian'] === 'yes'}
-                            <Badge variant="outline"
-                                   class="border-green-600/50 text-green-700 bg-green-50 dark:bg-green-950/50">
-                                Vegetarian
-                            </Badge>
-                        {/if}
+    <!--        <Card.Root>-->
+    <!--            <Card.Header>-->
+    <!--                <Card.Title>Features & Accessibility</Card.Title>-->
+    <!--            </Card.Header>-->
+    <!--            <Card.Content class="space-y-6">-->
+    <!--                {#if restaurantData.tags.wheelchair}-->
+    <!--                    <div class="flex items-center gap-3">-->
+    <!--                        <Accessibility class="h-5 w-5 text-muted-foreground shrink-0" />-->
+    <!--                        <div>-->
+    <!--                            <p class="font-medium leading-none mb-1">Wheelchair Accessible</p>-->
+    <!--                            <p class="text-sm text-muted-foreground capitalize">{restaurantData.tags.wheelchair}</p>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                {/if}-->
 
-                        {#if restaurantData.tags['diet:vegan'] === 'yes'}
-                            <Badge variant="outline"
-                                   class="border-green-600/50 text-green-700 bg-green-50 dark:bg-green-950/50">Vegan
-                            </Badge>
-                        {/if}
-                    </div>
-                </div>
-            </Card.Content>
-        </Card.Root>
-    </div>
+    <!--                <div class="pt-2">-->
+    <!--                    <p class="font-medium mb-3">Dietary Options</p>-->
+    <!--                    <div class="flex gap-2">-->
+    <!--                        {#if restaurantData.tags['diet:vegetarian'] === 'yes'}-->
+    <!--                            <Badge variant="outline"-->
+    <!--                                   class="border-green-600/50 text-green-700 bg-green-50 dark:bg-green-950/50">-->
+    <!--                                Vegetarian-->
+    <!--                            </Badge>-->
+    <!--                        {/if}-->
+
+    <!--                        {#if restaurantData.tags['diet:vegan'] === 'yes'}-->
+    <!--                            <Badge variant="outline"-->
+    <!--                                   class="border-green-600/50 text-green-700 bg-green-50 dark:bg-green-950/50">Vegan-->
+    <!--                            </Badge>-->
+    <!--                        {/if}-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </Card.Content>-->
+    <!--        </Card.Root>-->
+    <!--    </div>-->
+
+    <OsmDataDetailContainer {restaurantData} />
 
     <ActionNav {restaurantData} />
 
@@ -255,11 +199,11 @@
         </Tabs.List>
 
         <Tabs.Content value="menu">
-            <MenuItemList {menuItems} />
+            <MenuItemList {menuItems} {restaurantData} />
         </Tabs.Content>
 
         <Tabs.Content value="reviews">
-            <ReviewList {reviews} />
+            <ReviewList {reviews} {restaurantData} />
         </Tabs.Content>
     </Tabs.Root>
 </div>
