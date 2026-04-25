@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Actions\OsmData\GetFeatureGeoJsonBBox;
 use App\Actions\OsmData\GetFeaturesInBBox;
+use App\Actions\OsmData\UpdateOsmDataAction;
 use App\Actions\Utils\CreatePolygonFromBBox;
 use App\Data\MenuItemData;
 use App\Data\OsmFeatureData;
 use App\Data\ReviewData;
 use App\Http\Requests\OsmData\GetIndexOsmDataRequest;
+use App\Http\Requests\UpdateOsmDataRequest;
 use App\Http\Resources\MapFeatureCollection;
 use App\Models\Allergen;
 use App\Models\OsmData;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,6 +29,15 @@ class OsmDataController extends Controller
             'osmData' => OsmFeatureData::from($osmData),
         ]);
     }
+
+    public function update(OsmData $osmData, UpdateOsmDataRequest $updateOsmDataRequest, UpdateOsmDataAction $updateOsmDataAction): RedirectResponse
+    {
+        $validated = $updateOsmDataRequest->validated();
+        $updateOsmDataAction->execute($osmData, $validated, $validated['photos']);
+
+        return redirect()->route('map.show', $osmData);
+    }
+
     public function mapData(
         GetIndexOsmDataRequest $request,
         CreatePolygonFromBBox $createPolygon,
