@@ -24,7 +24,7 @@
 <div
     {@attach sortable.attach}
     class="relative aspect-square w-full h-full cursor-grab active:cursor-grabbing rounded-md
-           {isOverlay ? 'scale-105 shadow-2xl z-50 opacity-95' : ''}"
+           {isOverlay ? 'scale-110 shadow-2xl z-50 opacity-40' : ''}"
 >
     <img
         src={url}
@@ -34,7 +34,7 @@
 
     {#if !isOverlay && sortable.isDragging}
         <div
-            class="absolute inset-0 flex items-center justify-center rounded-md border-2 border-dashed border-accent bg-card">
+            class="absolute inset-0 flex items-center justify-center rounded-md border-2 border-dashed border-accent bg-accent/50">
         </div>
     {/if}
 
@@ -42,8 +42,9 @@
         <div role="button"
              tabindex="0"
              onpointerdown={(e) => e.stopPropagation()}>
+
             <Button
-                variant="default"
+                variant="destructive"
                 type="button"
                 class="absolute -right-2 -top-2 h-6 w-6 rounded-full shadow-md z-10 bg-red-500"
                 onclick={onRemove}
