@@ -2,7 +2,7 @@
     import * as ToggleGroup from '@/components/ui/toggle-group/index';
     import FullScreenLayout from '@/layouts/FullScreenLayout.svelte';
     import MapLayout from '@/layouts/MapLayout.svelte';
-    import { store } from '@/routes/map/menu-item';
+    import { store } from '@/routes/map/menuitem';
 
     export const layout = [FullScreenLayout, MapLayout];
 </script>
