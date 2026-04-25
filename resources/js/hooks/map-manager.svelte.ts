@@ -97,9 +97,9 @@ export class MapManager {
         this.map.on('click', layerId, (e) => {
             if (e.features && e.features.length > 0) {
                 const feature = e.features[0];
-                const featureId = feature.id ?? feature.properties?.id;
+                const featureId = feature.id as number;
 
-                if (featureId !== undefined && featureId !== null) {
+                if (featureId) {
                     this.onFeatureClick(featureId);
                 }
             }
@@ -368,8 +368,12 @@ export class MapManager {
                 ? [bbox[0], bbox[1], bbox[3], bbox[4]]
                 : (bbox as [number, number, number, number]);
 
-        this.map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
-        this.fetchFeaturesForCurrentBounds();
+        this.map.fitBounds(bounds, {
+            padding: 50,
+            maxZoom: 15,
+            animate: false,
+        });
+        // this.fetchFeaturesForCurrentBounds();
     }
 
     triggerGeolocation() {
