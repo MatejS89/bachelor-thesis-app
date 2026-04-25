@@ -39,6 +39,7 @@ class StoreMenuItemRequest extends FormRequest
             'allergens.*' => ['integer', 'exists:allergens,id'],
             'dietary_tags' => ['nullable', 'array'],
             'dietary_tags.*' => ['integer', 'exists:dietary_tags,id'],
+            'photo' => ['nullable', 'file', 'image', 'mimes:jpeg,png,jpg', 'max:10000'],
         ];
     }
 }
