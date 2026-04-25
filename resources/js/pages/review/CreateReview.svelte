@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Link, useForm } from '@inertiajs/svelte';
-    import { Star, Loader2, ArrowLeft } from 'lucide-svelte';
+    import { Star, ArrowLeft } from 'lucide-svelte';
     import DragAndDropPhotoContainer from '@/components/DragAndDropPhotoContainer.svelte';
     import { Button, buttonVariants } from '@/components/ui/button';
     import * as Card from '@/components/ui/card';
     import * as Field from '@/components/ui/field/index';
-    import { Label } from '@/components/ui/label';
+    import { Spinner } from '@/components/ui/spinner';
     import { Textarea } from '@/components/ui/textarea';
     import { show } from '@/routes/map';
     import { store } from '@/routes/map/review';
@@ -53,66 +53,91 @@
             </div>
         </div>
     </header>
-    <Card.Root>
-        <Card.Content>
-            <form onsubmit={submitReview} class="flex gap-4 flex-col">
-                <fieldset class="border-0 p-0 m-0" onmouseleave={() => (hoverRating = 0)}>
-                    <legend
-                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2">
-                        Rating
-                    </legend>
 
-                    <div class="flex items-center gap-1">
-                        {#each [1, 2, 3, 4, 5] as star (star)}
-                            <label
-                                class="cursor-pointer p-1 transition-transform hover:scale-110 rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
-                                onmouseenter={() => (hoverRating = star)}
-                            >
-                                <input
-                                    type="radio"
-                                    name="rating"
-                                    value={star}
-                                    class="sr-only"
-                                    bind:group={form.rating}
-                                />
-                                <Star
-                                    class="h-8 w-8 transition-colors {star <= (hoverRating || form.rating)
+    <form onsubmit={submitReview} class="flex  flex-col gap-4">
+        <Field.Set>
+            <Card.Root>
+                <Card.Content>
+                    <Field.Group>
+                        <Field.Field data-invalid={form.errors.rating ? true : undefined}>
+                            <Field.Label>
+                                Rating
+                            </Field.Label>
+
+                            <div class="flex items-center gap-1">
+                                {#each [1, 2, 3, 4, 5] as star (star)}
+                                    <label
+                                        class="cursor-pointer p-1 transition-transform hover:scale-110 rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+                                        onmouseenter={() => (hoverRating = star)}
+                                        onmouseleave={() => (hoverRating = form.rating)}
+                                    >
+                                        <input
+                                            aria-invalid={form.errors.rating ? true : undefined}
+                                            type="radio"
+                                            name="rating"
+                                            value={star}
+                                            class="sr-only"
+                                            bind:group={form.rating}
+                                        />
+                                        <Star
+                                            class="h-8 w-8 transition-colors {star <= (hoverRating || form.rating)
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'text-muted-foreground'}"
-                                />
-                            </label>
-                        {/each}
-                    </div>
-                </fieldset>
+                                        />
+                                    </label>
+                                {/each}
+                            </div>
 
-                <div>
-                    <Label for="description" class="pb-3">Review Description</Label>
-                    <Textarea
-                        id="description"
-                        placeholder="What did you like or dislike?"
-                        bind:value={form.description}
-                        rows={4}
-                        class="resize-none"
-                    />
-                    {#if form.errors.description}
-                        <p class="text-sm text-destructive">{form.errors.description}</p>
-                    {/if}
-                </div>
+                            {#if form.errors.rating}
+                                <Field.Error>
+                                    {form.errors.rating}
+                                </Field.Error>
+                            {/if}
+                        </Field.Field>
 
-                <DragAndDropPhotoContainer bind:items={form.photos} />
+                        <Field.Field data-invalid={form.errors.description ? true : undefined}>
+                            <Field.Label>Description</Field.Label>
 
-                <div class="pt-2">
-                    <Button type="submit" variant="default" class="w-full"
-                            disabled={form.processing || form.rating === 0}>
-                        {#if form.processing}
-                            <Loader2 class="mr-2 h-4 w-4 animate-spin" />
-                            Submitting...
-                        {:else}
-                            Submit
-                        {/if}
-                    </Button>
-                </div>
-            </form>
-        </Card.Content>
-    </Card.Root>
+                            <Textarea
+                                id="description"
+                                placeholder="What did you like or dislike?"
+                                bind:value={form.description}
+                                rows={4}
+                                class="resize-none"
+                                aria-invalid={form.errors.description ? true : undefined}
+                            />
+
+                            {#if form.errors.description}
+                                <Field.Error>
+                                    {form.errors.description}
+                                </Field.Error>
+                            {/if}
+                        </Field.Field>
+                    </Field.Group>
+                </Card.Content>
+            </Card.Root>
+
+            <Card.Root>
+                <Card.Content>
+                    <Field.Group>
+                        <DragAndDropPhotoContainer
+                            bind:items={form.photos}
+                            invalid={!!form.errors.photos}
+                            disabled={form.processing}
+                        />
+                    </Field.Group>
+                </Card.Content>
+            </Card.Root>
+        </Field.Set>
+
+        <Field.Field>
+            <Button type="submit" disabled={(form.processing || form.rating === 0) ? true : undefined}>
+                {#if form.processing}
+                    <Spinner />
+                {/if}
+
+                Submit
+            </Button>
+        </Field.Field>
+    </form>
 </div>
