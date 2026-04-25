@@ -1,8 +1,16 @@
 <script lang="ts">
+    import { Link } from '@inertiajs/svelte';
+    import { CirclePlus } from 'lucide-svelte';
     import MenuItemCard from '@/components/MenuItemCard.svelte';
+    import { buttonVariants } from '@/components/ui/button';
     import * as Card from '@/components/ui/card/index';
+    import * as Empty from '@/components/ui/empty/index';
+    import { create as createMenuItem } from '@/routes/map/menuitem';
 
-    let { menuItems }: { menuItems: App.Data.MenuItemData[] } = $props();
+    let { menuItems, restaurantData }: {
+        menuItems: App.Data.MenuItemData[],
+        restaurantData: App.Data.OsmFeatureData
+    } = $props();
 </script>
 
 <Card.Root>
@@ -20,9 +28,24 @@
                 {/each}
             </ul>
         {:else}
-            <div class="py-8 text-center text-muted-foreground">
-                <p class="text-sm italic">No menu items.</p>
-            </div>
+            <Empty.Root>
+                <Empty.Header>
+                    <Empty.Media variant="icon">
+                        <CirclePlus />
+                    </Empty.Media>
+
+                    <Empty.Title>No menu items yet</Empty.Title>
+                </Empty.Header>
+
+                <Empty.Content>
+                    <Link
+                        href={createMenuItem(restaurantData)}
+                        class={buttonVariants({ variant: 'outline' })}
+                    >
+                        Add a menu item
+                    </Link>
+                </Empty.Content>
+            </Empty.Root>
         {/if}
     </Card.Content>
 </Card.Root>
