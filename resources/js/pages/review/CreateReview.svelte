@@ -12,10 +12,14 @@
     import type { ImageItem } from '@/types/imageitem';
 
 
-    const form = useForm({
+    const form = useForm<{
+        rating: number
+        description: string
+        photos: ImageItem[]
+    }>({
         rating: 0,
         description: '',
-        photos: [] as ImageItem[]
+        photos: []
     });
 
     let { osmData }: {
