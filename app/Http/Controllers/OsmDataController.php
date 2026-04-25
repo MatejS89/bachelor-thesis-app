@@ -18,6 +18,14 @@ use Inertia\Response;
 
 class OsmDataController extends Controller
 {
+    public function edit(OsmData $osmData): Response
+    {
+        $osmData->load('media');
+
+        return Inertia::render('osmData/EditOsmData', [
+            'osmData' => OsmFeatureData::from($osmData),
+        ]);
+    }
     public function mapData(
         GetIndexOsmDataRequest $request,
         CreatePolygonFromBBox $createPolygon,
