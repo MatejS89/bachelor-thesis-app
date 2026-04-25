@@ -83,28 +83,23 @@ class OsmDataController extends Controller
             $request->input('east')
         );
 
+        $osmData->load('media');
+
         return Inertia::render('map/Show', [
             'selectedFeature' => OsmFeatureData::from($osmData),
 
             'filters' => $filters,
 
-            'mapFeatures' => fn () => new MapFeatureCollection(OsmData::query()
-                ->select('name', 'id', 'geom')
-                ->when($bbox, fn ($query) => $query->whereWithin('geom', $bbox))
-                ->withSafeItemCounts($filters)
-                ->get()
-            ),
-
             'reviews' => fn () => ReviewData::collect(
                 $osmData->reviews()
-                    ->with('user')
+                    ->with(['user', 'media'])
                     ->latest()
                     ->get()
             ),
 
             'menuItems' => fn () => MenuItemData::collect(
                 $osmData->menuItems()
-                    ->with('allergens', 'dietaryTags')
+                    ->with(['allergens', 'dietaryTags', 'media'])
                     ->get()
             ),
         ]);
