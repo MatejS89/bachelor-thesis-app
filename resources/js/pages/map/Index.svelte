@@ -3,11 +3,8 @@
     import AllergenFilter from '@/components/AllergenFilter.svelte';
     import RestaurantCard from '@/components/RestaurantCard.svelte';
     import SearchNav from '@/components/SearchNav.svelte';
-    import { getAppContext } from '@/state/appState.svelte';
 
     let { visibleFeatures, filters, allergens, mapFeatures } = $props();
-
-    let mapManager = getAppContext().mapManager;
 
     let featureStatsMap = $derived(
         new Map(
@@ -20,14 +17,6 @@
             ])
         )
     );
-
-    $effect(() => {
-        const featuresCollection = mapFeatures?.data;
-
-        if (featuresCollection) {
-            mapManager.setFeatures(featuresCollection);
-        }
-    });
 </script>
 
 <nav
