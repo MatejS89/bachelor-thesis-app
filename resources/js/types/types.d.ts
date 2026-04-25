@@ -27,6 +27,7 @@ declare namespace App {
             createdAt: string;
             allergens?: App.Data.AllergenData[];
             dietaryTags?: App.Data.DietaryTagData[];
+            photoUrl: string;
         };
         export type OsmDetailData = {
             id: number;
@@ -43,12 +44,17 @@ declare namespace App {
             osm_id: number;
             name: string;
             type: string | null;
-            tags: Array<any>;
+            tags: Record<string, any>;
             geom: { type: 'Point'; coordinates: [number, number] };
+            photos?: App.Data.PhotoData[];
         };
         export type OsmGeoJSONCollectionData = {
             type: 'FeatureCollection';
             features: unknown[];
+        };
+        export type PhotoData = {
+            id: string;
+            url: string;
         };
         export type ReviewData = {
             id: number;
@@ -56,7 +62,7 @@ declare namespace App {
             rating: number;
             created_at: string;
             user?: App.Data.User.UserMinData;
-            photo_urls: Array<any>;
+            photos?: App.Data.PhotoData[];
         };
         namespace User {
             export type UserData = {
