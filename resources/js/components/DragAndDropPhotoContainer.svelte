@@ -4,11 +4,20 @@
     import { ImagePlus } from 'lucide-svelte';
     import GridSortableItem from '@/components/GridSortableItem.svelte';
     import { Button } from '@/components/ui/button';
-    import * as Card from '@/components/ui/card';
+    import * as Empty from '@/components/ui/empty/index';
+    import * as Field from '@/components/ui/field/index';
+    import type { ImageItem } from '@/types/imageitem';
 
-    type ImageItem = { id: string; file: File; url: string };
+    let {
+        items = $bindable(),
+        invalid = false,
+        disabled = false
+    }: {
+        items: ImageItem[],
+        invalid?: boolean,
+        disabled?: boolean
+    } = $props();
 
-    let { items = $bindable() }: { items: ImageItem[] } = $props();
     let fileInput = $state<HTMLInputElement | null>(null);
     let snapshot: ImageItem[] = [];
 
@@ -34,7 +43,8 @@
             const newItems = validFiles.map(file => ({
                 id: crypto.randomUUID(),
                 file: file,
-                url: URL.createObjectURL(file)
+                url: URL.createObjectURL(file),
+                isExisting: false
             }));
             items = [...items, ...newItems];
         }
@@ -53,32 +63,44 @@
     }
 </script>
 
-<div class="max-w-225 mx-auto w-full">
-    <Card.Root>
-        <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-7">
-            <div>
-                <Card.Title class="text-lg font-semibold">Photos</Card.Title>
-                <Card.Description>Drag to reorder</Card.Description>
-            </div>
+<Field.Field>
+    <div class="flex items-center justify-between">
+        <div>
+            <Field.Label for="photo-input">Photos</Field.Label>
+            <Field.Description>Drag photos to reorder</Field.Description>
+        </div>
 
-            <Button variant="outline" size="sm" onclick={() => fileInput?.click()}>
-                <ImagePlus class="mr-2 h-4 w-4" />
-                Add Photos
-            </Button>
+        <Button
+            variant="outline"
+            size="sm"
+            type="button"
+            onclick={() => fileInput?.click()}
+            {disabled}
+        >
+            <ImagePlus class="mr-2 h-4 w-4" />
+            Add Photos
+        </Button>
+    </div>
 
-            <input
-                type="file"
-                multiple
-                accept="image/*"
-                class="hidden"
-                bind:this={fileInput}
-                onchange={handleFileSelect}
-            />
-        </Card.Header>
+    <input
+        id="photo-input"
+        type="file"
+        multiple
+        accept="image/*"
+        class="hidden"
+        bind:this={fileInput}
+        onchange={handleFileSelect}
+        {disabled}
+    />
 
-        <Card.Content>
-            <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div class={
+        "relative rounded-md border p-4 transition-colors " +
+        (invalid ? "border-destructive/50 bg-destructive/5 " : "border-input bg-transparent ") +
+        (items.length === 0 ? "border-dashed" : "")
+    }>
+        <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+            {#if items.length > 0}
+                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {#each items as item, index (item.id)}
                         <GridSortableItem
                             id={item.id}
@@ -88,40 +110,38 @@
                         />
                     {/each}
                 </div>
+            {:else}
+                <Empty.Root>
+                    <Empty.Media>
+                        <ImagePlus />
+                    </Empty.Media>
 
-                <DragOverlay>
-                    {#snippet children(source)}
-                        {#if source}
-                            {@const draggedItem = items.find((item) => item.id === source.id)}
-                            {#if draggedItem}
-                                <GridSortableItem
-                                    id={draggedItem.id}
-                                    index={0}
-                                    url={draggedItem.url}
-                                    isOverlay={true}
-                                    onRemove={() => {}}
-                                />
-                            {/if}
-                        {/if}
-                    {/snippet}
-                </DragOverlay>
-            </DragDropProvider>
-
-            {#if items.length === 0}
-                <div
-                    class="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-lg bg-muted/10 text-muted-foreground">
-                    <ImagePlus class="h-10 w-10 mb-4 opacity-20" />
-                    <p class="text-sm">No photos added yet.</p>
-                </div>
+                    <Empty.Title>No photos added</Empty.Title>
+                </Empty.Root>
             {/if}
-        </Card.Content>
 
-        {#if items.length > 0}
-            <Card.Footer class="border-t bg-muted/5 py-3 px-6">
-                <p class="text-xs text-muted-foreground">
-                    {items.length} {items.length === 1 ? 'photo' : 'photos'} ready for upload.
-                </p>
-            </Card.Footer>
-        {/if}
-    </Card.Root>
-</div>
+            <DragOverlay>
+                {#snippet children(source)}
+                    {#if source}
+                        {@const draggedItem = items.find((item) => item.id === source.id)}
+                        {#if draggedItem}
+                            <GridSortableItem
+                                id={draggedItem.id}
+                                index={0}
+                                url={draggedItem.url}
+                                isOverlay={true}
+                                onRemove={() => {}}
+                            />
+                        {/if}
+                    {/if}
+                {/snippet}
+            </DragOverlay>
+        </DragDropProvider>
+    </div>
+
+    {#if items.length > 0}
+        <p class="text-xs text-muted-foreground text-right">
+            {items.length} {items.length === 1 ? 'photo' : 'photos'} attached
+        </p>
+    {/if}
+</Field.Field>
