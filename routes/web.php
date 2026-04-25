@@ -30,4 +30,7 @@ Route::resource('map/{osmData}/menuitem', MenuItemController::class)
 Route::resource('map/{osmData}/review', ReviewController::class)->names('map.review')->middlewareFor(['create', 'store'], ['auth', 'verified', EncryptHistory::class]);
 Route::resource('map/{osmData}/menu-item', MenuItemController::class)->names('map.menu-item')->only(['create', 'store']);
 
+Route::get('map/{osmData}/edit', [OsmDataController::class, 'edit'])->name('map.edit')->middleware('auth');
+Route::put('map/{osmData}', [OsmDataController::class, 'update'])->name('map.update')->middleware('auth');
+
 require __DIR__.'/settings.php';
