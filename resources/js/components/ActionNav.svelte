@@ -1,8 +1,9 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import { ExternalLink, SquarePen, Star, UtensilsCrossed } from 'lucide-svelte';
-    import { Button, buttonVariants } from '@/components/ui/button';
-    import { create as createMenuItem } from '@/routes/map/menu-item';
+    import { buttonVariants } from '@/components/ui/button';
+    import { edit } from '@/routes/map';
+    import { create as createMenuItem } from '@/routes/map/menuitem';
     import { create as createReview } from '@/routes/map/review';
     import createNavigationLink from '@/utils/navigation';
 
@@ -35,8 +36,12 @@
         Add menu item
     </Link>
 
-    <Button class="flex-1 flex-col h-auto py-3 gap-1.5">
+
+    <Link
+        href={edit(restaurantData)}
+        class={buttonVariants({ variant: "default", class: "flex-1 flex-col h-auto py-3 gap-1.5" })}
+    >
         <SquarePen class="h-5 w-5" />
         Edit details
-    </Button>
+    </Link>
 </nav>
