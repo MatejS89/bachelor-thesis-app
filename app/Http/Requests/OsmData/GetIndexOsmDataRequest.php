@@ -27,6 +27,7 @@ class GetIndexOsmDataRequest extends FormRequest
             'west' => 'required_with:south,north,east|numeric|nullable',
             'north' => 'required_with:south,west,east|numeric|nullable',
             'east' => 'required_with:south,west,north|numeric|nullable',
+            'allergens' => ['nullable', 'array'],
 
             'search' => 'string|nullable',
         ];
