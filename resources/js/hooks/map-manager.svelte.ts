@@ -1,3 +1,4 @@
+import { page, useHttp } from '@inertiajs/svelte';
 import type { FeatureCollection, Point, Feature, BBox } from 'geojson';
 import maplibregl, {
     FullscreenControl,
@@ -18,15 +19,20 @@ const LAYERS = {
 };
 
 export class MapManager {
-    constructor(
-        onBoundsChange: (bounds: BoundingBox) => void,
-        onFeatureClick: (id: number) => void,
-    ) {
-        this.onBoundsChange = onBoundsChange;
+    constructor(onFeatureClick: (id: number) => void) {
         this.onFeatureClick = onFeatureClick;
+
+        this.http = useHttp({
+            north: null as number | null,
+            south: null as number | null,
+            east: null as number | null,
+            west: null as number | null,
+            allergens: [] as string[],
+        });
     }
 
-    private readonly onBoundsChange: (bounds: any) => void;
+    private http;
+
     private readonly onFeatureClick: (id: number) => void;
     map: Map | undefined = $state<Map>();
     userLocation: { lat: number; lng: number } | null = $state(null);
@@ -53,18 +59,35 @@ export class MapManager {
         }
     }
 
-    private fetchFeaturesForCurrentBounds = (e?: any) => {
-        if (e?.ignoreFetch) {
-            return;
-        }
+    public handleGeolocate() {
+        this.fetchFeaturesForCurrentBounds();
+    }
 
+    public fetchFeaturesForCurrentBounds = (query?: any) => {
         const bounds = this.getBounds();
 
         if (!bounds) {
             return;
         }
 
-        this.onBoundsChange(bounds);
+        this.http.north = bounds.north;
+        this.http.south = bounds.south;
+        this.http.east = bounds.east;
+        this.http.west = bounds.west;
+
+        if (query) {
+            this.http.allergens = query.allergens;
+        } else {
+            this.http.allergens = page.props.query.allergens;
+        }
+
+        this.http.get('/map-data', {
+            onSuccess: (data) => {
+                const currentData = data as FeatureCollection<Point>;
+
+                this.setFeatures(currentData);
+            },
+        });
     };
 
     initialize(container: HTMLElement) {
@@ -83,15 +106,16 @@ export class MapManager {
 
         this.map.addControl(this.geolocateControl);
 
-        this.geolocateControl.on(
-            'geolocate',
-            this.fetchFeaturesForCurrentBounds,
+        this.geolocateControl.on('geolocate', () =>
+            this.fetchFeaturesForCurrentBounds(),
         );
 
         this.map.addControl(new FullscreenControl());
 
         this.attachLayerInteractions(`${LAYERS.CUSTOM_FEATURES}-layer`);
         this.attachLayerInteractions(`${LAYERS.CUSTOM_FEATURES}-label-layer`);
+
+        this.fetchFeaturesForCurrentBounds();
     }
 
     private attachLayerInteractions(layerId: string) {
@@ -380,7 +404,8 @@ export class MapManager {
             maxZoom: 15,
             animate: false,
         });
-        // this.fetchFeaturesForCurrentBounds();
+
+        this.fetchFeaturesForCurrentBounds();
     }
 
     triggerGeolocation() {
