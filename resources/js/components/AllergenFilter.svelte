@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { router, useRemember } from '@inertiajs/svelte';
+    import { page, router, useRemember } from '@inertiajs/svelte';
     import { ChevronDown, ChevronUp } from 'lucide-svelte';
     import { Button } from '@/components/ui/button';
     import * as Collapsible from '@/components/ui/collapsible';
@@ -7,29 +7,30 @@
     import { index } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
 
-    let { allergens, filters } = $props();
+    let { allergens } = $props();
 
     let mapManager = getAppContext().mapManager;
 
-    let allergenArr = $derived((filters?.allergens ?? []).map(String));
+    let allergenArr = $derived(
+        (page.props.query?.allergens ?? []).map(String)
+    );
 
     const allergenDropdownState = useRemember({
         isOpen: true
     });
 
-    function handleAllergenChange(newAllergenArray: string[]) {
+    function handleAllergenChange(value: string[]) {
         const bounds = mapManager.getBounds();
 
         router.get(index(),
-            { allergens: newAllergenArray, ...bounds },
+            { allergens: value, ...bounds },
             {
-                preserveState: true,
-                preserveScroll: true,
                 reset: ['visibleFeatures'],
-                only: ['visibleFeatures', 'mapFeatures']
+                only: ['visibleFeatures', 'mapFeatures'],
+                preserveState: true
             }
         );
-    };
+    }
 </script>
 
 <Collapsible.Root bind:open={allergenDropdownState.isOpen} class="w-full px-3 py-2">
