@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { router } from '@inertiajs/svelte';
+    import { page, router, useHttp } from '@inertiajs/svelte';
+    import type { FeatureCollection, Point } from 'geojson';
     import { Map as MapIcon, List as ListIcon } from 'lucide-svelte';
     import AppHead from '@/components/AppHead.svelte';
     import MapComp from '@/components/MapComp.svelte';
@@ -28,16 +29,35 @@
         searchManager: new SearchManager()
     });
 
-    function searchThisArea() {
-        const bounds = mapManager.getBounds();
+    const http = useHttp({
+        north: null as number | null,
+        south: null as number | null,
+        east: null as number | null,
+        west: null as number | null,
+        allergens: [] as string[]
+    });
 
-        if (bounds) {
-            router.reload({
-                data: { ...bounds },
-                only: ['visibleFeatures', 'mapFeatures'],
-                reset: ['visibleFeatures']
-            });
+    function searchThisArea() {
+        const currentBounds = mapManager.getBounds();
+
+        if (!currentBounds) {
+            return;
         }
+
+        http.north = currentBounds.north;
+        http.south = currentBounds.south;
+        http.east = currentBounds.east;
+        http.west = currentBounds.west;
+
+        http.allergens = page.props.query.allergens;
+
+        http.get('/map-data', {
+            onSuccess: (data) => {
+                let currentData = data as FeatureCollection<Point>;
+
+                mapManager.setFeatures(currentData);
+            }
+        });
     }
 </script>
 
@@ -56,17 +76,33 @@
     {/if}
 </Button>
 
-<section
-    class="flex flex-col min-h-0 w-full lg:static h-full lg:w-2/5 lg:overflow-y-auto {showMapOnMobile ? 'hidden' : 'flex'}"
->
-    {@render children()}
-</section>
+<div class="flex-1 h-dvh w-full grid grid-cols-1 lg:grid-cols-[40%_1fr]">
+    <section
+        class="col-start-1 row-start-1 flex flex-col min-h-0 w-full h-full border-r lg:overflow-hidden bg-background
+               lg:opacity-100 lg:pointer-events-auto
+               transition-opacity duration-300 ease-in-out"
+        class:opacity-0={showMapOnMobile}
+        class:pointer-events-none={showMapOnMobile}
+        class:opacity-100={!showMapOnMobile}
+    >
+        {@render children()}
+    </section>
 
-<aside aria-label="Map View" class="flex-1 relative {showMapOnMobile ? 'block' : 'hidden lg:block'}">
-    <nav class="absolute top-4 left-4 flex flex-col gap-2">
-        <Button variant="secondary" class="z-100" onclick={searchThisArea}>Search this area
-        </Button>
-        <MapLegend />
-    </nav>
-    <MapComp class="border-l" />
-</aside>
+    <aside
+        aria-label="Map View"
+        class="col-start-1 row-start-1 lg:col-start-2 relative min-h-0 min-w-0 h-full w-full
+               lg:opacity-100 lg:pointer-events-auto
+               transition-opacity duration-300 ease-in-out"
+        class:opacity-0={!showMapOnMobile}
+        class:pointer-events-none={!showMapOnMobile}
+        class:opacity-100={showMapOnMobile}
+    >
+        <nav class="absolute top-4 left-4 flex flex-col gap-2 z-10">
+            <Button variant="secondary" onclick={searchThisArea}>
+                Search this area
+            </Button>
+            <MapLegend />
+        </nav>
+        <MapComp />
+    </aside>
+</div>
