@@ -37,7 +37,7 @@
     <AllergenFilter {allergens} />
 </nav>
 
-<ol class="h-full w-full overflow-y-auto relative px-2" bind:this={virtualListElement}>
+<ol class="h-full w-full overflow-y-auto relative px-2" bind:this={virtualListElement} scroll-region="">
     {#if features.length === 0}
         <p class="p-4 text-gray-500">No locations found near you.</p>
     {:else}
