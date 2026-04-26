@@ -1,48 +1,60 @@
 <script lang="ts">
-    import { InfiniteScroll } from '@inertiajs/svelte';
+    import { createVirtualizer } from '@tanstack/svelte-virtual';
     import AllergenFilter from '@/components/AllergenFilter.svelte';
     import RestaurantCard from '@/components/RestaurantCard.svelte';
     import SearchNav from '@/components/SearchNav.svelte';
+    import { getAppContext } from '@/state/appState.svelte';
 
-    let { visibleFeatures, filters, allergens, mapFeatures } = $props();
+    let { allergens } = $props();
+    let mapManager = getAppContext().mapManager;
 
-    let featureStatsMap = $derived(
-        new Map(
-            (mapFeatures?.data?.features ?? []).map((feature: any) => [
-                feature.id ?? feature.properties?.id,
-                {
-                    total_items_count: feature.total_items_count ?? feature.properties?.total_items_count,
-                    safe_items_count: feature.safe_items_count ?? feature.properties?.safe_items_count
-                }
-            ])
-        )
+    let features = $derived(mapManager.featureData?.features ?? []);
+
+    let virtualListElement = $state<HTMLElement | null>(null);
+
+    let virtualizer = $derived(
+        createVirtualizer<HTMLElement, HTMLLIElement>({
+            count: features.length,
+            getScrollElement: virtualListElement ? () => virtualListElement : () => null,
+            estimateSize: () => 200,
+            gap: 10,
+            paddingStart: 10,
+        })
     );
+
+    let virtualListItemElements: HTMLLIElement[] = $state([]);
+    let virtualListItems = $derived($virtualizer.getVirtualItems());
+
+    $effect(() => {
+        if (virtualListItemElements.length) {
+            virtualListItemElements.forEach((el) => $virtualizer.measureElement(el));
+        }
+    });
 </script>
 
-<nav
-    class="shrink-0 flex flex-col sticky top-0 z-40 bg-background border-b shadow-xs lg:static">
+<nav class="shrink-0 flex flex-col sticky top-0 z-40 bg-background border-b shadow-xs lg:static">
     <SearchNav />
-    <AllergenFilter {allergens} {filters} />
+    <AllergenFilter {allergens} />
 </nav>
 
-<div class="px-2 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain bg-sidebar" scroll-region="">
-    <InfiniteScroll
-        data="visibleFeatures"
-        as="ol"
-        class="flex flex-col gap-3 pt-3"
-    >
-        {#if visibleFeatures.data.length > 0}
-            {#each visibleFeatures.data as feature (feature.id)}
-                <RestaurantCard
-                    {feature}
-                    {filters}
-                    stats={featureStatsMap.get(feature.id)}
-                />
+<ol class="h-full w-full overflow-y-auto relative px-2" bind:this={virtualListElement}>
+    {#if features.length === 0}
+        <p class="p-4 text-gray-500">No locations found near you.</p>
+    {:else}
+        <div style="height: {$virtualizer.getTotalSize()}px; width: 100%; position: relative;">
+            {#each virtualListItems as { index }, virtualListItemArrIndex (index)}
+                {@const feature = features[index]}
+
+                <li
+                    data-index={index}
+                    bind:this={virtualListItemElements[virtualListItemArrIndex]}
+                    style="position: absolute; top: 0; left: 0; width: 100%; transform: translateY({virtualListItems[virtualListItemArrIndex].start}px);"
+                    onmouseenter={() => mapManager.highlightFeature(feature.id)}
+                    onmouseleave={() => mapManager.highlightFeature(null)}
+                >
+                    <RestaurantCard {feature} />
+                </li>
             {/each}
-        {:else}
-            <p class="p-4 text-gray-500">
-                No locations found near you.
-            </p>
-        {/if}
-    </InfiniteScroll>
-</div>
+        </div>
+    {/if}
+</ol>
