@@ -106,22 +106,22 @@
                 </Card.Root>
 
                 <Card.Root>
-                    <Card.Content class="space-y-6">
+                    <Card.Content class="space-y-8">
                         <Field.Group>
                             <Field.Field>
-                                <Field.Label for="dietary_attributes">Dietary Attributes</Field.Label>
-
+                                <Field.Label>Dietary Attributes</Field.Label>
                                 <ToggleGroup.Root
-                                    id="dietary_attributes"
                                     type="multiple"
                                     bind:value={form.dietary_tags}
+                                    class="flex flex-wrap justify-start"
                                     variant="outline"
                                     spacing={2}
-                                    class="flex flex-row flex-wrap"
                                 >
                                     {#each dietaryTags as tag (tag.id)}
                                         <ToggleGroup.Item
                                             value={tag.id.toString()}
+                                            variant="outline"
+                                            class="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground transition-colors"
                                             aria-label="Toggle {tag.name}"
                                             disabled={form.processing}
                                         >
@@ -132,21 +132,20 @@
                             </Field.Field>
 
                             <Field.Field>
-                                <Field.Label for="allergens">Allergens</Field.Label>
+                                <Field.Label>Allergens</Field.Label>
 
                                 <ToggleGroup.Root
-                                    id="allergens"
                                     type="multiple"
                                     bind:value={form.allergens}
+                                    class="flex flex-wrap justify-start gap-2"
                                     variant="outline"
                                     spacing={2}
-                                    class="flex flex-row flex-wrap"
                                 >
                                     {#each allergens as allergen (allergen.id)}
                                         <ToggleGroup.Item
                                             value={allergen.id.toString()}
-                                            aria-label="Toggle {allergen.name}"
-                                            disabled={form.processing}
+                                            variant="outline"
+                                            class="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground transition-colors"
                                         >
                                             {allergen.name}
                                         </ToggleGroup.Item>
