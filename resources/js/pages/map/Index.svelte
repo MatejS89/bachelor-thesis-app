@@ -19,6 +19,7 @@
             estimateSize: () => 200,
             gap: 10,
             paddingStart: 10,
+            overscan: 10,
         })
     );
 
@@ -37,7 +38,7 @@
     <AllergenFilter {allergens} />
 </nav>
 
-<ol class="h-full w-full overflow-y-auto relative px-2" bind:this={virtualListElement} scroll-region="">
+<ol class="h-full w-full lg:overflow-y-auto relative px-2" bind:this={virtualListElement} scroll-region="">
     {#if features.length === 0}
         <p class="p-4 text-gray-500">No locations found near you.</p>
     {:else}
