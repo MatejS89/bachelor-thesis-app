@@ -19,17 +19,22 @@
         isOpen: true
     });
 
-    function handleAllergenChange(value: string[]) {
-        const bounds = mapManager.getBounds();
+    function handleAllergenChange(allergens: string[]) {
+        const filters = { ...page.props.query, allergens: allergens ?? [] };
 
-        router.get(index(),
-            { allergens: value, ...bounds },
-            {
-                reset: ['visibleFeatures'],
-                only: ['visibleFeatures', 'mapFeatures'],
-                preserveState: true
-            }
-        );
+        mapManager.fetchFeaturesForCurrentBounds(filters);
+
+        const currentHash = window.location.hash;
+
+        router.replace({
+            url: `${index().url}/?${new URLSearchParams(filters).toString()}${currentHash}`,
+            props: (currentProps) => ({
+                ...currentProps,
+                query: {
+                    ...filters
+                }
+            })
+        });
     }
 </script>
 
@@ -54,7 +59,7 @@
     <Collapsible.Content>
         <ToggleGroup.Root
             type="multiple"
-            bind:value={allergenArr}
+            value={allergenArr}
             onValueChange={handleAllergenChange}
             spacing={2}
             class="flex flex-wrap pt-2"
