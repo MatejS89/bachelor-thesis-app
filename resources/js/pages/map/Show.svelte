@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import {
         MapPin,
         ArrowLeft, ImagePlus
@@ -28,6 +28,7 @@
         <Link
             class={buttonVariants({ variant: "ghost", size: "icon", class: "self-center" })}
             href={index()}
+            data={page.props.query}
         >
             <ArrowLeft class="w-6 h-6" />
         </Link>
