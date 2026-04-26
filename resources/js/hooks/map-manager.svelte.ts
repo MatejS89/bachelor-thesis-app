@@ -31,6 +31,11 @@ export class MapManager {
     map: Map | undefined = $state<Map>();
     userLocation: { lat: number; lng: number } | null = $state(null);
 
+    public featureData: FeatureCollection = $state({
+        type: 'FeatureCollection',
+        features: [],
+    });
+
     private geolocateControl: GeolocateControl | undefined;
     private hoverMarker: maplibregl.Marker | null = null;
 
@@ -123,6 +128,8 @@ export class MapManager {
     }
 
     setFeatures(featureCollection: FeatureCollection<Point>) {
+        this.featureData = featureCollection;
+
         if (!this.map) {
             return;
         }
