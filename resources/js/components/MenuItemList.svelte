@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import { CirclePlus } from 'lucide-svelte';
     import MenuItemCard from '@/components/MenuItemCard.svelte';
     import { buttonVariants } from '@/components/ui/button';
@@ -11,6 +11,8 @@
         menuItems: App.Data.MenuItemData[],
         restaurantData: App.Data.OsmFeatureData
     } = $props();
+
+    let allergens = page.props.query?.allergens ?? [];
 </script>
 
 <Card.Root>
@@ -23,7 +25,7 @@
             <ul class="flex flex-col gap-4">
                 {#each menuItems as menuItem (menuItem.id)}
                     <li>
-                        <MenuItemCard {menuItem} />
+                        <MenuItemCard {allergens} {menuItem} />
                     </li>
                 {/each}
             </ul>
