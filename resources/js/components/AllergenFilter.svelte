@@ -22,8 +22,6 @@
     function handleAllergenChange(allergens: string[]) {
         const filters = { ...page.props.query, allergens: allergens ?? [] };
 
-        mapManager.fetchFeaturesForCurrentBounds(filters);
-
         const currentHash = window.location.hash;
 
         router.replace({
@@ -35,6 +33,8 @@
                 }
             })
         });
+
+        mapManager.fetchFeaturesForCurrentBounds();
     }
 </script>
 
