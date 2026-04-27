@@ -10,7 +10,7 @@ import type { BoundingBox } from '@/types';
 import {
     buildRatioColorExpression,
     getRatioColor,
-    RATIO_CONFIG,
+    COLOR_CONFIG,
 } from '@/utils/get_color';
 
 const LAYERS = {
@@ -29,6 +29,10 @@ export class MapManager {
             west: null as number | null,
             allergens: [] as string[],
         });
+    }
+
+    public get isProcessing(): boolean {
+        return this.http.processing;
     }
 
     private http;
@@ -259,7 +263,7 @@ export class MapManager {
                     const total = properties?.total_items_count ?? 0;
                     const status = getRatioColor(safe, total);
 
-                    const hexColor = RATIO_CONFIG.mapColors[status];
+                    const hexColor = COLOR_CONFIG.mapColors[status];
 
                     this.hoverMarker = new maplibregl.Marker({
                         color: hexColor,
