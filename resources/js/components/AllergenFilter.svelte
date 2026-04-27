@@ -20,12 +20,23 @@
     });
 
     function handleAllergenChange(allergens: string[]) {
-        const filters = { ...page.props.query, allergens: allergens ?? [] };
+        const filters = { ...page.props.query };
 
+        if (allergens && allergens.length > 0) {
+            filters.allergens = allergens;
+        } else {
+            delete filters.allergens;
+        }
+
+        const queryString = new URLSearchParams(filters).toString();
         const currentHash = window.location.hash;
 
+        const finalUrl = queryString
+            ? `${index().url}?${queryString}${currentHash}`
+            : `${index().url}${currentHash}`;
+
         router.replace({
-            url: `${index().url}/?${new URLSearchParams(filters).toString()}${currentHash}`,
+            url: finalUrl,
             props: (currentProps) => ({
                 ...currentProps,
                 query: {
@@ -34,7 +45,7 @@
             })
         });
 
-        mapManager.fetchFeaturesForCurrentBounds();
+        mapManager.fetchFeaturesForCurrentBounds(filters);
     }
 </script>
 
