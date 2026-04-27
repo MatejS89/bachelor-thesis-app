@@ -1,28 +1,28 @@
 <script lang="ts">
     import * as Card from '@/components/ui/card/index';
-    import { RATIO_CONFIG } from '@/utils/get_color';
+    import { COLOR_CONFIG } from '@/utils/get_color';
 
-    const highPct = RATIO_CONFIG.thresholds.high * 100;
-    const medPct = RATIO_CONFIG.thresholds.medium * 100;
+    const highPct = COLOR_CONFIG.thresholds.high * 100;
+    const medPct = COLOR_CONFIG.thresholds.medium * 100;
 
     let { class: className = '' } = $props();
 
     const legendItems = [
         {
             label: `≥ ${highPct}% Safe`,
-            color: RATIO_CONFIG.mapColors.green
+            color: COLOR_CONFIG.mapColors.green
         },
         {
             label: `${medPct}% - ${highPct - 1}% Safe`,
-            color: RATIO_CONFIG.mapColors.orange
+            color: COLOR_CONFIG.mapColors.orange
         },
         {
             label: `< ${medPct}% Safe`,
-            color: RATIO_CONFIG.mapColors.red
+            color: COLOR_CONFIG.mapColors.red
         },
         {
             label: 'No Data',
-            color: RATIO_CONFIG.mapColors.neutral
+            color: COLOR_CONFIG.mapColors.neutral
         }
     ];
 </script>
