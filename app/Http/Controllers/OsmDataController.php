@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\OsmData\GetFeatureGeoJsonBBox;
-use App\Actions\OsmData\GetFeaturesInBBox;
 use App\Actions\OsmData\UpdateOsmDataAction;
 use App\Actions\Utils\CreatePolygonFromBBox;
 use App\Data\MenuItemData;
@@ -40,11 +38,11 @@ class OsmDataController extends Controller
 
     public function mapData(
         GetIndexOsmDataRequest $request,
-        CreatePolygonFromBBox $createPolygon,
+        CreatePolygonFromBBox $createPolygonFromBBox
     ): JsonResponse {
-        $filters = $request->except('page');
+        $filters = $request->validated();
 
-        $bbox = $createPolygon->handle(
+        $bbox = $createPolygonFromBBox->handle(
             $request->input('south'),
             $request->input('west'),
             $request->input('north'),
@@ -52,12 +50,12 @@ class OsmDataController extends Controller
         );
 
         return response()->json(
-            OsmData::query()
-                ->select('name', 'id', 'geom')
-                ->withinMapBounds($bbox)
+            new MapFeatureCollection(OsmData::query()
+                ->select('name', 'id', 'geom', 'tags')
+                ->when($bbox, fn ($query) => $query->whereWithin('geom', $bbox))
                 ->withSafeItemCounts($filters)
-                ->get(),
-        );
+                ->get()
+            ));
     }
 
     public function search(GetIndexOsmDataRequest $request): JsonResponse
@@ -86,9 +84,7 @@ class OsmDataController extends Controller
         $osmData->load('media');
 
         return Inertia::render('map/Show', [
-            'selectedFeature' => OsmFeatureData::from($osmData),
-
-            'filters' => $filters,
+            'selectedFeature' => fn () => OsmFeatureData::from($osmData),
 
             'reviews' => fn () => ReviewData::collect(
                 $osmData->reviews()
@@ -105,32 +101,9 @@ class OsmDataController extends Controller
         ]);
     }
 
-    public function index(
-        GetIndexOsmDataRequest $request,
-        CreatePolygonFromBBox $createPolygon,
-        GetFeaturesInBBox $getFeaturesInBBox,
-        GetFeatureGeoJsonBBox $getFeatureGeoJsonBBox,
-    ): Response {
-        $filters = $request->except('page');
-        $bbox = $createPolygon->handle(
-            $request->input('south'),
-            $request->input('west'),
-            $request->input('north'),
-            $request->input('east')
-        );
-
+    public function index(): Response
+    {
         return Inertia::render('map/Index', [
-            'filters' => Inertia::always(fn () => $filters),
-
-            'visibleFeatures' => Inertia::scroll(fn () => OsmData::query()->when($bbox, fn ($query) => $query->whereWithin('geom', $bbox))->orderBy('id')->paginate(20)->withQueryString()),
-
-            'mapFeatures' => fn () => new MapFeatureCollection(OsmData::query()
-                ->select('name', 'id', 'geom')
-                ->when($bbox, fn ($query) => $query->whereWithin('geom', $bbox))
-                ->withSafeItemCounts($filters)
-                ->get()
-            ),
-
             'allergens' => Inertia::once(fn () => Allergen::all('name', 'id')),
         ]);
     }
