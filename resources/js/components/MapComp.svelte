@@ -23,6 +23,10 @@
     });
 
     let isMobile = $state(new IsMobile());
+
+    function handleSearchThisArea(e: Event) {
+        mapManager.fetchFeaturesForCurrentBounds();
+    }
 </script>
 
 <section bind:this={mapContainer}
@@ -32,7 +36,7 @@
          class:hidden={isMobile.current && !showMapOnMobile}
 >
     <nav class="absolute top-4 left-4 flex flex-col gap-2 z-10">
-        <Button variant="secondary" onclick={mapManager.fetchFeaturesForCurrentBounds}>
+        <Button variant="secondary" onclick={handleSearchThisArea}>
             Search this area
         </Button>
         <MapLegend />
