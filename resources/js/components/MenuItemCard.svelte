@@ -3,32 +3,20 @@
     import { Badge } from '@/components/ui/badge/index';
     import * as Card from '@/components/ui/card/index';
     import * as Item from '@/components/ui/item/index';
+    import { COLOR_CONFIG } from '@/utils/get_color';
 
-    let { menuItem }: { menuItem: App.Data.MenuItemData } = $props();
+    let { menuItem, allergens, dietaryTags =[] }: { menuItem: App.Data.MenuItemData, allergens: string[], dietaryTags: string[] } = $props();
 
-    const baseBadgeClass = 'px-1.5 text-xs md:text-sm uppercase font-semibold';
-
-    interface TagItem {
-        id: string | number;
-        name: string;
-    }
+    let containsAllergens = $derived(
+        menuItem.allergens?.some(allergen =>
+            allergens.includes(allergen.id.toString())
+        ) ?? false
+    );
 </script>
 
-{#snippet badgeList(items: TagItem[] | undefined, variant: "outline" | "destructive", extraClasses: string = "")}
-    {#if items && items.length > 0}
-        <ul class="flex flex-row flex-wrap items-center gap-1 md:gap-2">
-            {#each items as item (item.id)}
-                <li>
-                    <Badge {variant} class="{baseBadgeClass} {extraClasses}">
-                        {item.name}
-                    </Badge>
-                </li>
-            {/each}
-        </ul>
-    {/if}
-{/snippet}
-
-<Item.Root class="gap-4" variant="outline">
+<Item.Root
+    class="gap-4 border-2" style="border-color: {containsAllergens ? COLOR_CONFIG.mapColors.red : COLOR_CONFIG.mapColors.green}"
+    variant="outline">
     <Item.Media class="w-28 md:w-40 shrink-0">
         {#if menuItem.photoUrl}
             <img
@@ -43,22 +31,41 @@
     </Item.Media>
 
     <Item.Content class="flex-1 min-w-0">
-        <Item.Title class="flex flex-row gap-1 md:gap-2 items-center text-sm md:text-base flex-wrap">
+        <Item.Title class="flex flex-row gap-1 md:gap-2 items-center text-sm md:text-lg flex-wrap">
             <span class="truncate">{menuItem.name}</span>
 
-            {@render badgeList(
-                menuItem.dietaryTags,
-                "outline",
-                "text-green-600 dark:text-green-400 border-green-600/30"
-            )}
+            {#if menuItem.dietaryTags && menuItem.dietaryTags.length > 0}
+                <ul class="flex flex-row flex-wrap items-center gap-1">
+                    {#each menuItem.dietaryTags as dietaryTag(dietaryTag.id)}
+                        {@const hexColor = dietaryTags.includes(dietaryTag.id.toString()) ? COLOR_CONFIG.mapColors.red : COLOR_CONFIG.mapColors.green}
+                            <Badge
+                                variant="outline"
+                                class="font-semibold text-xs md:text-sm uppercase whitespace-normal h-auto text-center leading-tight px-1.5"
+                                style="
+                                    color: {hexColor};
+                                    border-color: {hexColor};">
+                                {dietaryTag.name}
+                            </Badge>
+                    {/each}
+                </ul>
+            {/if}
         </Item.Title>
 
-        <div class="mt-1">
-            {@render badgeList(
-                menuItem.allergens,
-                "destructive"
-            )}
-        </div>
+        {#if menuItem.allergens && menuItem.allergens.length > 0}
+            <ul class="flex flex-row flex-wrap items-center gap-1 mt-1">
+                {#each menuItem.allergens as allergen(allergen.id)}
+                    {@const hexColor = allergens.includes(allergen.id.toString()) ? COLOR_CONFIG.mapColors.red : COLOR_CONFIG.mapColors.green}
+                            <Badge
+                                variant="outline"
+                                class="font-semibold text-xs md:text-sm uppercase whitespace-normal h-auto text-center leading-tight px-1.5"
+                                style="
+                                color: {hexColor};
+                                border-color: {hexColor};">
+                                {allergen.name}
+                            </Badge>
+                {/each}
+            </ul>
+        {/if}
 
         <Card.Description class="text-sm md:text-md leading-relaxed">
             {menuItem.description}
