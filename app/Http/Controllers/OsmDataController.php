@@ -53,6 +53,7 @@ class OsmDataController extends Controller
             new MapFeatureCollection(OsmData::query()
                 ->select('name', 'id', 'geom', 'tags')
                 ->when($bbox, fn ($query) => $query->whereWithin('geom', $bbox))
+                ->with('media')
                 ->withSafeItemCounts($filters)
                 ->get()
             ));
