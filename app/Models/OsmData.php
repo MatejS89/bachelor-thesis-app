@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Data\BoundingBox;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[WithoutTimestamps]
+#[Fillable(['name', 'tags'])]
 class OsmData extends Model implements HasMedia
 {
     use HasSpatial;
@@ -68,7 +70,7 @@ class OsmData extends Model implements HasMedia
 
         $query->withCount([
             'menuItems as total_items_count',
-            'menuItems as safe_items_count' => fn ($menuQuery) => $menuQuery->withoutAllergens($allergens),
+            'menuItems as safe_items_count' => fn($menuQuery) => $menuQuery->withoutAllergens($allergens),
         ]);
     }
 }
