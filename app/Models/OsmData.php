@@ -17,7 +17,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[WithoutTimestamps]
-#[Fillable(['name', 'tags'])]
+#[Fillable(['name', 'type', 'tags'])]
 class OsmData extends Model implements HasMedia
 {
     use HasSpatial;
@@ -70,7 +70,7 @@ class OsmData extends Model implements HasMedia
 
         $query->withCount([
             'menuItems as total_items_count',
-            'menuItems as safe_items_count' => fn($menuQuery) => $menuQuery->withoutAllergens($allergens),
+            'menuItems as safe_items_count' => fn ($menuQuery) => $menuQuery->withoutAllergens($allergens),
         ]);
     }
 }
