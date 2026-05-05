@@ -7,6 +7,7 @@ use App\Actions\Utils\CreatePolygonFromBBox;
 use App\Data\MenuItemData;
 use App\Data\OsmFeatureData;
 use App\Data\ReviewData;
+use App\Data\UpdateOsmDataData;
 use App\Http\Requests\OsmData\GetIndexOsmDataRequest;
 use App\Http\Requests\UpdateOsmDataRequest;
 use App\Http\Resources\MapFeatureCollection;
@@ -30,8 +31,7 @@ class OsmDataController extends Controller
 
     public function update(OsmData $osmData, UpdateOsmDataRequest $updateOsmDataRequest, UpdateOsmDataAction $updateOsmDataAction): RedirectResponse
     {
-        $validated = $updateOsmDataRequest->validated();
-        $updateOsmDataAction->execute($osmData, $validated, $validated['photos']);
+        $updateOsmDataAction->execute($osmData, UpdateOsmDataData::fromRequest($updateOsmDataRequest));
 
         return redirect()->route('map.show', $osmData);
     }
