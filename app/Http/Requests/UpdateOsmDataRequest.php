@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Data\UpdateOsmDataData;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,9 +25,8 @@ class UpdateOsmDataRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'opening_hours' => ['nullable', 'string'],
+            'type' => ['nullable', 'string', 'max:255'],
             'photos' => ['nullable', 'array'],
-        ];
+        ] + UpdateOsmDataData::tagRules();
     }
 }
