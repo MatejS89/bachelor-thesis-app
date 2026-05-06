@@ -9,6 +9,8 @@ use Inertia\Middleware\EncryptHistory;
 
 Route::get('map/search', [OsmDataController::class, 'search'])->name('map.search');
 
+Route::get('map-data', [OsmDataController::class, 'mapData'])->name('map.data');
+
 Route::resource('map/{osmData}/review', ReviewController::class)
     ->names('map.review')
     ->only(['create', 'store'])
@@ -24,7 +26,5 @@ Route::resource('map', OsmDataController::class)
     ->names('map')
     ->only(['update', 'show', 'edit', 'index'])
     ->middlewareFor(['update'], ['auth', EncryptHistory::class]);
-
-Route::get('map-data', [OsmDataController::class, 'mapData'])->name('map.data');
 
 require __DIR__.'/settings.php';
