@@ -1,9 +1,6 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
-    import {
-        MapPin,
-        ArrowLeft, ImagePlus
-    } from 'lucide-svelte';
+    import { MapPin, ArrowLeft, ImagePlus } from 'lucide-svelte';
     import ActionNav from '@/components/ActionNav.svelte';
     import MenuItemList from '@/components/MenuItemList.svelte';
     import OsmDataDetailContainer from '@/components/OsmDataDetailContainer.svelte';
@@ -15,18 +12,28 @@
     import * as Tabs from '@/components/ui/tabs/index';
     import { index, edit } from '@/routes/map';
 
-
-    let { selectedFeature: restaurantData, reviews, menuItems }: {
-        selectedFeature: App.Data.OsmFeatureData,
-        reviews: App.Data.ReviewData[]
-        menuItems: App.Data.MenuItemData[]
+    let {
+        selectedFeature: restaurantData,
+        reviews,
+        menuItems
+    }: {
+        selectedFeature: App.Data.OsmData.OsmFeatureData;
+        reviews: App.Data.ReviewData[];
+        menuItems: App.Data.MenuItemData[];
     } = $props();
 </script>
 
-<div class="p-3 h-full w-full flex flex-col gap-3 overflow-y-auto" scroll-region="">
+<div
+    class="p-3 h-full w-full flex flex-col gap-3 overflow-y-auto"
+    scroll-region=""
+>
     <header class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
         <Link
-            class={buttonVariants({ variant: "ghost", size: "icon", class: "self-center" })}
+            class={buttonVariants({
+                variant: 'ghost',
+                size: 'icon',
+                class: 'self-center',
+            })}
             href={index()}
             data={page.props.query}
         >
@@ -39,22 +46,27 @@
         <div class="flex justify-center items-start w-full self-center">
             <MapPin class="h-5 w-5 text-muted-foreground" />
         </div>
+
         <p class="text-muted-foreground text-lg leading-snug self-center">
-            {restaurantData.tags['addr:street']} {restaurantData.tags['addr:housenumber']}
-            , {restaurantData.tags['addr:city']} {restaurantData.tags['addr:postcode']}
+            {restaurantData.tags['addr:street']}
+            {restaurantData.tags['addr:housenumber']}
+            , {restaurantData.tags['addr:city']}
+            {restaurantData.tags['addr:postcode']}
         </p>
     </header>
 
     <div class="w-full px-12">
         {#if restaurantData.photos && restaurantData.photos.length > 0}
-
             <Carousel.Root class="w-full">
                 <Carousel.Content>
-                    {#each restaurantData.photos as img, i(img.id)}
+                    {#each restaurantData.photos as img, i (img.id)}
                         <Carousel.Item class="basis-[85%]">
-                            <Card.Root class="overflow-hidden border-0 shadow-none p-0">
+                            <Card.Root
+                                class="overflow-hidden border-0 shadow-none p-0"
+                            >
                                 <Card.Content
-                                    class="p-0 aspect-auto items-center justify-center rounded-xl overflow-hidden bg-muted">
+                                    class="p-0 aspect-auto items-center justify-center rounded-xl overflow-hidden bg-muted"
+                                >
                                     <img
                                         src={img.url}
                                         alt="Restaurant photo {i + 1}"
@@ -71,9 +83,7 @@
                 <Carousel.Previous />
                 <Carousel.Next />
             </Carousel.Root>
-
         {:else}
-
             <Empty.Root>
                 <Empty.Header>
                     <Empty.Media variant="icon">
@@ -95,108 +105,15 @@
         {/if}
     </div>
 
-    <!--    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">-->
-    <!--        <Card.Root>-->
-    <!--            <Card.Header>-->
-    <!--                <Card.Title>Restaurant Details</Card.Title>-->
-    <!--                <Card.Description>OSM Node: {restaurantData.osm_type}{restaurantData.osm_id}</Card.Description>-->
-    <!--            </Card.Header>-->
-    <!--            <Card.Content class="space-y-6">-->
-    <!--                <div class="flex items-start gap-3">-->
-    <!--                    <Utensils class="h-5 w-5 text-muted-foreground shrink-0" />-->
-    <!--                    <div>-->
-    <!--                        <p class="font-medium leading-none">Cuisine</p>-->
-    <!--                        <div class="flex gap-2 flex-wrap">-->
-    <!--                            {#each restaurantData.tags?.cuisine?.split(';') || [] as cuisine(cuisine)}-->
-    <!--                                <Badge variant="secondary" class="capitalize">{cuisine}</Badge>-->
-    <!--                            {/each}-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-
-    <!--                <div class="flex items-start gap-3">-->
-    <!--                    <Clock class="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />-->
-    <!--                    <div class="w-full">-->
-    <!--                        <div class="flex items-center justify-between mb-3">-->
-    <!--                            <p class="font-medium leading-none">Opening Hours</p>-->
-    <!--                            {#if isOpenNow !== null}-->
-    <!--                                <Badge-->
-    <!--                                    variant={isOpenNow ? "default" : "secondary"}-->
-    <!--                                    class={isOpenNow ? "bg-green-600 hover:bg-green-700 text-white" : ""}-->
-    <!--                                >-->
-    <!--                                    {isOpenNow ? "Open Now" : "Closed"}-->
-    <!--                                </Badge>-->
-    <!--                            {/if}-->
-    <!--                        </div>-->
-
-    <!--                        {#if formattedHours.length > 0}-->
-    <!--                            <div class="space-y-2 bg-muted/30 p-3 rounded-md">-->
-    <!--                                {#each formattedHours as { days, times }}-->
-    <!--                                    <div-->
-    <!--                                        class="flex items-start justify-between text-sm border-b border-border/40 pb-2 last:border-0 last:pb-0 gap-4">-->
-    <!--                                        <span class="font-medium text-foreground">{days}</span>-->
-    <!--                                        <span class="text-muted-foreground text-right">{times}</span>-->
-    <!--                                    </div>-->
-    <!--                                {/each}-->
-    <!--                            </div>-->
-    <!--                        {:else}-->
-    <!--                            <p class="text-sm text-muted-foreground">Hours not available</p>-->
-    <!--                        {/if}-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </Card.Content>-->
-    <!--        </Card.Root>-->
-
-
-    <!--        <Card.Root>-->
-    <!--            <Card.Header>-->
-    <!--                <Card.Title>Features & Accessibility</Card.Title>-->
-    <!--            </Card.Header>-->
-    <!--            <Card.Content class="space-y-6">-->
-    <!--                {#if restaurantData.tags.wheelchair}-->
-    <!--                    <div class="flex items-center gap-3">-->
-    <!--                        <Accessibility class="h-5 w-5 text-muted-foreground shrink-0" />-->
-    <!--                        <div>-->
-    <!--                            <p class="font-medium leading-none mb-1">Wheelchair Accessible</p>-->
-    <!--                            <p class="text-sm text-muted-foreground capitalize">{restaurantData.tags.wheelchair}</p>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                {/if}-->
-
-    <!--                <div class="pt-2">-->
-    <!--                    <p class="font-medium mb-3">Dietary Options</p>-->
-    <!--                    <div class="flex gap-2">-->
-    <!--                        {#if restaurantData.tags['diet:vegetarian'] === 'yes'}-->
-    <!--                            <Badge variant="outline"-->
-    <!--                                   class="border-green-600/50 text-green-700 bg-green-50 dark:bg-green-950/50">-->
-    <!--                                Vegetarian-->
-    <!--                            </Badge>-->
-    <!--                        {/if}-->
-
-    <!--                        {#if restaurantData.tags['diet:vegan'] === 'yes'}-->
-    <!--                            <Badge variant="outline"-->
-    <!--                                   class="border-green-600/50 text-green-700 bg-green-50 dark:bg-green-950/50">Vegan-->
-    <!--                            </Badge>-->
-    <!--                        {/if}-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </Card.Content>-->
-    <!--        </Card.Root>-->
-    <!--    </div>-->
-
     <OsmDataDetailContainer {restaurantData} />
 
     <ActionNav {restaurantData} />
 
     <Tabs.Root value="menu" class="w-full ">
         <Tabs.List class="w-full">
-            <Tabs.Trigger value="menu">
-                Menu
-            </Tabs.Trigger>
+            <Tabs.Trigger value="menu">Menu</Tabs.Trigger>
 
-            <Tabs.Trigger value="reviews">
-                Reviews
-            </Tabs.Trigger>
+            <Tabs.Trigger value="reviews">Reviews</Tabs.Trigger>
         </Tabs.List>
 
         <Tabs.Content value="menu">
