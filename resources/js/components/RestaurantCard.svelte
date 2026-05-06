@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
+    import { Image } from 'lucide-svelte';
     import OpeningBadge from '@/components/OpeningBadge.svelte';
     import { Badge } from '@/components/ui/badge';
     import * as Item from '@/components/ui/item/index';
@@ -9,7 +10,13 @@
 
     let { feature } = $props();
 
-    let status = $derived(() => getRatioColor(feature.properties?.safe_items_count ?? 0, feature.properties?.total_items_count ?? 0) as StatusColor);
+    let status = $derived(
+        () =>
+            getRatioColor(
+                feature.properties?.safe_items_count ?? 0,
+                feature.properties?.total_items_count ?? 0
+            ) as StatusColor
+    );
 
     const borderClasses: Record<StatusColor, string> = {
         green: 'border-green-500 hover:border-green-600',
@@ -33,62 +40,88 @@
     };
 </script>
 
-
-<Link href={show(feature.id)} data={page.props.query}>
-    <Item.Root
-        class={`flex flex-row flex-nowrap justify-start gap-4 bg-card overflow-hidden transition-colors border-2 rounded-2xl ${borderClasses[status()]}`}
-    >
-        <img
-            src="/400.svg"
-            loading="lazy"
-            class="object-cover aspect-square w-32 sm:w-40 border-r rounded-2xl"
-            alt={feature.properties.name ? `Photo of ${feature.properties.name}` : ''}
-        />
-
-        <Item.Content class="flex flex-1 flex-col justify-center min-w-0 shrink-0">
-            <Item.Title class="text-md lg:text-lg font-semibold ">
-                {feature.properties.name || 'Unnamed location'}
-            </Item.Title>
-
-            <Item.Description class="flex flex-col gap-0.5 mt-1 text-sm">
-                <dl class="flex flex-col gap-0.5">
-                    <Badge class={`shrink-0 ${badgeClasses[status()]}`}>
-                        {badgeLabels[status()]}
-                    </Badge>
-
-                    <div class="flex gap-1 items-baseline">
-                        <dt class="text-muted-foreground">Total menu items:</dt>
-                        <dd class="font-medium text-foreground">{feature.properties?.total_items_count ?? 0}</dd>
+<Item.Root
+    variant="outline"
+    class={`gap-4 bg-card border-2 ${borderClasses[status()]}`}
+>
+    {#snippet child({ props })}
+        <Link href={show(feature.id)} data={page.props.query} {...props}>
+            <Item.Media variant="image" class="w-32 md:w-40 shrink-0 h-full">
+                {#if feature.properties.thumbnail_url}
+                    <img
+                        src={feature.properties.thumbnail_url}
+                        loading="lazy"
+                        class=" object-cover aspect-square"
+                        alt={feature.properties.name
+                            ? `Photo of ${feature.properties.name}`
+                            : ''}
+                    />
+                {:else}
+                    <div
+                        class="w-full h-full aspect-square items-center flex outline-muted-foreground bg-muted"
+                    >
+                        <Image class="flex-1 mx-auto my-auto" />
                     </div>
+                {/if}
+            </Item.Media>
 
-                    <div class="flex gap-1 items-baseline">
-                        <dt class="text-muted-foreground">Safe menu items:</dt>
-                        <dd class="font-medium text-foreground">{feature.properties?.safe_items_count ?? 0}</dd>
-                    </div>
+            <Item.Content>
+                <Item.Title class="text-md lg:text-lg font-semibold ">
+                    {feature.properties.name || 'Unnamed location'}
+                </Item.Title>
 
-                    <!--                    <div class="mt-1 relative">-->
-                    <!--                        <dt class="sr-only">Opening hours</dt>-->
-                    <!--                        <dd>-->
-                    <!--                            <OpeningBadge-->
-                    <!--                                hoursString={feature.p.opening_hours}-->
-                    <!--                            />-->
-                    <!--                        </dd>-->
-                    <!--                    </div>-->
+                <Item.Description class="flex flex-col gap-0.5 mt-1 text-sm">
+                    <dl class="flex flex-col gap-0.5">
+                        <Badge class={`shrink-0 ${badgeClasses[status()]}`}>
+                            {badgeLabels[status()]}
+                        </Badge>
 
-                    {#if feature.properties.cuisine}
-                        <div class="mt-2 relative">
-                            <dt class="sr-only">Cuisines</dt>
-                            <dd class="flex flex-wrap gap-1.5">
-                                {#each feature.properties.cuisine.split(';') as cuisine, i(cuisine + feature.id + i)}
-                                    <Badge variant="secondary" class="capitalize font-medium text-xs">
-                                        {cuisine.trim().replace(/_/g, ' ')}
-                                    </Badge>
-                                {/each}
+                        <div class="flex gap-1 items-baseline">
+                            <dt class="text-muted-foreground">
+                                Total menu items:
+                            </dt>
+                            <dd class="font-medium text-foreground">
+                                {feature.properties?.total_items_count ?? 0}
                             </dd>
                         </div>
-                    {/if}
-                </dl>
-            </Item.Description>
-        </Item.Content>
-    </Item.Root>
-</Link>
+
+                        <div class="flex gap-1 items-baseline">
+                            <dt class="text-muted-foreground">
+                                Safe menu items:
+                            </dt>
+                            <dd class="font-medium text-foreground">
+                                {feature.properties?.safe_items_count ?? 0}
+                            </dd>
+                        </div>
+
+                        <div class="mt-1 relative">
+                            <dt class="sr-only">Opening hours</dt>
+                            <dd>
+                                <OpeningBadge
+                                    hoursString={feature.properties
+                                        .opening_hours}
+                                />
+                            </dd>
+                        </div>
+
+                        {#if feature.properties.cuisine}
+                            <div class="mt-2 relative">
+                                <dt class="sr-only">Cuisines</dt>
+                                <dd class="flex flex-wrap gap-1.5">
+                                    {#each feature.properties.cuisine.split(';') as cuisine, i (cuisine + feature.id + i)}
+                                        <Badge
+                                            variant="secondary"
+                                            class="capitalize font-medium text-xs"
+                                        >
+                                            {cuisine.trim().replace(/_/g, ' ')}
+                                        </Badge>
+                                    {/each}
+                                </dd>
+                            </div>
+                        {/if}
+                    </dl>
+                </Item.Description>
+            </Item.Content>
+        </Link>
+    {/snippet}
+</Item.Root>
