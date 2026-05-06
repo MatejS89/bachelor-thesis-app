@@ -1,165 +1,228 @@
 <script lang="ts">
     import { router } from '@inertiajs/svelte';
     import type { Feature } from 'geojson';
-    import { Search, MapPin } from 'lucide-svelte';
-    import { Button } from '@/components/ui/button';
-    import { Input } from '@/components/ui/input';
-    import * as Item from '@/components/ui/item/index';
+    import { MapPin, Navigation, SearchX } from 'lucide-svelte';
+    import * as Command from '@/components/ui/command/index';
     import { Spinner } from '@/components/ui/spinner';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
     import getIconForFeature from '@/utils/get-osm_data-icons';
 
+    const DEBOUNCE_MS = 300;
+
     let { mapManager, searchManager } = getAppContext();
 
-    let showDropdown = $state(false);
-    let isSearching = $state(false);
+    let containerEl: HTMLElement;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let suppressNextSearch = false;
 
-    function submitSearch() {
-        handleSearch();
-        showDropdown = true;
-    }
+    const hasResults = $derived(
+        searchManager.localResults.length > 0 ||
+        searchManager.nominatimResults.length > 0
+    );
 
-    async function handleSearch() {
-        isSearching = true;
+    const trimmedQuery = $derived(searchManager.query.trim());
 
-        try {
-            const results: Feature[] = await searchManager.search(
-                mapManager.userLocation
-            );
+    $effect(() => {
+        const q = searchManager.query;
 
-            if (results && results.length > 0) {
-                mapManager.displaySearchResults(results);
+        if (suppressNextSearch) {
+            suppressNextSearch = false;
+
+            return;
+        }
+
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+
+        if (!q.trim()) {
+            searchManager.localResults = [];
+            searchManager.nominatimResults = [];
+
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            runSearch();
+        }, DEBOUNCE_MS);
+    });
+
+    $effect(() => {
+        function handleClick(e: MouseEvent) {
+            if (containerEl && !containerEl.contains(e.target as Node)) {
+                searchManager.showDropdown = false;
             }
-        } finally {
-            isSearching = false;
         }
+
+        document.addEventListener('mousedown', handleClick);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+        };
+    });
+
+    async function runSearch() {
+        if (!searchManager.query.trim()) {
+            return;
+        }
+
+        await searchManager.search(mapManager.userLocation);
+
+        // mapManager.displaySearchResults(results);
+
+        searchManager.showDropdown = true;
     }
 
-    function handleSearchInput(e: KeyboardEvent) {
+    async function commitSearchToMap() {
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+            debounceTimer = null;
+        }
+
+        searchManager.showDropdown = true;
+    }
+
+    function handleKeydown(e: KeyboardEvent) {
         if (e.key === 'Enter') {
-            submitSearch();
+            e.preventDefault();
+            commitSearchToMap();
+        } else if (e.key === 'Escape') {
+            searchManager.showDropdown = false;
         }
     }
 
-    function selectNominatimResult(feature: Feature) {
-        showDropdown = false;
-        searchManager.query = feature?.properties?.display_name;
-
-        mapManager.clearSearchResults();
+    function selectAddressResult(feature: Feature) {
+        suppressNextSearch = true;
+        searchManager.query = feature?.properties?.display_name ?? '';
+        searchManager.showDropdown = false;
 
         if (feature.bbox) {
             mapManager.fitToFeatures(feature.bbox);
-        } else if (
-            feature.geometry?.type === 'Point'
-        ) {
+        } else if (feature.geometry?.type === 'Point') {
             const [lng, lat] = feature.geometry.coordinates;
             mapManager.flyToLocation(lng, lat, 15);
         }
     }
 
     function selectRestaurantResult(featureId: number) {
-        showDropdown = false;
-
-        mapManager.clearSearchResults();
-
+        searchManager.showDropdown = false;
         router.get(show(featureId));
+    }
+
+    function selectCurrentLocation() {
+        searchManager.showDropdown = false;
+        mapManager.triggerGeolocation();
     }
 </script>
 
-<nav class="border-b px-3 py-2">
-    <div class="relative flex flex-row gap-2">
-        <Input
-            type="text"
-            placeholder="Search for a location or restaurant name..."
-            id="search-input"
-            bind:value={searchManager.query}
-            onkeydown={handleSearchInput}
-        />
-
-        <!--{#if searchManager.query.length > 0}-->
-        <!--    <button-->
-        <!--        type="button"-->
-        <!--        class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none transition-colors"-->
-        <!--        onclick={clearSearch}-->
-        <!--        aria-label="Clear search"-->
-        <!--    >-->
-        <!--        <X class="w-4 h-4" />-->
-        <!--    </button>-->
-        <!--{/if}-->
-
-        <Button type="button" onclick={submitSearch} variant="secondary" class="shrink-0">
-            {#if isSearching}
-                <Spinner />
-            {:else}
-                <Search />
-            {/if}
-            Search
-        </Button>
-    </div>
-
-    {#if showDropdown && (searchManager.localResults.length > 0 || searchManager.nominatimResults.length > 0)}
-        <div
-            class="absolute z-50 mt-1 bg-card border rounded-md shadow-lg max-h-80 overflow-y-auto text-sm flex flex-col w-[calc(100%-2rem)]"
-        >
-            {#if searchManager.localResults.length > 0}
-                <div
-                    class="px-3 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0 backdrop-blur-sm z-10"
-                >
-                    Restaurants
-                </div>
-                <ol class="py-1">
-                    {#each searchManager.localResults as feature (feature.id)}
-                        {@const FeatureIcon = getIconForFeature(feature)}
-                        <Item.Root
-                            onclick={() => selectRestaurantResult(feature.id)}
-                        >
-                            <Item.Media variant="icon">
-                                <FeatureIcon></FeatureIcon>
-                            </Item.Media>
-                            <Item.Content>
-                                <Item.Title
-                                >{feature?.properties
-                                    ?.display_name}</Item.Title
-                                >
-                            </Item.Content>
-                        </Item.Root>
-                    {/each}
-                </ol>
-            {/if}
-
-
-            {#if searchManager.nominatimResults.length > 0}
-                <div
-                    class="px-3 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0 backdrop-blur-sm z-10"
-                >
-                    Places Addresses
-                </div>
-                <ol class="py-1">
-                    {#each searchManager.nominatimResults as feature (feature.id)}
-                        <button
-                            type="button"
-                            class="w-full text-left hover:bg-muted/50 transition-colors"
-                            onclick={() => selectNominatimResult(feature)}
-                        >
-                            <Item.Root>
-                                <Item.Media variant="icon">
-                                    <MapPin />
-                                </Item.Media>
-                                <Item.Content>
-                                    <Item.Title
-                                    >{feature?.properties?.name}</Item.Title
-                                    >
-                                    <Item.Description
-                                    >{feature?.properties
-                                        ?.secondary_info}</Item.Description
-                                    >
-                                </Item.Content>
-                            </Item.Root>
-                        </button>
-                    {/each}
-                </ol>
-            {/if}
+<nav bind:this={containerEl} class="border-b px-3 py-2 relative">
+    <Command.Root
+        shouldFilter={false}
+        class="bg-transparent rounded-none p-0 overflow-visible h-auto"
+    >
+        <div class="relative">
+            <Command.Input
+                bind:value={searchManager.query}
+                placeholder="Search for a location or restaurant name..."
+                onkeydown={handleKeydown}
+                onfocus={() => (searchManager.showDropdown = true)}
+            />
         </div>
-    {/if}
+
+        {#if searchManager.showDropdown}
+            <div
+                class="absolute top-full left-3 right-3 mt-1 bg-popover border rounded-md shadow-lg z-50 overflow-hidden"
+            >
+                <Command.List>
+                    <Command.Group>
+                        <Command.Item
+                            value="current-location"
+                            onSelect={selectCurrentLocation}
+                        >
+                            <Navigation class="text-primary" />
+                            <span class="font-medium text-primary">
+                                Current Location
+                            </span>
+                        </Command.Item>
+                    </Command.Group>
+
+                    {#if trimmedQuery.length > 0}
+                        <Command.Separator />
+
+                        {#if searchManager.isSearching && !hasResults}
+                            <Command.Loading>
+                                <div
+                                    class="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground"
+                                >
+                                    <Spinner />
+                                    Searching...
+                                </div>
+                            </Command.Loading>
+                        {:else if !hasResults}
+                            <div
+                                class="flex flex-col items-center gap-1 py-6 text-muted-foreground"
+                            >
+                                <SearchX class="size-5" />
+                                <span class="text-sm">No results</span>
+                            </div>
+                        {:else}
+                            {#if searchManager.localResults.length > 0}
+                                <Command.Group heading="Restaurants">
+                                    {#each searchManager.localResults as feature (feature.id)}
+                                        {@const FeatureIcon =
+                                            getIconForFeature(feature)}
+                                        <Command.Item
+                                            value={`local-${feature.id}`}
+                                            onSelect={() =>
+                                                selectRestaurantResult(
+                                                    feature.id,
+                                                )}
+                                        >
+                                            <FeatureIcon />
+                                            <span class="truncate">
+                                                {feature?.properties
+                                                    ?.display_name}
+                                            </span>
+                                        </Command.Item>
+                                    {/each}
+                                </Command.Group>
+                            {/if}
+
+                            {#if searchManager.localResults.length > 0 && searchManager.nominatimResults.length > 0}
+                                <Command.Separator />
+                            {/if}
+
+                            {#if searchManager.nominatimResults.length > 0}
+                                <Command.Group heading="Addresses">
+                                    {#each searchManager.nominatimResults as feature (feature.id)}
+                                        <Command.Item
+                                            value={`addr-${feature.id}`}
+                                            onSelect={() =>
+                                                selectAddressResult(feature)}
+                                        >
+                                            <MapPin />
+                                            <div
+                                                class="flex flex-col min-w-0 flex-1"
+                                            >
+                                                <span class="truncate">
+                                                    {feature?.properties?.name}
+                                                </span>
+                                                <span
+                                                    class="truncate text-xs text-muted-foreground"
+                                                >
+                                                    {feature?.properties
+                                                        ?.secondary_info}
+                                                </span>
+                                            </div>
+                                        </Command.Item>
+                                    {/each}
+                                </Command.Group>
+                            {/if}
+                        {/if}
+                    {/if}
+                </Command.List>
+            </div>
+        {/if}
+    </Command.Root>
 </nav>
