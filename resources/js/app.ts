@@ -17,8 +17,6 @@ createInertiaApp({
         return pages[`./pages/${name}.svelte`] as never;
     },
     layout: (name) => {
-        console.log(name);
-
         if (
             name.startsWith('map') ||
             name.startsWith('review') ||
