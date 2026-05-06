@@ -10,20 +10,20 @@
     const legendItems = [
         {
             label: `≥ ${highPct}% Safe`,
-            color: COLOR_CONFIG.mapColors.green
+            color: COLOR_CONFIG.mapColors.green,
         },
         {
             label: `${medPct}% - ${highPct - 1}% Safe`,
-            color: COLOR_CONFIG.mapColors.orange
+            color: COLOR_CONFIG.mapColors.orange,
         },
         {
             label: `< ${medPct}% Safe`,
-            color: COLOR_CONFIG.mapColors.red
+            color: COLOR_CONFIG.mapColors.red,
         },
         {
             label: 'No Data',
-            color: COLOR_CONFIG.mapColors.neutral
-        }
+            color: COLOR_CONFIG.mapColors.neutral,
+        },
     ];
 </script>
 
@@ -40,6 +40,5 @@
                 </span>
             </div>
         {/each}
-
     </Card.Content>
 </Card.Root>
