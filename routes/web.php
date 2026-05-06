@@ -7,6 +7,8 @@ use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware\EncryptHistory;
 
+Route::inertia('/', 'Welcome')->name('home');
+
 Route::get('map/search', [OsmDataController::class, 'search'])->name('map.search');
 
 Route::get('map-data', [OsmDataController::class, 'mapData'])->name('map.data');
