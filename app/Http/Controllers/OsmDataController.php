@@ -15,6 +15,7 @@ use App\Models\Allergen;
 use App\Models\OsmData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,6 +23,8 @@ class OsmDataController extends Controller
 {
     public function edit(OsmData $osmData): Response
     {
+        Gate::authorize('update', $osmData);
+
         $osmData->load('media');
 
         return Inertia::render('osmData/EditOsmData', [
@@ -31,6 +34,8 @@ class OsmDataController extends Controller
 
     public function update(OsmData $osmData, UpdateOsmDataRequest $updateOsmDataRequest, UpdateOsmDataAction $updateOsmDataAction): RedirectResponse
     {
+        Gate::authorize('update', $osmData);
+
         $updateOsmDataAction->execute($osmData, UpdateOsmDataData::fromRequest($updateOsmDataRequest));
 
         return redirect()->route('map.show', $osmData);
