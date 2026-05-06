@@ -13,7 +13,7 @@
     let previewUrls = $state<string[]>([]);
 
     const form = useForm({
-        images: [] as File[]
+        images: [] as File[],
     });
 
     function handleFileChange(event: Event) {
@@ -24,7 +24,7 @@
 
             form.images = [...form.images, ...newFiles];
 
-            const newUrls = newFiles.map(file => URL.createObjectURL(file));
+            const newUrls = newFiles.map((file) => URL.createObjectURL(file));
             previewUrls = [...previewUrls, ...newUrls];
 
             input.value = '';
@@ -48,17 +48,17 @@
         form.submit(update(selectedFeature.id), {
             preserveScroll: true,
             onSuccess: () => {
-                previewUrls.forEach(url => URL.revokeObjectURL(url));
+                previewUrls.forEach((url) => URL.revokeObjectURL(url));
                 previewUrls = [];
 
                 form.reset();
-            }
+            },
         });
     }
 
     $effect(() => {
         return () => {
-            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            previewUrls.forEach((url) => URL.revokeObjectURL(url));
         };
     });
 </script>
@@ -67,15 +67,25 @@
     <form onsubmit={submit}>
         <Card.Header>
             <Card.Title>Restaurant Gallery</Card.Title>
-            <Card.Description>Upload multiple photos of the interior, exterior, or food.</Card.Description>
+            <Card.Description
+                >Upload multiple photos of the interior, exterior, or food.</Card.Description
+            >
         </Card.Header>
 
         <Card.Content class="space-y-6">
             {#if previewUrls.length > 0}
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div
+                    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                >
                     {#each previewUrls as url, i (url)}
-                        <div class="relative group aspect-square rounded-md overflow-hidden border">
-                            <img src={url} alt="Preview {i + 1}" class="w-full h-full object-cover" />
+                        <div
+                            class="relative group aspect-square rounded-md overflow-hidden border"
+                        >
+                            <img
+                                src={url}
+                                alt="Preview {i + 1}"
+                                class="w-full h-full object-cover"
+                            />
 
                             <button
                                 type="button"
@@ -90,7 +100,8 @@
                 </div>
             {:else}
                 <div
-                    class="flex flex-col items-center justify-center py-8 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/30">
+                    class="flex flex-col items-center justify-center py-8 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/30"
+                >
                     <Images class="mb-3 h-10 w-10 opacity-50" />
                     <p>No images selected</p>
                 </div>
@@ -108,7 +119,9 @@
                     disabled={form.processing}
                 />
                 {#if Object.keys(form.errors).length > 0}
-                    <div class="text-sm font-medium text-destructive mt-2 space-y-1">
+                    <div
+                        class="text-sm font-medium text-destructive mt-2 space-y-1"
+                    >
                         {#each Object.entries(form.errors) as [key, error] (key)}
                             {#if key.startsWith('images')}
                                 <p>{error}</p>
@@ -129,7 +142,9 @@
                     <Loader2 class="mr-2 h-4 w-4 animate-spin" />
                     Uploading {form.images.length} files...
                     {#if form.progress}
-                        <span class="ml-1 opacity-75">({form.progress.percentage}%)</span>
+                        <span class="ml-1 opacity-75"
+                            >({form.progress.percentage}%)</span
+                        >
                     {/if}
                 {:else}
                     Upload {form.images.length > 0 ? form.images.length : ''} Images
