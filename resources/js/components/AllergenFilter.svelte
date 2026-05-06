@@ -11,12 +11,10 @@
 
     let mapManager = getAppContext().mapManager;
 
-    let allergenArr = $derived(
-        (page.props.query?.allergens ?? []).map(String)
-    );
+    let allergenArr = $derived((page.props.query?.allergens ?? []).map(String));
 
     const allergenDropdownState = useRemember({
-        isOpen: true
+        isOpen: true,
     });
 
     function handleAllergenChange(allergens: string[]) {
@@ -40,21 +38,22 @@
             props: (currentProps) => ({
                 ...currentProps,
                 query: {
-                    ...filters
-                }
-            })
+                    ...filters,
+                },
+            }),
         });
 
         mapManager.fetchFeaturesForCurrentBounds(filters);
     }
 </script>
 
-<Collapsible.Root bind:open={allergenDropdownState.isOpen} class="w-full px-3 py-2">
+<Collapsible.Root
+    bind:open={allergenDropdownState.isOpen}
+    class="w-full px-3 py-2"
+>
     <Collapsible.Trigger>
         <div class="flex items-center justify-between w-full">
-            <h4 class="text-sm font-medium leading-none">
-                Allergen Filters
-            </h4>
+            <h4 class="text-sm font-medium leading-none">Allergen Filters</h4>
 
             <Button variant="ghost" size="sm" class="w-9 p-0">
                 {#if allergenDropdownState.isOpen}
