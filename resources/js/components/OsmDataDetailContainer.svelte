@@ -1,316 +1,907 @@
 <script lang="ts">
-    import { Hash } from 'lucide-svelte';
+    import {
+        Accessibility,
+        Baby,
+        Banknote,
+        Beer,
+        Building,
+        Calendar,
+        CheckCircle2,
+        ChefHat,
+        Cigarette,
+        Clock,
+        Coffee,
+        CreditCard,
+        Dog,
+        Globe,
+        Hash,
+        HelpCircle,
+        Info,
+        Mail,
+        Music,
+        Phone,
+        Pizza,
+        Sandwich,
+        ShoppingBag,
+        Sparkles,
+        Star,
+        Store,
+        Toilet,
+        Truck,
+        Utensils,
+        UtensilsCrossed,
+        Wifi,
+        Wind,
+        XCircle
+    } from 'lucide-svelte';
+    import OpeningBadge from '@/components/OpeningBadge.svelte';
+    import { Badge } from '@/components/ui/badge/index.js';
     import * as Card from '@/components/ui/card/index';
+    import {
+        osmDietTags,
+        osmFoodOptionTags,
+        osmServiceTags
+    } from '@/lib/osm-tags';
 
-    let { restaurantData }: { restaurantData: App.Data.OsmFeatureData } = $props();
+    let { restaurantData }: { restaurantData: App.Data.OsmData.OsmFeatureData } =
+        $props();
 
-    const getPaymentMethods = (tags: Record<string, string>) => {
-        return Object.entries(tags)
-            .filter(([key]) => key.startsWith('payment:'))
-            .map(([key, value]) => {
-                const rawName = key.replace('payment:', '').replace(/_/g, ' ');
-                const label = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    type TagValue = string | undefined;
 
-                let formattedValue = value;
-
-                if (value === 'yes') {
-                    formattedValue = 'Accepted';
-                } else if (value === 'no') {
-                    formattedValue = 'Not accepted';
-                }
-
-                return { label, value: formattedValue };
-            });
+    type DetailItem = {
+        key: string;
+        label: string;
+        icon: any;
+        value?: string;
+        note?: string;
     };
 
     type DogPolicy = {
         label: string;
         allowed: boolean | 'partial' | null;
-        iconUrl: string | null;
     };
 
-    const ICONS = {
-        ALLOWED: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Pictogram_Dog.svg',
-        BANNED: 'https://upload.wikimedia.org/wikipedia/commons/5/52/No_dogs.svg',
-        LEASHED: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Dogs_on_leash_pictogram.svg',
-        UNKNOWN: null
+    const positiveValues = ['yes', 'only', 'customers', 'wlan', 'free'];
+    const negativeValues = ['no', 'none'];
+
+    const dayMap: Record<string, string> = {
+        Mo: 'Mon',
+        Tu: 'Tue',
+        We: 'Wed',
+        Th: 'Thu',
+        Fr: 'Fri',
+        Sa: 'Sat',
+        Su: 'Sun',
+        PH: 'Holidays'
     };
 
-    export const parseDogPolicy = (dogTag?: string): DogPolicy => {
+    const tags = $derived(restaurantData.tags ?? {});
+
+    function humanize(value: string): string {
+        return value
+            .replace(/_/g, ' ')
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    }
+
+    function formatTagValue(value: TagValue): string {
+        if (!value) {
+            return '';
+        }
+
+        const normalizedValue = value.trim().toLowerCase();
+
+        if (normalizedValue === 'yes') {
+            return 'Available';
+        }
+
+        if (normalizedValue === 'no') {
+            return 'Not available';
+        }
+
+        if (normalizedValue === 'only') {
+            return 'Only option';
+        }
+
+        if (normalizedValue === 'customers') {
+            return 'For customers';
+        }
+
+        if (normalizedValue === 'limited') {
+            return 'Limited';
+        }
+
+        if (normalizedValue === 'designated') {
+            return 'Designated';
+        }
+
+        return humanize(value);
+    }
+
+    function splitTags(value: TagValue): string[] {
+        return (
+            value
+                ?.split(';')
+                .map((tag) => tag.trim())
+                .filter(Boolean) ?? []
+        );
+    }
+
+    function normalizeUrl(value: string): string {
+        return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    }
+
+    function boolState(value: TagValue): boolean | 'partial' | null {
+        if (!value) {
+            return null;
+        }
+
+        const normalizedValue = value.trim().toLowerCase();
+
+        if (positiveValues.includes(normalizedValue)) {
+            return true;
+        }
+
+        if (negativeValues.includes(normalizedValue)) {
+            return false;
+        }
+
+        if (
+            ['limited', 'partial', 'permissive', 'conditional'].includes(
+                normalizedValue
+            )
+        ) {
+            return 'partial';
+        }
+
+        return null;
+    }
+
+    function boolIcon(value: TagValue) {
+        const state = boolState(value);
+
+        if (state === true) {
+            return { icon: CheckCircle2, className: 'text-green-600' };
+        }
+
+        if (state === false) {
+            return { icon: XCircle, className: 'text-muted-foreground/40' };
+        }
+
+        if (state === 'partial') {
+            return { icon: HelpCircle, className: 'text-amber-600' };
+        }
+
+        return { icon: Info, className: 'text-muted-foreground' };
+    }
+
+    function formatPaymentMethod(key: string, value: string): DetailItem {
+        const rawName = key.replace('payment:', '');
+
+        return {
+            key,
+            label: humanize(rawName),
+            icon: rawName.includes('cash') ? Banknote : CreditCard,
+            value:
+                value === 'yes'
+                    ? 'Accepted'
+                    : value === 'no'
+                        ? 'Not accepted'
+                        : formatTagValue(value)
+        };
+    }
+
+    function getAmenityIcon(type: TagValue) {
+        switch (type?.trim().toLowerCase()) {
+            case 'restaurant':
+                return ChefHat;
+            case 'cafe':
+                return Coffee;
+            case 'fast_food':
+                return Sandwich;
+            case 'food_court':
+                return Store;
+            case 'bar':
+            case 'biergarten':
+            case 'pub':
+                return Beer;
+            case 'pizza':
+                return Pizza;
+            default:
+                return Utensils;
+        }
+    }
+
+    function parseHours(raw: string) {
+        return raw
+            .split(';')
+            .map((rule) => rule.trim())
+            .filter(Boolean)
+            .map((rule) => {
+                const formattedRule = Object.entries(dayMap).reduce(
+                    (formatted, [abbr, full]) =>
+                        formatted.replace(
+                            new RegExp(`\\b${abbr}\\b`, 'g'),
+                            full
+                        ),
+                    rule
+                );
+                const isOff = formattedRule.includes('off');
+                const firstDigitIdx = formattedRule.search(/\d/);
+                const days = isOff
+                    ? formattedRule
+                        .replace(/\boff\b/g, '')
+                        .trim()
+                        .replace(/[:,\s]+$/, '')
+                    : firstDigitIdx !== -1
+                        ? formattedRule
+                            .substring(0, firstDigitIdx)
+                            .trim()
+                            .replace(/[:,\s]+$/, '')
+                        : formattedRule;
+                const times = isOff
+                    ? 'Closed'
+                    : firstDigitIdx !== -1
+                        ? formattedRule.substring(firstDigitIdx).trim()
+                        : '';
+
+                return { days, times, isOff };
+            });
+    }
+
+    const parseDogPolicy = (dogTag?: string): DogPolicy => {
         if (!dogTag) {
-            return { label: 'Unknown', allowed: null, iconUrl: ICONS.UNKNOWN };
+            return { label: 'Unknown', allowed: null };
         }
 
         const normalizedValue = dogTag.trim().toLowerCase();
 
         switch (normalizedValue) {
             case 'yes':
-                return { label: 'Allowed', allowed: true, iconUrl: ICONS.ALLOWED };
+                return { label: 'Allowed', allowed: true };
             case 'no':
-                return { label: 'Not allowed', allowed: false, iconUrl: ICONS.BANNED };
+                return { label: 'Not allowed', allowed: false };
             case 'leashed':
+                return { label: 'Allowed on leash', allowed: 'partial' };
             case 'service':
+                return { label: 'Service dogs only', allowed: 'partial' };
             case 'tethered':
-                return { label: 'Allowed (Conditionally)', allowed: 'partial', iconUrl: ICONS.LEASHED };
+                return { label: 'Allowed when tethered', allowed: 'partial' };
             default:
-                return {
-                    label: dogTag.charAt(0).toUpperCase() + dogTag.slice(1),
-                    allowed: null,
-                    iconUrl: ICONS.UNKNOWN
-                };
+                return { label: formatTagValue(dogTag), allowed: null };
         }
     };
 
+    const cuisines = $derived(splitTags(tags.cuisine));
+    const amenityType = $derived(restaurantData.type ?? tags.amenity);
+    const AmenityIcon = $derived(getAmenityIcon(amenityType));
+    const serviceIcons: Record<string, any> = {
+        takeaway: ShoppingBag,
+        delivery: Truck,
+        drive_through: Truck,
+        reservation: Calendar,
+        self_service: UtensilsCrossed
+    };
 
-    let isOpenNow = $derived.by(() => {
-        const rawHours = restaurantData?.tags?.opening_hours;
+    const dietItems = $derived(
+        osmDietTags.filter((item) => tags[item.key] !== undefined)
+    );
 
-        if (!rawHours) {
-            return null;
-        }
+    const serviceItems: DetailItem[] = $derived(
+        osmServiceTags
+            .filter((item) => tags[item.key] !== undefined)
+            .map((item) => ({
+                key: item.key,
+                label: item.label,
+                icon: serviceIcons[item.key] ?? ShoppingBag,
+                value: formatTagValue(tags[item.key])
+            }))
+    );
 
-        try {
-            const oh = new opening_hours(rawHours);
+    const foodOptionItems = $derived(
+        osmFoodOptionTags.filter((item) => tags[item.key] !== undefined)
+    );
 
-            return oh.getState();
-        } catch (e) {
-            console.warn('Invalid opening hours format:', e);
-
-            return null;
-        }
-    });
-
-    let formattedHours = $derived.by(() => {
-        const rawHours = restaurantData?.tags?.opening_hours;
-
-        if (!rawHours) {
-            return [];
-        }
-
-        const rules = rawHours.split(';').map(r => r.trim()).filter(Boolean);
-        const dayMap: Record<string, string> = {
-            'Mo': 'Mon', 'Tu': 'Tue', 'We': 'Wed',
-            'Th': 'Thu', 'Fr': 'Fri', 'Sa': 'Sat',
-            'Su': 'Sun', 'PH': 'Holidays'
-        };
-
-        return rules.map(rule => {
-            let formattedRule = rule;
-            Object.entries(dayMap).forEach(([abbr, full]) => {
-                const regex = new RegExp(`\\b${abbr}\\b`, 'g');
-                formattedRule = formattedRule.replace(regex, full);
-            });
-
-            let days = formattedRule;
-            let times = '';
-
-            if (formattedRule.includes('off')) {
-                days = formattedRule.replace(/\boff\b/g, '').trim();
-                times = 'Closed';
-            } else {
-                const firstDigitIdx = formattedRule.search(/\d/);
-
-                if (firstDigitIdx !== -1) {
-                    days = formattedRule.substring(0, firstDigitIdx).trim();
-                    times = formattedRule.substring(firstDigitIdx).trim();
-                }
+    const facilityItems: DetailItem[] = $derived(
+        [
+            {
+                key: 'wheelchair',
+                label: 'Wheelchair access',
+                icon: Accessibility,
+                value: formatTagValue(tags.wheelchair),
+                note: tags['wheelchair:description']
+            },
+            {
+                key: 'toilets',
+                label: 'Toilets',
+                icon: Toilet,
+                value: formatTagValue(tags.toilets)
+            },
+            {
+                key: 'toilets:wheelchair',
+                label: 'Accessible toilet',
+                icon: Accessibility,
+                value: formatTagValue(tags['toilets:wheelchair'])
+            },
+            {
+                key: 'outdoor_seating',
+                label: 'Outdoor seating',
+                icon: Sparkles,
+                value: formatTagValue(tags.outdoor_seating),
+                note: tags['capacity:outdoor']
+                    ? `${tags['capacity:outdoor']} seats`
+                    : undefined
+            },
+            {
+                key: 'indoor_seating',
+                label: 'Indoor seating',
+                icon: Building,
+                value: formatTagValue(tags.indoor_seating),
+                note: tags.capacity
+                    ? `${tags.capacity} total seats`
+                    : undefined
+            },
+            {
+                key: 'internet_access',
+                label: 'Wi-Fi',
+                icon: Wifi,
+                value:
+                    tags.internet_access === 'wlan'
+                        ? 'Available'
+                        : formatTagValue(tags.internet_access),
+                note: tags['internet_access:ssid']
+                    ? `SSID: ${tags['internet_access:ssid']}`
+                    : tags['internet_access:fee'] === 'no'
+                        ? 'Free'
+                        : tags['internet_access:fee']
+            },
+            {
+                key: 'air_conditioning',
+                label: 'Air conditioning',
+                icon: Wind,
+                value: formatTagValue(tags.air_conditioning)
+            },
+            {
+                key: 'high_chair',
+                label: 'High chairs',
+                icon: Baby,
+                value: formatTagValue(tags.high_chair)
+            },
+            {
+                key: 'changing_table',
+                label: 'Changing table',
+                icon: Baby,
+                value: formatTagValue(tags.changing_table)
+            },
+            {
+                key: 'dog',
+                label: 'Dogs',
+                icon: Dog,
+                value: parseDogPolicy(tags.dog).label
             }
+        ].filter((item) => tags[item.key] !== undefined)
+    );
 
-            return {
-                days: days.replace(/[:,\s]+$/, ''),
-                times
-            };
-        });
-    });
+    const atmosphereItems: DetailItem[] = $derived(
+        [
+            {
+                key: 'smoking',
+                label: 'Smoking',
+                icon: Cigarette,
+                value: formatTagValue(tags.smoking)
+            },
+            {
+                key: 'smoking:outside',
+                label: 'Smoking outside',
+                icon: Cigarette,
+                value: formatTagValue(tags['smoking:outside'])
+            },
+            {
+                key: 'bar',
+                label: 'Bar',
+                icon: Beer,
+                value: formatTagValue(tags.bar)
+            },
+            {
+                key: 'alcohol',
+                label: 'Alcohol',
+                icon: Beer,
+                value: formatTagValue(tags.alcohol)
+            },
+            {
+                key: 'cocktails',
+                label: 'Cocktails',
+                icon: Beer,
+                value: formatTagValue(tags.cocktails)
+            },
+            {
+                key: 'brewery',
+                label: 'Brewery',
+                icon: Beer,
+                value: humanize(tags.brewery ?? '')
+            },
+            {
+                key: 'microbrewery',
+                label: 'Microbrewery',
+                icon: Beer,
+                value: formatTagValue(tags.microbrewery)
+            },
+            {
+                key: 'live_music',
+                label: 'Live music',
+                icon: Music,
+                value: formatTagValue(tags.live_music)
+            },
+            {
+                key: 'tv',
+                label: 'TV',
+                icon: Music,
+                value: formatTagValue(tags.tv)
+            }
+        ].filter((item) => tags[item.key] !== undefined)
+    );
 
-    const rawTagEntries = $derived(Object.entries(restaurantData.tags));
-    const paymentMethods = getPaymentMethods(restaurantData.tags);
-    const dogPolicy: DogPolicy = parseDogPolicy(restaurantData.tags['dog']);
+    const paymentMethods: DetailItem[] = $derived(
+        Object.entries(tags)
+            .filter(([key]) => key.startsWith('payment:'))
+            .map(([key, value]) => formatPaymentMethod(key, value))
+    );
+
+    const contactItems = $derived(
+        [
+            {
+                key: 'phone',
+                label: 'Phone',
+                icon: Phone,
+                value: tags.phone ?? tags['contact:phone'],
+                href: tags.phone
+                    ? `tel:${tags.phone}`
+                    : tags['contact:phone']
+                        ? `tel:${tags['contact:phone']}`
+                        : undefined
+            },
+            {
+                key: 'mobile',
+                label: 'Mobile',
+                icon: Phone,
+                value: tags['contact:mobile'],
+                href: tags['contact:mobile']
+                    ? `tel:${tags['contact:mobile']}`
+                    : undefined
+            },
+            {
+                key: 'email',
+                label: 'Email',
+                icon: Mail,
+                value: tags.email ?? tags['contact:email'],
+                href: tags.email
+                    ? `mailto:${tags.email}`
+                    : tags['contact:email']
+                        ? `mailto:${tags['contact:email']}`
+                        : undefined
+            },
+            {
+                key: 'website',
+                label: 'Website',
+                icon: Globe,
+                value: tags.website ?? tags['contact:website'],
+                href:
+                    tags.website || tags['contact:website']
+                        ? normalizeUrl(tags.website ?? tags['contact:website'])
+                        : undefined
+            },
+            {
+                key: 'facebook',
+                label: 'Facebook',
+                icon: Globe,
+                value: tags.facebook ?? tags['contact:facebook'],
+                href:
+                    tags.facebook || tags['contact:facebook']
+                        ? normalizeUrl(
+                            tags.facebook ?? tags['contact:facebook']
+                        )
+                        : undefined
+            },
+            {
+                key: 'instagram',
+                label: 'Instagram',
+                icon: Globe,
+                value: tags.instagram ?? tags['contact:instagram'],
+                href:
+                    tags.instagram || tags['contact:instagram']
+                        ? normalizeUrl(
+                            tags.instagram ?? tags['contact:instagram']
+                        )
+                        : undefined
+            }
+        ].filter((item) => item.value)
+    );
+
+    const identityItems = $derived(
+        [
+            { label: 'Brand', value: tags.brand },
+            { label: 'Branch', value: tags.branch },
+            { label: 'Operator', value: tags.operator },
+            {
+                label: 'Floor',
+                value: tags.level ? `Level ${tags.level}` : null
+            },
+            { label: 'Started', value: tags.start_date }
+        ].filter((item) => item.value)
+    );
+
+    const noteItems = $derived(
+        [
+            tags['description:en'] ?? tags.description,
+            tags.note,
+            tags.fixme
+        ].filter(Boolean)
+    );
+
+    const formattedHours = $derived(
+        tags.opening_hours ? parseHours(tags.opening_hours) : []
+    );
+
+    const breakfastHours = $derived(
+        tags.breakfast && tags.breakfast.includes(':')
+            ? parseHours(tags.breakfast)
+            : []
+    );
+
+    const happyHours = $derived(
+        tags.happy_hours && tags.happy_hours.includes(':')
+            ? parseHours(tags.happy_hours)
+            : []
+    );
+
+    const rawTagEntries = $derived(Object.entries(tags));
 </script>
 
-<Card.Root class="shrink-0">
-    <Card.Content>
-        <dl class="text-muted-foreground flex flex-col gap-3">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:gap-4 ">
-                <dt class="font-medium text-foreground shrink-0">Opening hours</dt>
-                {#if formattedHours.length > 0}
-                    <div class="space-y-2 bg-muted/30 p-3 rounded-md">
-                        {#each formattedHours as { days, times }}
-                            <div
-                                class="flex items-start justify-between text-sm border-b border-border/40 pb-2 last:border-0 last:pb-0 gap-4">
-                                <span class="font-medium text-foreground">{days}</span>
-                                <span class="text-muted-foreground text-right">{times}</span>
-                            </div>
-                        {/each}
-                    </div>
-                {:else}
-                    <p class="text-sm text-muted-foreground">Hours not available</p>
+{#snippet sectionHeading(icon: any, label: string)}
+    {@const Icon = icon}
+    <h2
+        class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground"
+    >
+        <Icon class="h-3.5 w-3.5" />
+        {label}
+    </h2>
+{/snippet}
+
+{#snippet statusIcon(value: TagValue)}
+    {@const state = boolIcon(value)}
+    {@const Icon = state.icon}
+    <Icon class={`h-4 w-4 shrink-0 ${state.className}`} />
+{/snippet}
+
+{#snippet detailRow(item: DetailItem)}
+    {@const Icon = item.icon}
+    <div
+        class="flex items-start gap-3 rounded-md border border-border/60 bg-muted/25 p-3"
+    >
+        <Icon class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+        <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+                <p class="text-sm font-medium text-foreground">{item.label}</p>
+                {#if item.value}
+                    <p class="text-sm text-muted-foreground text-right">
+                        {item.value}
+                    </p>
                 {/if}
             </div>
-
-            <dt class="font-medium text-foreground">Contacts</dt>
-            <dd>
-                <dl class="grid gap-3">
-                    {#if restaurantData.tags.phone}
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:gap-4">
-                            <dt class="text-muted-foreground shrink-0">Phone</dt>
-                            <dd class="text-foreground sm:text-right">
-                                <a
-                                    href={`tel:${restaurantData.tags.phone}`}
-                                    class="text-primary underline-offset-4 hover:underline">
-                                    {restaurantData.tags.phone}
-                                </a>
-                            </dd>
-                        </div>
-                    {/if}
-
-                    {#if restaurantData.tags.website}
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:gap-4">
-                            <dt class="text-muted-foreground shrink-0">Website:</dt>
-                            <dd class="sm:text-right overflow-hidden text-ellipsis whitespace-nowrap">
-                                <a
-                                    href={restaurantData.tags.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-primary underline-offset-4 hover:underline"
-                                >
-                                    {restaurantData.tags.website}
-                                </a>
-                            </dd>
-                        </div>
-                    {/if}
-
-                    {#if restaurantData.tags.email}
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:gap-4">
-                            <dt class="text-muted-foreground shrink-0">Email:</dt>
-                            <dd class="sm:text-right overflow-hidden text-ellipsis whitespace-nowrap">
-                                <a
-                                    href={`mailto:${restaurantData.tags.email}`}
-                                    class="text-primary underline-offset-4 hover:underline">
-                                    {restaurantData.tags.email}
-                                </a>
-                            </dd>
-                        </div>
-                    {/if}
-
-                    {#if restaurantData.tags.facebook}
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:gap-4">
-                            <dt class="text-muted-foreground shrink-0">Email:</dt>
-                            <dd class="sm:text-right overflow-hidden text-ellipsis whitespace-nowrap">
-                                <a
-                                    href={restaurantData.tags.facebook}
-                                    class="text-primary underline-offset-4 hover:underline">
-                                    Facebook
-                                </a>
-                            </dd>
-                        </div>
-                    {/if}
-                </dl>
-            </dd>
-
-            <dt class="font-medium text-foreground">Dietary</dt>
-            <dd>
-                <dl class="grid gap-3">
-                    {#if restaurantData.tags.cuisine}
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:gap-4">
-                            <dt class="text-muted-foreground shrink-0">Cuisine:</dt>
-
-                            <dd class="sm:text-right overflow-hidden text-ellipsis whitespace-nowrap">
-                                <ul>
-                                    {#each restaurantData.tags.cuisine.split(';') as cuisine, i(cuisine + i)}
-                                        <li>{cuisine}</li>
-                                    {/each}
-                                </ul>
-                            </dd>
-                        </div>
-                    {/if}
-                </dl>
-            </dd>
-
-            <dt class="font-semibold text-foreground">Features & accessibility</dt>
-            <dd>
-                <ul class="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    {#if restaurantData.tags.takeaway === 'yes'}
-                        <li class="bg-muted px-2 py-1 rounded-md">Takeaway</li>
-                    {/if}
-                    {#if restaurantData.tags.delivery === 'yes'}
-                        <li class="bg-muted px-2 py-1 rounded-md">Delivery</li>
-                    {/if}
-                    {#if restaurantData.tags.outdoor_seating === 'yes'}
-                        <li class="bg-muted px-2 py-1 rounded-md">Outdoor Seating</li>
-                    {/if}
-                    {#if restaurantData.tags.wheelchair === 'yes'}
-                        <li class="bg-muted px-2 py-1 rounded-md">Wheelchair Accessible</li>
-                    {/if}
-                </ul>
-            </dd>
-
-            {#if paymentMethods.length > 0}
-                <dt class="font-semibold text-foreground mb-1">Payment</dt>
-                <dd>
-                    <dl class="grid sm:grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-                        {#each paymentMethods as method, i(method.label + i)}
-                            <dt class="text-muted-foreground">{method.label}</dt>
-                            <dd class="text-foreground sm:text-right">
-                    <span class={method.value === 'Not accepted' ? 'text-destructive' : ''}>
-                        {method.value}
-                    </span>
-                            </dd>
-                        {/each}
-                    </dl>
-                </dd>
+            {#if item.note}
+                <p class="mt-1 text-xs text-muted-foreground">{item.note}</p>
             {/if}
+        </div>
+    </div>
+{/snippet}
 
-            {#if restaurantData.tags.description}
-                <dt class="font-semibold text-foreground mb-1">Notes</dt>
-                <dd>{restaurantData.tags.description}</dd>
-            {/if}
-
-            {#if dogPolicy.allowed !== null}
-                <dt class="font-semibold text-foreground mb-1 mt-4 border-t pt-4">Pets</dt>
-                <dd>
-                    <dl class="grid sm:grid-cols-[auto_1fr] gap-x-4 gap-y-1 items-center">
-                        <dt class="text-muted-foreground">Dogs</dt>
-
-                        <dd class="text-foreground sm:text-right flex items-center justify-end gap-2">
-                            {#if dogPolicy.iconUrl}
-                                <img
-                                    src={dogPolicy.iconUrl}
-                                    alt={dogPolicy.label}
-                                    class="w-5 h-5 object-contain"
-                                    aria-hidden="true"
-                                />
-                            {/if}
-
-                            <span class={
-                    dogPolicy.allowed === false ? 'text-destructive' :
-                    dogPolicy.allowed === true ? 'text-green-600 dark:text-green-400' :
-                    'text-amber-600 dark:text-amber-400'
-                }>
-                    {dogPolicy.label}
+{#snippet hoursList(hours: ReturnType<typeof parseHours>)}
+    <div class="space-y-1.5 rounded-md bg-muted/30 p-3">
+        {#each hours as { days, times, isOff } (days + times)}
+            <div class="flex justify-between gap-4 text-sm">
+                <span class="font-medium text-foreground">{days}</span>
+                <span
+                    class={isOff
+                        ? 'text-destructive'
+                        : 'text-muted-foreground text-right'}
+                >
+                    {times}
                 </span>
-                        </dd>
-                    </dl>
-                </dd>
+            </div>
+        {/each}
+    </div>
+{/snippet}
+
+<Card.Root class="shrink-0 overflow-hidden">
+    <Card.Content class="grid gap-5">
+        {#if amenityType || cuisines.length > 0 || tags.stars || tags.michelin_guide}
+            <section class="grid gap-3">
+                {@render sectionHeading(UtensilsCrossed, 'Details')}
+
+                <div class="flex flex-row flex-wrap gap-1.5">
+                    {#if amenityType}
+                        <Badge variant="outline" class="gap-1 capitalize">
+                            <AmenityIcon class="h-3 w-3" />
+                            {humanize(amenityType)}
+                        </Badge>
+                    {/if}
+
+                    {#each cuisines as cuisine (cuisine)}
+                        <Badge variant="secondary" class="capitalize">
+                            {humanize(cuisine)}
+                        </Badge>
+                    {/each}
+
+                    {#if tags.stars}
+                        <Badge variant="outline" class="gap-1">
+                            <Star class="h-3 w-3 fill-amber-400 text-amber-400" />
+                            {tags.stars} stars
+                        </Badge>
+                    {/if}
+
+                    {#if tags.michelin_guide}
+                        <Badge
+                            variant="outline"
+                            class="border-red-500/40 text-red-700 dark:text-red-300"
+                        >
+                            Michelin {formatTagValue(tags.michelin_guide)}
+                        </Badge>
+                    {/if}
+                </div>
+            </section>
+        {/if}
+
+        <section class="grid gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                {@render sectionHeading(Clock, 'Hours')}
+                <OpeningBadge hoursString={tags.opening_hours} />
+            </div>
+
+            {#if formattedHours.length > 0}
+                {@render hoursList(formattedHours)}
+            {:else}
+                <p class="text-sm text-muted-foreground">Hours not available</p>
             {/if}
-        </dl>
+
+            {#if breakfastHours.length > 0 || happyHours.length > 0}
+                <div class="grid gap-3 sm:grid-cols-2">
+                    {#if breakfastHours.length > 0}
+                        <div class="grid gap-2">
+                            <p
+                                class="text-xs font-medium text-muted-foreground"
+                            >
+                                Breakfast
+                            </p>
+                            {@render hoursList(breakfastHours)}
+                        </div>
+                    {/if}
+
+                    {#if happyHours.length > 0}
+                        <div class="grid gap-2">
+                            <p
+                                class="text-xs font-medium text-muted-foreground"
+                            >
+                                Happy hours
+                            </p>
+                            {@render hoursList(happyHours)}
+                        </div>
+                    {/if}
+                </div>
+            {/if}
+        </section>
+
+        {#if dietItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(UtensilsCrossed, 'Dietary')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each dietItems as item (item.key)}
+                        <div
+                            class="flex items-center gap-2 rounded-md border border-border/60 bg-muted/25 p-3 text-sm"
+                        >
+                            {@render statusIcon(tags[item.key])}
+                            <span class="font-medium">{item.label}</span>
+                            <span class="ml-auto text-muted-foreground">
+                                {formatTagValue(tags[item.key])}
+                            </span>
+                        </div>
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if contactItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(Phone, 'Contact')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each contactItems as item (item.key)}
+                        {@const Icon = item.icon}
+                        <div
+                            class="flex items-start gap-3 rounded-md border border-border/60 bg-muted/25 p-3"
+                        >
+                            <Icon
+                                class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                            />
+                            <div class="min-w-0">
+                                <p class="text-xs text-muted-foreground">
+                                    {item.label}
+                                </p>
+                                <a
+                                    href={item.href}
+                                    target={item.href?.startsWith('http')
+                                        ? '_blank'
+                                        : undefined}
+                                    rel={item.href?.startsWith('http')
+                                        ? 'noopener noreferrer'
+                                        : undefined}
+                                    class="block truncate text-sm font-medium text-primary underline-offset-4 hover:underline"
+                                >
+                                    {item.value}
+                                </a>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if identityItems.length > 0 || tags['addr:full']}
+            <section class="grid gap-3">
+                {@render sectionHeading(Info, 'Identity')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each identityItems as item (item.label)}
+                        <div
+                            class="flex items-start justify-between gap-3 rounded-md border border-border/60 bg-muted/25 p-3"
+                        >
+                            <p class="text-sm text-muted-foreground">
+                                {item.label}
+                            </p>
+                            <p
+                                class="text-right text-sm font-medium text-foreground"
+                            >
+                                {item.value}
+                            </p>
+                        </div>
+                    {/each}
+
+                    {#if tags['addr:full']}
+                        <div
+                            class="rounded-md border border-border/60 bg-muted/25 p-3 sm:col-span-2"
+                        >
+                            <p class="text-sm text-muted-foreground">Address</p>
+                            <p class="text-sm font-medium text-foreground">
+                                {tags['addr:full']}
+                            </p>
+                        </div>
+                    {/if}
+                </div>
+            </section>
+        {/if}
+
+        {#if foodOptionItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(UtensilsCrossed, 'Food options')}
+                <div class="flex flex-wrap gap-2">
+                    {#each foodOptionItems as item (item.key)}
+                        <Badge variant="outline">
+                            {item.label}: {formatTagValue(tags[item.key])}
+                        </Badge>
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if serviceItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(ShoppingBag, 'Service')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each serviceItems as item (item.key)}
+                        {@render detailRow(item)}
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if facilityItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(Accessibility, 'Facilities')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each facilityItems as item (item.key)}
+                        {@render detailRow(item)}
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if atmosphereItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(Music, 'Atmosphere')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each atmosphereItems as item (item.key)}
+                        {@render detailRow(item)}
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if paymentMethods.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(CreditCard, 'Payment')}
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {#each paymentMethods as method (method.key)}
+                        {@const Icon = method.icon}
+                        <div
+                            class="flex items-center gap-2 rounded-md border border-border/60 bg-muted/25 p-3 text-sm"
+                        >
+                            {@render statusIcon(tags[method.key])}
+                            <Icon
+                                class="h-4 w-4 shrink-0 text-muted-foreground"
+                            />
+                            <span class="font-medium">{method.label}</span>
+                            <span
+                                class={method.value === 'Not accepted'
+                                    ? 'ml-auto text-destructive'
+                                    : 'ml-auto text-muted-foreground'}
+                            >
+                                {method.value}
+                            </span>
+                        </div>
+                    {/each}
+                </div>
+            </section>
+        {/if}
+
+        {#if noteItems.length > 0}
+            <section class="grid gap-3">
+                {@render sectionHeading(Info, 'Notes')}
+
+                <div class="grid gap-2">
+                    {#each noteItems as note (note)}
+                        <p
+                            class="rounded-md border border-border/60 bg-muted/25 p-3 text-sm text-muted-foreground"
+                        >
+                            {note}
+                        </p>
+                    {/each}
+                </div>
+            </section>
+        {/if}
     </Card.Content>
 
-    <Card.Footer>
+    <Card.Footer class="border-t">
         <details class="group w-full">
             <summary
-                class=" text-xs font-semibold uppercase tracking-widest text-muted-foreground cursor-pointer select-none flex items-center gap-1.5 hover:text-foreground transition-colors list-none">
+                class="flex cursor-pointer list-none items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
+            >
                 <Hash class="h-3.5 w-3.5" />
                 All OSM Tags ({rawTagEntries.length})
-                <span class="ml-auto text-xs normal-case font-normal group-open:hidden">Show</span>
-                <span class="ml-auto text-xs normal-case font-normal hidden group-open:inline">Hide</span>
+
+                <span
+                    class="ml-auto text-xs font-normal normal-case group-open:hidden"
+                >
+                    Show
+                </span>
+                <span
+                    class="ml-auto hidden text-xs font-normal normal-case group-open:inline"
+                >
+                    Hide
+                </span>
             </summary>
 
-            <div class="pt-3 space-y-0.5 font-mono text-xs">
-                {#each rawTagEntries as [k, v] (k)}
-                    <div class="flex justify-between py-1 border-b border-border/30 last:border-0">
-                        <span class="text-muted-foreground shrink-0 w-48 truncate">{k}</span>
-                        <span class="text-foreground break-all">{v}</span>
+            <div class="pt-3 font-mono text-xs">
+                {#each rawTagEntries as [key, value] (key)}
+                    <div
+                        class="grid grid-cols-[minmax(8rem,12rem)_1fr] gap-3 border-b border-border/30 py-1 last:border-0"
+                    >
+                        <span class="truncate text-muted-foreground">{key}</span
+                        >
+                        <span class="break-all text-foreground">{value}</span>
                     </div>
                 {/each}
             </div>
