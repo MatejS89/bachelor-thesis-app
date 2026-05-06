@@ -1,34 +1,32 @@
-<script lang="ts" module>
-    import * as ToggleGroup from '@/components/ui/toggle-group/index';
-    import FullScreenLayout from '@/layouts/FullScreenLayout.svelte';
-    import MapLayout from '@/layouts/MapLayout.svelte';
-    import { store } from '@/routes/map/menuitem';
-
-    export const layout = [FullScreenLayout, MapLayout];
-</script>
-
 <script lang="ts">
-    import { useForm } from '@inertiajs/svelte';
+    import { Link, useForm } from '@inertiajs/svelte';
     import { ArrowLeft } from 'lucide-svelte';
-    import { Button } from '@/components/ui/button';
+    import { Button, buttonVariants } from '@/components/ui/button';
     import * as Card from '@/components/ui/card';
     import * as Field from '@/components/ui/field/index';
     import { Input } from '@/components/ui/input';
     import { Textarea } from '@/components/ui/textarea';
+    import * as ToggleGroup from '@/components/ui/toggle-group/index';
     import UploadSinglePhotoContainer from '@/components/UploadSinglePhotoContainer.svelte';
+    import { show } from '@/routes/map';
+    import { store } from '@/routes/map/menuitem';
 
-    let { allergens, dietaryTags, osmData }: {
-        allergens: App.Data.AllergenData[],
-        dietaryTags: App.Data.DietaryTagData[],
-        osmData: App.Data.OsmFeatureData
+    let {
+        allergens,
+        dietaryTags,
+        osmData
+    }: {
+        allergens: App.Data.AllergenData[];
+        dietaryTags: App.Data.DietaryTagData[];
+        osmData: App.Data.OsmData.OsmFeatureData;
     } = $props();
 
     const form = useForm<{
-        name: string
-        description: string
-        dietary_tags: string[]
-        allergens: string[],
-        photo: File | null
+        name: string;
+        description: string;
+        dietary_tags: string[];
+        allergens: string[];
+        photo: File | null;
     }>({
         name: '',
         description: '',
@@ -48,11 +46,21 @@
 
 <div class="p-4">
     <div class="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onclick={() => window.history.back()}>
-            <ArrowLeft class="w-5 h-5" />
-        </Button>
+        <Link
+            class={buttonVariants({
+                variant: 'ghost',
+                size: 'icon',
+                class: 'self-center',
+            })}
+            href={show(osmData)}
+        >
+            <ArrowLeft class="w-6 h-6" />
+        </Link>
+
         <div>
-            <h1 class="text-2xl font-bold tracking-tight">Add Menu Item to {osmData.name}</h1>
+            <h1 class="text-2xl font-bold tracking-tight">
+                Add Menu Item to {osmData.name}
+            </h1>
         </div>
     </div>
 
@@ -63,7 +71,12 @@
                     <Card.Content>
                         <Field.Group>
                             <Field.Field>
-                                <Field.Label for="menu-item-name" data-invalid={form.errors.name ? true : undefined}>
+                                <Field.Label
+                                    for="menu-item-name"
+                                    data-invalid={form.errors.name
+                                        ? true
+                                        : undefined}
+                                >
                                     Item name
                                 </Field.Label>
 
@@ -73,18 +86,24 @@
                                     onblur={() => form.validate('name')}
                                     placeholder="e.g. Truffle Parmesan Fries"
                                     disabled={form.processing}
-                                    required
-                                    aria-invalid={form.errors.name ? true : undefined}
+                                    aria-invalid={form.errors.name
+                                        ? true
+                                        : undefined}
                                 />
 
                                 {#if form.errors.name}
-                                    <Field.Error>{form.errors.name}</Field.Error>
+                                    <Field.Error>{form.errors.name}</Field.Error
+                                    >
                                 {/if}
                             </Field.Field>
 
                             <Field.Field>
-                                <Field.Label for="menu-item-description"
-                                             data-invalid={form.errors.name ? true : undefined}>
+                                <Field.Label
+                                    for="menu-item-description"
+                                    data-invalid={form.errors.description
+                                        ? true
+                                        : undefined}
+                                >
                                     Description
                                 </Field.Label>
 
@@ -98,7 +117,9 @@
                                 />
 
                                 {#if form.errors.description}
-                                    <Field.Error>{form.errors.description}</Field.Error>
+                                    <Field.Error
+                                    >{form.errors.description}</Field.Error
+                                    >
                                 {/if}
                             </Field.Field>
                         </Field.Group>
@@ -109,7 +130,7 @@
                     <Card.Content class="space-y-8">
                         <Field.Group>
                             <Field.Field>
-                                <Field.Label>Dietary Attributes</Field.Label>
+                                <Field.Legend variant="label">Dietary Attributes</Field.Legend>
                                 <ToggleGroup.Root
                                     type="multiple"
                                     bind:value={form.dietary_tags}
@@ -131,8 +152,11 @@
                                 </ToggleGroup.Root>
                             </Field.Field>
 
-                            <Field.Field>
-                                <Field.Label>Allergens</Field.Label>
+                            <Field.Set>
+                                <Field.Legend variant="label"
+                                >Allergens
+                                </Field.Legend
+                                >
 
                                 <ToggleGroup.Root
                                     type="multiple"
@@ -151,7 +175,7 @@
                                         </ToggleGroup.Item>
                                     {/each}
                                 </ToggleGroup.Root>
-                            </Field.Field>
+                            </Field.Set>
                         </Field.Group>
                     </Card.Content>
                 </Card.Root>
@@ -161,18 +185,17 @@
                         <UploadSinglePhotoContainer
                             bind:file={form.photo}
                             invalid={form.errors.photo}
-                            disabled={form.processing || form.errors.photo ? true : undefined}
+                            disabled={form.processing}
                             maxSizeMB={5}
-                            onReject={(message) => form.setError('photo', message)}
+                            onReject={(message) =>
+                                form.setError('photo', message)}
                         />
                     </Card.Content>
                 </Card.Root>
             </Field.Set>
 
             <Field.Field>
-                <Button type="submit"
-                        disabled={form.processing || Object.keys(form.errors).length > 0 ? true : undefined}>Submit
-                </Button>
+                <Button type="submit" disabled={form.processing}>Submit</Button>
             </Field.Field>
         </Field.Group>
     </form>

@@ -17,7 +17,14 @@ createInertiaApp({
         return pages[`./pages/${name}.svelte`] as never;
     },
     layout: (name) => {
-        if (name.startsWith('map') || name.startsWith('review')) {
+        console.log(name);
+
+        if (
+            name.startsWith('map') ||
+            name.startsWith('review') ||
+            name.startsWith('menuItem') ||
+            name.startsWith('osmData')
+        ) {
             return [FullScreenLayout, MapLayout];
         }
 
