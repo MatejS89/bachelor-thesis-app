@@ -10,7 +10,7 @@
         disabled = false,
         maxSizeMB = 5,
         accept = 'image/jpeg, image/png, image/webp',
-        onReject
+        onReject,
     }: {
         file: File | null;
         invalid?: string;
@@ -67,10 +67,17 @@
     <Field.Label for="photo">Photo</Field.Label>
 
     {#if previewUrl}
-        <div class="group relative aspect-4/3 max-h-60 overflow-hidden rounded-lg border bg-muted">
-            <img src={previewUrl} alt="Upload preview" class="h-full w-full object-cover" />
+        <div
+            class="group relative aspect-4/3 max-h-60 overflow-hidden rounded-lg border bg-muted"
+        >
+            <img
+                src={previewUrl}
+                alt="Upload preview"
+                class="h-full w-full object-cover"
+            />
             <div
-                class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100"
+            >
                 <Button
                     type="button"
                     variant="destructive"
@@ -90,9 +97,7 @@
                 <ImagePlus />
             </Empty.Media>
 
-            <Empty.Title>
-                No photo added
-            </Empty.Title>
+            <Empty.Title>No photo added</Empty.Title>
 
             <Empty.Content>
                 <Button
@@ -100,7 +105,8 @@
                     size="sm"
                     type="button"
                     onclick={() => fileInput?.click()}
-                    {disabled}>
+                    {disabled}
+                >
                     Add photo
                 </Button>
             </Empty.Content>
