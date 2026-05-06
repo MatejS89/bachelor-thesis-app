@@ -7,9 +7,12 @@
     import * as Empty from '@/components/ui/empty/index';
     import { create as createMenuItem } from '@/routes/map/menuitem';
 
-    let { menuItems, restaurantData }: {
-        menuItems: App.Data.MenuItemData[],
-        restaurantData: App.Data.OsmFeatureData
+    let {
+        menuItems,
+        restaurantData,
+    }: {
+        menuItems: App.Data.MenuItemData[];
+        restaurantData: App.Data.OsmFeatureData;
     } = $props();
 
     let allergens = page.props.query?.allergens ?? [];
@@ -24,9 +27,7 @@
         {#if menuItems.length > 0}
             <ul class="flex flex-col gap-4">
                 {#each menuItems as menuItem (menuItem.id)}
-                    <li>
-                        <MenuItemCard {allergens} {menuItem} />
-                    </li>
+                    <MenuItemCard {allergens} {menuItem} />
                 {/each}
             </ul>
         {:else}
