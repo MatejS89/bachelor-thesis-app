@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\OsmData;
 
+use App\Data\PhotoData;
 use App\Models\OsmData;
 use Illuminate\Support\Collection;
 use MatanYadaev\EloquentSpatial\Objects\Point;
