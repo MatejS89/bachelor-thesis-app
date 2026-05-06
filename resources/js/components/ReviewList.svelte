@@ -5,12 +5,16 @@
     import * as Card from '@/components/ui/card/index';
     import * as Carousel from '@/components/ui/carousel/index';
     import * as Empty from '@/components/ui/empty/index';
+    import { Separator } from '@/components/ui/separator';
     import { create as createReview } from '@/routes/map/review';
     import formatLocal from '@/utils/format-date';
 
-    let { restaurantData, reviews }: {
-        restaurantData: App.Data.OsmFeatureData,
-        reviews: App.Data.ReviewData[]
+    let {
+        restaurantData,
+        reviews,
+    }: {
+        restaurantData: App.Data.OsmFeatureData;
+        reviews: App.Data.ReviewData[];
     } = $props();
 </script>
 
@@ -21,34 +25,46 @@
 
     <Card.Content>
         {#if reviews.length > 0}
-            {#each reviews as review (review.id)}
-                <div class="border-b border-border/50 pb-6 last:border-0 last:pb-0">
+            {#each reviews as review, i (review.id)}
+                <article class="flex flex-col gap-1">
                     <div class="flex items-center justify-between mb-1">
-                        <span class="font-medium text-foreground">{review?.user?.name}</span>
-                        <span
-                            class="text-sm text-muted-foreground">{formatLocal(review.created_at)}</span>
+                        <span class="text-sm lg:text-base text-foreground"
+                            >{review?.user?.name}</span
+                        >
+                        <time
+                            class="text-sm datetime={review.created_at} text-muted-foreground"
+                            >{formatLocal(review.created_at)}</time
+                        >
                     </div>
                     <div class="flex items-center gap-0.5 text-yellow-500 mb-2">
-                        {#each Array(5) as _, i(i)}
+                        {#each Array(5) as _, i (i)}
                             <Star
-                                class="h-4 w-4 {i < review.rating ? 'fill-yellow-500' : 'text-muted/50 fill-muted/50'}"
+                                class="h-4 w-4 {i < review.rating
+                                    ? 'fill-yellow-500'
+                                    : 'text-muted/50 fill-muted/50'}"
                             />
                         {/each}
                     </div>
-                    <p class="text-sm text-foreground/90">{review.description}</p>
+
+                    <p class="text-sm text-foreground/90">
+                        {review.description}
+                    </p>
 
                     {#if review.photos && review.photos.length > 0}
-                        <div class="mt-4 px-8 sm:px-10 w-full">
-                            <Carousel.Root class="w-full">
+                        <figure class="mt-4 px-8 sm:px-10 w-full">
+                            <Carousel.Root>
                                 <Carousel.Content class="-ml-2 md:-ml-4">
                                     {#each review.photos as photo, j (photo.id)}
-                                        <Carousel.Item class="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 md:basis-1/3">
-                                            <div class="overflow-hidden rounded-md border bg-muted">
+                                        <Carousel.Item
+                                            class="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 md:basis-1/3"
+                                        >
+                                            <div
+                                                class="overflow-hidden rounded-md border bg-muted"
+                                            >
                                                 <img
                                                     src={photo.url}
                                                     alt="Review photo {j + 1}"
                                                     loading="lazy"
-                                                    decoding="async"
                                                     class="h-32 w-full object-cover"
                                                 />
                                             </div>
@@ -59,11 +75,14 @@
                                 <Carousel.Previous />
                                 <Carousel.Next />
                             </Carousel.Root>
-                        </div>
+                        </figure>
                     {/if}
-                </div>
-            {/each}
+                </article>
 
+                {#if i < reviews.length - 1}
+                    <Separator class="my-3" />
+                {/if}
+            {/each}
         {:else}
             <Empty.Root>
                 <Empty.Header>
