@@ -13,9 +13,9 @@
         invalid = false,
         disabled = false
     }: {
-        items: ImageItem[],
-        invalid?: boolean,
-        disabled?: boolean
+        items: ImageItem[];
+        invalid?: boolean;
+        disabled?: boolean;
     } = $props();
 
     let fileInput = $state<HTMLInputElement | null>(null);
@@ -39,13 +39,17 @@
         const target = e.target as HTMLInputElement;
 
         if (target.files) {
-            const validFiles = Array.from(target.files).filter(file => file.type.startsWith('image/'));
-            const newItems = validFiles.map(file => ({
+            const validFiles = Array.from(target.files).filter((file) =>
+                file.type.startsWith('image/')
+            );
+
+            const newItems = validFiles.map((file) => ({
                 id: crypto.randomUUID(),
                 file: file,
                 url: URL.createObjectURL(file),
                 isExisting: false
             }));
+
             items = [...items, ...newItems];
         }
 
@@ -53,13 +57,13 @@
     }
 
     function removePhoto(id: string) {
-        const itemToRemove = items.find(i => i.id === id);
+        const itemToRemove = items.find((i) => i.id === id);
 
         if (itemToRemove) {
             URL.revokeObjectURL(itemToRemove.url);
         }
 
-        items = items.filter(i => i.id !== id);
+        items = items.filter((i) => i.id !== id);
     }
 </script>
 
@@ -93,14 +97,18 @@
         {disabled}
     />
 
-    <div class={
-        "relative rounded-md border p-4 transition-colors " +
-        (invalid ? "border-destructive/50 bg-destructive/5 " : "border-input bg-transparent ") +
-        (items.length === 0 ? "border-dashed" : "")
-    }>
+    <div
+        class={'relative rounded-md border p-4 transition-colors ' +
+            (invalid
+                ? 'border-destructive/50 bg-destructive/5 '
+                : 'border-input bg-transparent ') +
+            (items.length === 0 ? 'border-dashed' : '')}
+    >
         <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
             {#if items.length > 0}
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                <div
+                    class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                >
                     {#each items as item, index (item.id)}
                         <GridSortableItem
                             id={item.id}
@@ -123,7 +131,9 @@
             <DragOverlay>
                 {#snippet children(source)}
                     {#if source}
-                        {@const draggedItem = items.find((item) => item.id === source.id)}
+                        {@const draggedItem = items.find(
+                            (item) => item.id === source.id,
+                        )}
                         {#if draggedItem}
                             <GridSortableItem
                                 id={draggedItem.id}
@@ -141,7 +151,8 @@
 
     {#if items.length > 0}
         <p class="text-xs text-muted-foreground text-right">
-            {items.length} {items.length === 1 ? 'photo' : 'photos'} attached
+            {items.length}
+            {items.length === 1 ? 'photo' : 'photos'} attached
         </p>
     {/if}
 </Field.Field>
