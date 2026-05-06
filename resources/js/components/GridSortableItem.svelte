@@ -3,12 +3,18 @@
     import { X } from 'lucide-svelte';
     import { Button } from '@/components/ui/button';
 
-    let { id, index, url, onRemove, isOverlay = false }: {
+    let {
+        id,
+        index,
+        url,
+        onRemove,
+        isOverlay = false
+    }: {
         id: string;
-        index: number,
-        url: string,
-        onRemove: () => void
-        isOverlay?: boolean,
+        index: number;
+        url: string;
+        onRemove: () => void;
+        isOverlay?: boolean;
     } = $props();
 
     const sortable = createSortable({
@@ -29,24 +35,28 @@
     <img
         src={url}
         alt="Uploaded preview"
-        class="h-full w-full object-cover rounded-md pointer-events-none {!isOverlay && sortable.isDragging ? 'invisible' : ''}"
+        class="h-full w-full object-cover rounded-md pointer-events-none {!isOverlay &&
+        sortable.isDragging
+            ? 'invisible'
+            : ''}"
     />
 
     {#if !isOverlay && sortable.isDragging}
         <div
-            class="absolute inset-0 flex items-center justify-center rounded-md border-2 border-dashed border-accent bg-accent/50">
-        </div>
+            class="absolute inset-0 flex items-center justify-center rounded-md border-2 border-dashed border-accent bg-accent/50"
+        ></div>
     {/if}
 
     {#if !sortable.isDragging && !isOverlay}
-        <div role="button"
-             tabindex="0"
-             onpointerdown={(e) => e.stopPropagation()}>
-
+        <div
+            role="button"
+            tabindex="0"
+            onpointerdown={(e) => e.stopPropagation()}
+        >
             <Button
                 variant="destructive"
                 type="button"
-                class="absolute -right-2 -top-2 h-6 w-6 rounded-full shadow-md z-10 bg-red-500"
+                class="absolute -right-2 -top-2 h-6 w-6 rounded-full shadow-md z-10 bg-destructive hover:bg-destructive text-destructive-foreground"
                 onclick={onRemove}
                 aria-label="Remove photo"
             >
