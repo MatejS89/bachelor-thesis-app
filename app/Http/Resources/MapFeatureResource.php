@@ -17,6 +17,9 @@ class MapFeatureResource extends JsonResource
                 'name' => $this->name,
                 'total_items_count' => $this->total_items_count,
                 'safe_items_count' => $this->safe_items_count,
+                'opening_hours' => $this->tags['opening_hours'] ?? null,
+                'cuisine' => $this->tags['cuisine'] ?? null,
+                'amenity' => $this->type,
             ],
         ];
     }
