@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '@inertiajs/svelte';
-    import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
+    import { ChevronDown } from 'lucide-svelte';
     import { Button } from '@/components/ui/button';
 
     import * as DropdownMenu from '@/components/ui/dropdown-menu/index';
@@ -11,22 +11,18 @@
     let isMobile = true;
 </script>
 
-<DropdownMenu.Root class="w-full">
+<DropdownMenu.Root>
     <DropdownMenu.Trigger>
         {#snippet child({ props })}
-            <Button
-                {...props}
-            >
+            <Button {...props}>
                 <UserInfo {user} />
-                <ChevronsUpDown class="ml-auto size-4" />
+                <ChevronDown class="ml-auto size-4" />
             </Button>
         {/snippet}
     </DropdownMenu.Trigger>
     <DropdownMenu.Content
         class="w-full min-w-0 rounded-lg"
-        side={!isMobile
-                    ? 'left'
-                    : 'top'}
+        side={!isMobile ? 'left' : 'top'}
         align="end"
         sideOffset={4}
     >
