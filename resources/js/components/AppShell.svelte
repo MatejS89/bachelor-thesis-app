@@ -3,13 +3,15 @@
 
     let {
         class: className = '',
-        children
+        children,
     }: {
         class?: string;
         children?: Snippet;
     } = $props();
 </script>
 
-<div class="flex min-h-dvh h-full lg:h-svh w-full lg:overflow-hidden {className}">
+<div
+    class="flex min-h-svh h-full lg:h-svh w-full lg:overflow-hidden {className}"
+>
     {@render children?.()}
 </div>
