@@ -73,15 +73,6 @@ class OsmDataController extends Controller
 
     public function show(GetIndexOsmDataRequest $request, OsmData $osmData, CreatePolygonFromBBox $createPolygon): Response
     {
-        $filters = $request->except('page');
-
-        $bbox = $createPolygon->handle(
-            $request->input('south'),
-            $request->input('west'),
-            $request->input('north'),
-            $request->input('east')
-        );
-
         $osmData->load('media');
 
         return Inertia::render('map/Show', [
