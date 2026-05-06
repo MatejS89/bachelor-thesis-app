@@ -3,7 +3,7 @@
 
     let {
         class: className = '',
-        children
+        children,
     }: {
         class?: string;
         children?: Snippet;
@@ -11,6 +11,7 @@
 </script>
 
 <main
-    class='mx-auto flex h-full w-full flex-col flex-1 min-h-0 min-w-0 {className}'>
+    class="mx-auto flex h-full w-full flex-col flex-1 min-h-0 min-w-0 {className}"
+>
     {@render children?.()}
 </main>
