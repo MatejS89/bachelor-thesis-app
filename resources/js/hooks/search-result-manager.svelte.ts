@@ -1,14 +1,54 @@
-import type { Point, Feature, Position } from 'geojson';
+import type { BBox, Feature, Point } from 'geojson';
+
+const EXCLUDED_OSM_KEYS = ['amenity'];
+
+type PhotonProps = {
+    osm_id: number;
+    osm_type: string;
+    osm_key?: string;
+    osm_value?: string;
+    name?: string;
+    street?: string;
+    housenumber?: string;
+    postcode?: string;
+    city?: string;
+    district?: string;
+    state?: string;
+    county?: string;
+    country?: string;
+    extent?: [number, number, number, number];
+};
+
+function formatPhotonAddress(props: PhotonProps) {
+    const street = [props.street, props.housenumber].filter(Boolean).join(' ');
+
+    const parts = [
+        props.name,
+        street || null,
+        props.postcode,
+        props.city,
+        props.district,
+        props.county,
+        props.state,
+        props.country,
+    ].filter((p): p is string => Boolean(p));
+
+    const unique = parts.filter((p, i) => p !== parts[i - 1]);
+
+    const name = unique[0] ?? 'Unknown location';
+    const secondary_info = unique.slice(1).join(', ');
+    const display_name = unique.join(', ');
+
+    return { name, secondary_info, display_name };
+}
 
 export class SearchManager {
     query = $state('');
     localResults = $state<Feature[]>([]);
     nominatimResults = $state<Feature[]>([]);
     isSearching = $state(false);
-
-    get showDropdown() {
-        return this.localResults.length > 0 || this.nominatimResults.length > 0;
-    }
+    showDropdown = $state(false);
+    results = $state<Feature[]>([]);
 
     async search(userLocation?: { lat: number; lng: number } | null) {
         const trimmedQuery = this.query.trim();
@@ -21,20 +61,27 @@ export class SearchManager {
 
         this.isSearching = true;
 
-        // if (userLocation) {
-        //     const { lat, lng } = userLocation;
-        //     nominatimQuery = `${trimmedQuery} [${lat}, ${lng}]`;
-        // }
+        const photonParams = new URLSearchParams({
+            q: trimmedQuery,
+            limit: '5',
+            lang: 'en',
+        });
 
-        const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-            trimmedQuery,
-        )}&format=geojson&dedupe=1&polygon_geojson=1&addressdetails=1`;
+        for (const key of EXCLUDED_OSM_KEYS) {
+            photonParams.append('osm_tag', `!${key}`);
+        }
 
+        if (userLocation) {
+            photonParams.set('lat', String(userLocation.lat));
+            photonParams.set('lon', String(userLocation.lng));
+        }
+
+        const photonUrl = `https://photon.komoot.io/api/?${photonParams.toString()}`;
         const localUrl = `/map/search?search=${encodeURIComponent(trimmedQuery)}`;
 
         try {
-            const [nominatimRes, serverRes] = await Promise.all([
-                fetch(nominatimUrl).then((res) => res.json()),
+            const [photonRes, serverRes] = await Promise.all([
+                fetch(photonUrl).then((res) => res.json()),
                 fetch(localUrl).then((res) => res.json()),
             ]);
 
@@ -55,36 +102,42 @@ export class SearchManager {
                 });
             }
 
-            for (const feature of nominatimRes.features || []) {
-                const center: Position = feature.bbox
-                    ? [
-                          feature.bbox[0] +
-                              (feature.bbox[2] - feature.bbox[0]) / 2,
-                          feature.bbox[1] +
-                              (feature.bbox[3] - feature.bbox[1]) / 2,
-                      ]
-                    : feature.geometry.coordinates;
+            for (const feature of photonRes.features || []) {
+                const props = feature.properties as PhotonProps;
 
-                const nameParts = feature.properties.display_name.split(', ');
+                if (
+                    props.osm_key &&
+                    EXCLUDED_OSM_KEYS.includes(props.osm_key)
+                ) {
+                    continue;
+                }
+
+                const ext = props.extent;
+                const bbox: BBox | undefined = ext
+                    ? [ext[0], ext[3], ext[2], ext[1]]
+                    : undefined;
+
+                const { name, secondary_info, display_name } =
+                    formatPhotonAddress(props);
 
                 formattedNominatim.push({
                     type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: center,
-                    },
-                    bbox: feature.bbox,
-                    id: feature.properties.osm_id,
+                    geometry: feature.geometry as Point,
+                    bbox,
+                    id: `${props.osm_type}${props.osm_id}`,
                     properties: {
-                        ...feature.properties,
-                        name: feature.properties.name || nameParts[0],
-                        secondary_info: nameParts.slice(1).join(', '),
+                        ...props,
+                        name,
+                        secondary_info,
+                        display_name,
                     },
                 });
             }
 
             this.localResults = formattedLocal;
             this.nominatimResults = formattedNominatim;
+
+            this.results = [...this.localResults, ...this.nominatimResults];
 
             return [...this.localResults, ...this.nominatimResults];
         } catch (error) {
