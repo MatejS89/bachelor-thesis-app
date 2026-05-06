@@ -24,7 +24,7 @@
     setAppContext({
         mapManager,
         navigationManager,
-        searchManager: new SearchManager()
+        searchManager: new SearchManager(),
     });
 </script>
 
@@ -54,5 +54,5 @@
         {@render children()}
     </section>
 
-    <MapComp bind:showMapOnMobile={showMapOnMobile} />
+    <MapComp bind:showMapOnMobile />
 </div>
