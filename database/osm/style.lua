@@ -7,7 +7,7 @@ local places = osm2pgsql.define_table {
     },
     columns = { {
         column = 'id',
-        sql_type = 'serial PRIMARY KEY',
+        sql_type = 'bigserial PRIMARY KEY',
         create_only = true
     }, {
         column = 'name',
@@ -37,7 +37,24 @@ local get_matching_amenitites = osm2pgsql.make_check_values_func({
     'restaurant'
 })
 
-function process_tags(object, geometry, matched_amenities)
+local excluded_tags = {
+    name = true,
+    amenity = true
+}
+
+local function clean_tags(tags, exclusions)
+    local result = {}
+
+    for k, v in pairs(tags) do
+        if not exclusions[k] then
+            result[k] = v
+        end
+    end
+
+    return result
+end
+
+function process_tags(object, geometry)
     if not geometry then return end
     if not object.tags.name then return end
 
@@ -48,23 +65,23 @@ function process_tags(object, geometry, matched_amenities)
     places:insert({
         name = object.tags.name,
         type = amenity_type,
-        tags = object.tags,
+        tags = clean_tags(object.tags, excluded_tags),
         geom = geometry
     })
 end
 
 function osm2pgsql.process_node(object)
-    process_tags(object, object:as_point(), matched)
+    process_tags(object, object:as_point())
 end
 
 function osm2pgsql.process_way(object)
     if object.is_closed then
-        process_tags(object, object:as_polygon():centroid(), matched)
+        process_tags(object, object:as_polygon():centroid())
     end
 end
 
 function osm2pgsql.process_relation(object)
     if object.tags.type == 'multipolygon' then
-        process_tags(object, object:as_multipolygon():centroid(), matched)
+        process_tags(object, object:as_multipolygon():centroid())
     end
 end
