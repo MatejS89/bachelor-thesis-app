@@ -15,8 +15,7 @@
     let mapManager: MapManager = getAppContext().mapManager;
 
     onMount(() => {
-        mapManager.initialize(
-            mapContainer);
+        requestAnimationFrame(() => mapManager.initialize(mapContainer));
     });
 
     onDestroy(() => {
@@ -25,16 +24,16 @@
 
     let isMobile = $state(new IsMobile());
 
-    function handleSearchThisArea(e: Event) {
+    function handleSearchThisArea(_: Event) {
         mapManager.fetchFeaturesForCurrentBounds();
     }
 </script>
 
-<section bind:this={mapContainer}
-         aria-label="Map View"
-         class="relative flex-1 min-h-0 min-w-0
-    transition-opacity duration-300 ease-in-out h-dvh"
-         class:hidden={isMobile.current && !showMapOnMobile}
+<section
+    bind:this={mapContainer}
+    aria-label="Map View"
+    class="relative flex-1 min-h-0 min-w-0 h-full max-h-dvh {className}"
+    class:hidden={isMobile.current && !showMapOnMobile}
 >
     <nav class="absolute top-2 left-2 flex flex-col gap-2 z-10">
         <Button variant="secondary" onclick={handleSearchThisArea}>
