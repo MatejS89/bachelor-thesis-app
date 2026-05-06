@@ -2,7 +2,10 @@
     import opening_hours from 'opening_hours';
     import { Badge } from '@/components/ui/badge';
 
-    let { hoursString, countryCode = 'cz' }: { hoursString: string | undefined, countryCode?: string } = $props();
+    let {
+        hoursString,
+        countryCode = 'cz'
+    }: { hoursString: string | undefined; countryCode?: string } = $props();
 
     let status = $state<'open' | 'closed' | 'unknown' | 'error'>('unknown');
 
@@ -36,8 +39,11 @@
                     minute: '2-digit'
                 });
 
-                const isToday = nextChange.toDateString() === new Date().toDateString();
-                const dayString = isToday ? '' : ` ${nextChange.toLocaleDateString([], { weekday: 'short' })}`;
+                const isToday =
+                    nextChange.toDateString() === new Date().toDateString();
+                const dayString = isToday
+                    ? ''
+                    : ` ${nextChange.toLocaleDateString([], { weekday: 'short' })}`;
 
                 if (isOpen) {
                     timeDetail = `until ${timeString}${dayString}`;
@@ -47,9 +53,11 @@
             } else {
                 timeDetail = isOpen ? '24/7' : '';
             }
-
         } catch (error) {
-            console.warn(`Failed to parse opening_hours: ${hoursString}`, error);
+            // console.warn(
+            //     `failed to parse ${hoursString}`,
+            //     error,
+            // );
             status = 'error';
         }
     });
@@ -62,10 +70,16 @@
 {:else if status === 'closed'}
     <Badge variant="destructive" class="font-medium">
         Closed
-        {#if timeDetail} <span class="ml-1 opacity-80 font-normal"> • {timeDetail}</span> {/if}
+        {#if timeDetail}
+            <span class="ml-1 opacity-80 font-normal"> • {timeDetail}</span>
+        {/if}
     </Badge>
 {:else if status === 'error'}
-    <Badge variant="outline" class="text-muted-foreground border-dashed" title={hoursString}>
+    <Badge
+        variant="outline"
+        class="text-muted-foreground border-dashed"
+        title={hoursString}
+    >
         Hours format invalid
     </Badge>
 {:else}
