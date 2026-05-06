@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Form } from '@inertiajs/svelte';
+    import { Form, router } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
@@ -17,7 +17,7 @@
     let {
         status = '',
         canResetPassword,
-        canRegister
+        canRegister,
     }: {
         status?: string;
         canResetPassword: boolean;
@@ -40,6 +40,9 @@
     <Form
         {...store.form()}
         resetOnSuccess={['password']}
+        options={{
+            replace: true,
+        }}
         class="flex flex-col gap-6"
     >
         {#snippet children({ errors, processing })}
