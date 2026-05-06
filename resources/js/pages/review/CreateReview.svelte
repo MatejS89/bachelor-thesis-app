@@ -11,19 +11,20 @@
     import { store } from '@/routes/map/review';
     import type { ImageItem } from '@/types/imageitem';
 
-
     const form = useForm<{
-        rating: number
-        description: string
-        photos: ImageItem[]
+        rating: number;
+        description: string;
+        photos: ImageItem[];
     }>({
         rating: 0,
         description: '',
-        photos: []
+        photos: [],
     });
 
-    let { osmData }: {
-        osmData: App.Data.OsmFeatureData
+    let {
+        osmData,
+    }: {
+        osmData: App.Data.OsmFeatureData;
     } = $props();
 
     let hoverRating = $state(0);
@@ -33,46 +34,53 @@
 
         form.transform((data) => ({
             ...data,
-            photos: data.photos.map(item => item.file)
+            photos: data.photos.map((item) => item.file),
         })).submit(store(osmData));
     }
 </script>
 
-
-<div class="p-3 h-full w-full overflow-y-auto lg:p-4 flex flex-col gap-2 md:gap-4">
+<div
+    class="p-3 h-full w-full overflow-y-auto lg:p-4 flex flex-col gap-2 md:gap-4"
+>
     <header>
         <div class="flex items-center gap-4">
             <Link
-                class={buttonVariants({ variant: "ghost", size: 'lg'})}
+                class={buttonVariants({ variant: 'ghost', size: 'lg' })}
                 href={show(osmData)}
             >
                 <ArrowLeft />
             </Link>
             <div>
-                <h1 class="text-3xl font-bold tracking-tight">Add review for {osmData.name}</h1>
+                <h1 class="text-3xl font-bold tracking-tight">
+                    Add review for {osmData.name}
+                </h1>
             </div>
         </div>
     </header>
 
-    <form onsubmit={submitReview} class="flex  flex-col gap-4">
+    <form onsubmit={submitReview} class="flex flex-col gap-4">
         <Field.Set>
             <Card.Root>
                 <Card.Content>
                     <Field.Group>
-                        <Field.Field data-invalid={form.errors.rating ? true : undefined}>
-                            <Field.Label>
-                                Rating
-                            </Field.Label>
+                        <Field.Field
+                            data-invalid={form.errors.rating ? true : undefined}
+                        >
+                            <Field.Label>Rating</Field.Label>
 
                             <div class="flex items-center gap-1">
                                 {#each [1, 2, 3, 4, 5] as star (star)}
                                     <label
                                         class="cursor-pointer p-1 transition-transform hover:scale-110 rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
-                                        onmouseenter={() => (hoverRating = star)}
-                                        onmouseleave={() => (hoverRating = form.rating)}
+                                        onmouseenter={() =>
+                                            (hoverRating = star)}
+                                        onmouseleave={() =>
+                                            (hoverRating = form.rating)}
                                     >
                                         <input
-                                            aria-invalid={form.errors.rating ? true : undefined}
+                                            aria-invalid={form.errors.rating
+                                                ? true
+                                                : undefined}
                                             type="radio"
                                             name="rating"
                                             value={star}
@@ -80,9 +88,10 @@
                                             bind:group={form.rating}
                                         />
                                         <Star
-                                            class="h-8 w-8 transition-colors {star <= (hoverRating || form.rating)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-muted-foreground'}"
+                                            class="h-8 w-8 transition-colors {star <=
+                                            (hoverRating || form.rating)
+                                                ? 'fill-yellow-400 text-yellow-400'
+                                                : 'text-muted-foreground'}"
                                         />
                                     </label>
                                 {/each}
@@ -95,7 +104,11 @@
                             {/if}
                         </Field.Field>
 
-                        <Field.Field data-invalid={form.errors.description ? true : undefined}>
+                        <Field.Field
+                            data-invalid={form.errors.description
+                                ? true
+                                : undefined}
+                        >
                             <Field.Label>Description</Field.Label>
 
                             <Textarea
@@ -104,7 +117,9 @@
                                 bind:value={form.description}
                                 rows={4}
                                 class="resize-none"
-                                aria-invalid={form.errors.description ? true : undefined}
+                                aria-invalid={form.errors.description
+                                    ? true
+                                    : undefined}
                             />
 
                             {#if form.errors.description}
@@ -131,7 +146,12 @@
         </Field.Set>
 
         <Field.Field>
-            <Button type="submit" disabled={(form.processing || form.rating === 0) ? true : undefined}>
+            <Button
+                type="submit"
+                disabled={form.processing || form.rating === 0
+                    ? true
+                    : undefined}
+            >
                 {#if form.processing}
                     <Spinner />
                 {/if}
