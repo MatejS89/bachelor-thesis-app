@@ -13,10 +13,16 @@ import {
     COLOR_CONFIG,
 } from '@/utils/get_color';
 
-const LAYERS = {
+const SOURCES = {
     CUSTOM_FEATURES: 'custom-features',
     SEARCH_RESULTS: 'search-results',
-};
+} as const;
+
+const LAYERS = {
+    CUSTOM_FEATURES_CIRCLES: 'custom-features-layer',
+    CUSTOM_FEATURES_LABELS: 'custom-features-label-layer',
+    SEARCH_RESULTS_CIRCLES: 'search-results-layer',
+} as const;
 
 export class MapManager {
     constructor(onFeatureClick: (id: number) => void) {
@@ -116,8 +122,8 @@ export class MapManager {
 
         this.map.addControl(new FullscreenControl());
 
-        this.attachLayerInteractions(`${LAYERS.CUSTOM_FEATURES}-layer`);
-        this.attachLayerInteractions(`${LAYERS.CUSTOM_FEATURES}-label-layer`);
+        this.attachLayerInteractions(LAYERS.CUSTOM_FEATURES_CIRCLES);
+        this.attachLayerInteractions(LAYERS.CUSTOM_FEATURES_LABELS);
 
         this.fetchFeaturesForCurrentBounds();
     }
@@ -148,11 +154,11 @@ export class MapManager {
     }
 
     toggleCustomFeatures(visible: boolean) {
-        this.setLayerVisibility(`${LAYERS.CUSTOM_FEATURES}-layer`, visible);
+        this.setLayerVisibility(LAYERS.CUSTOM_FEATURES_CIRCLES, visible);
     }
 
     toggleSearchResults(visible: boolean) {
-        this.setLayerVisibility(`${LAYERS.SEARCH_RESULTS}-layer`, visible);
+        this.setLayerVisibility(LAYERS.SEARCH_RESULTS_CIRCLES, visible);
     }
 
     setFeatures(featureCollection: FeatureCollection<Point>) {
@@ -164,13 +170,13 @@ export class MapManager {
 
         const update = () => {
             const source = this.map!.getSource(
-                LAYERS.CUSTOM_FEATURES,
+                SOURCES.CUSTOM_FEATURES,
             ) as maplibregl.GeoJSONSource;
 
             if (source) {
                 source.setData(featureCollection);
             } else {
-                this.map!.addSource(LAYERS.CUSTOM_FEATURES, {
+                this.map!.addSource(SOURCES.CUSTOM_FEATURES, {
                     type: 'geojson',
                     data: featureCollection,
                 });
@@ -181,9 +187,9 @@ export class MapManager {
                 );
 
                 this.map!.addLayer({
-                    id: `${LAYERS.CUSTOM_FEATURES}-layer`,
+                    id: LAYERS.CUSTOM_FEATURES_CIRCLES,
                     type: 'circle',
-                    source: LAYERS.CUSTOM_FEATURES,
+                    source: SOURCES.CUSTOM_FEATURES,
                     paint: {
                         'circle-radius': 6,
                         'circle-color': colorExpression,
@@ -193,9 +199,9 @@ export class MapManager {
                 });
 
                 this.map!.addLayer({
-                    id: `${LAYERS.CUSTOM_FEATURES}-label-layer`,
+                    id: LAYERS.CUSTOM_FEATURES_LABELS,
                     type: 'symbol',
-                    source: LAYERS.CUSTOM_FEATURES,
+                    source: SOURCES.CUSTOM_FEATURES,
                     minzoom: 14,
                     layout: {
                         'text-field': ['get', 'name'],
@@ -243,7 +249,7 @@ export class MapManager {
 
         if (id !== null) {
             const features = this.map.querySourceFeatures(
-                LAYERS.CUSTOM_FEATURES,
+                SOURCES.CUSTOM_FEATURES,
                 {
                     filter: ['==', ['id'], id],
                 },
@@ -282,36 +288,27 @@ export class MapManager {
         }
 
         const update = () => {
-            if (this.map!.getLayer('custom-features-layer')) {
-                this.map!.setLayoutProperty(
-                    'custom-features-layer',
-                    'visibility',
-                    'none',
-                );
-            }
-
             const featureCollection: FeatureCollection = {
                 type: 'FeatureCollection',
                 features: features,
             };
 
-            const sourceId = LAYERS.SEARCH_RESULTS;
             const source = this.map!.getSource(
-                sourceId,
+                SOURCES.SEARCH_RESULTS,
             ) as maplibregl.GeoJSONSource;
 
             if (source) {
                 source.setData(featureCollection);
             } else {
-                this.map!.addSource(sourceId, {
+                this.map!.addSource(SOURCES.SEARCH_RESULTS, {
                     type: 'geojson',
                     data: featureCollection,
                 });
 
                 this.map!.addLayer({
-                    id: `${sourceId}-layer`,
+                    id: LAYERS.SEARCH_RESULTS_CIRCLES,
                     type: 'circle',
-                    source: sourceId,
+                    source: SOURCES.SEARCH_RESULTS,
                     paint: {
                         'circle-radius': 8,
                         'circle-color': '#3b82f6',
@@ -365,8 +362,9 @@ export class MapManager {
             return;
         }
 
-        const sourceId = LAYERS.SEARCH_RESULTS;
-        const source = this.map.getSource(sourceId) as maplibregl.GeoJSONSource;
+        const source = this.map.getSource(
+            SOURCES.SEARCH_RESULTS,
+        ) as maplibregl.GeoJSONSource;
 
         if (source) {
             source.setData({
