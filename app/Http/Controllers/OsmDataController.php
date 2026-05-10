@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Actions\OsmData\FilterOsmDataAction;
 use App\Actions\OsmData\UpdateOsmDataAction;
-use App\Actions\Utils\CreatePolygonFromBBox;
-use App\Data\MenuItemData;
-use App\Data\OsmFeatureData;
-use App\Data\ReviewData;
-use App\Data\UpdateOsmDataData;
-use App\Http\Requests\OsmData\GetIndexOsmDataRequest;
-use App\Http\Requests\UpdateOsmDataRequest;
+use App\Data\MenuItem\MenuItemData;
+use App\Data\OsmData\FilterOsmDataData;
+use App\Data\OsmData\OsmFeatureData;
 use App\Data\OsmData\SearchOsmDataData;
 use App\Data\OsmData\UpdateOsmDataData;
+use App\Data\Review\ReviewData;
 use App\Http\Resources\MapFeatureCollection;
 use App\Models\Allergen;
 use App\Models\OsmData;
@@ -31,7 +28,7 @@ class OsmDataController extends Controller
         $osmData->load('media');
 
         return Inertia::render('osmData/EditOsmData', [
-            'osmData' => OsmFeatureData::from($osmData),
+            'osmData' => UpdateOsmDataData::from($osmData),
         ]);
     }
 
