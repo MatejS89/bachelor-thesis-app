@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\OsmData\FilterOsmDataAction;
 use App\Actions\OsmData\UpdateOsmDataAction;
 use App\Actions\Utils\CreatePolygonFromBBox;
 use App\Data\MenuItemData;
@@ -42,27 +43,11 @@ class OsmDataController extends Controller
         return redirect()->route('map.show', $osmData);
     }
 
-    public function mapData(
-        GetIndexOsmDataRequest $request,
-        CreatePolygonFromBBox $createPolygonFromBBox
-    ): JsonResponse {
-        $filters = $request->validated();
-
-        $bbox = $createPolygonFromBBox->handle(
-            $request->input('south'),
-            $request->input('west'),
-            $request->input('north'),
-            $request->input('east')
-        );
-
+    public function filter(FilterOsmDataData $data, FilterOsmDataAction $action): JsonResponse
+    {
         return response()->json(
-            new MapFeatureCollection(OsmData::query()
-                ->select('name', 'id', 'geom', 'tags')
-                ->when($bbox, fn ($query) => $query->whereWithin('geom', $bbox))
-                ->with('media')
-                ->withSafeItemCounts($filters)
-                ->get()
-            ));
+            new MapFeatureCollection($action->execute($data))
+        );
     }
 
     public function search(GetIndexOsmDataRequest $request): JsonResponse
