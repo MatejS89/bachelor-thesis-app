@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Actions\MenuItem\StoreMenuItemAction;
-use App\Data\AllergenData;
-use App\Data\DietaryTagData;
-use App\Data\OsmFeatureData;
+use App\Data\Allergen\AllergenData;
+use App\Data\DietaryTag\DietaryTagData;
+use App\Data\OsmData\OsmFeatureData;
 use App\Http\Requests\MenuItem\StoreMenuItemRequest;
 use App\Models\Allergen;
 use App\Models\DietaryTag;
