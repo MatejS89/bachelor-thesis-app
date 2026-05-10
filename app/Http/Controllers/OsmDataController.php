@@ -11,6 +11,7 @@ use App\Data\ReviewData;
 use App\Data\UpdateOsmDataData;
 use App\Http\Requests\OsmData\GetIndexOsmDataRequest;
 use App\Http\Requests\UpdateOsmDataRequest;
+use App\Data\OsmData\SearchOsmDataData;
 use App\Data\OsmData\UpdateOsmDataData;
 use App\Http\Resources\MapFeatureCollection;
 use App\Models\Allergen;
@@ -50,12 +51,10 @@ class OsmDataController extends Controller
         );
     }
 
-    public function search(GetIndexOsmDataRequest $request): JsonResponse
+    public function search(SearchOsmDataData $data): JsonResponse
     {
-        $query = $request['search'];
-
         $results = OsmData::query()
-            ->where('name', 'ilike', "%{$query}%")
+            ->where('name', 'ilike', "%{$data->search}%")
             ->limit(3)
             ->get();
 
