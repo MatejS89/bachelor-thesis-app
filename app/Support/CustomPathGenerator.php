@@ -19,7 +19,7 @@ class CustomPathGenerator implements PathGenerator
             default => 'misc',
         };
 
-        $hash = substr(md5($media->model_id.config('app.key')), 0, 12);
+        $hash = substr(hash_hmac('sha256', (string) $media->model_id, config('app.key')), 0, 12);
 
         return $rootFolder.'/'.$hash.'/';
     }
