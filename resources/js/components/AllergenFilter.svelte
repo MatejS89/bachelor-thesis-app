@@ -1,49 +1,39 @@
 <script lang="ts">
-    import { page, router, useRemember } from '@inertiajs/svelte';
+    import { router, useRemember } from '@inertiajs/svelte';
     import { ChevronDown, ChevronUp } from 'lucide-svelte';
+    import qs from 'qs';
     import { Button } from '@/components/ui/button';
     import * as Collapsible from '@/components/ui/collapsible';
     import * as ToggleGroup from '@/components/ui/toggle-group';
-    import { index } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
 
     let { allergens } = $props();
 
-    let mapManager = getAppContext().mapManager;
-
-    let allergenArr = $derived((page.props.query?.allergens ?? []).map(String));
+    let { stateManager, fetchManager } = getAppContext();
 
     const allergenDropdownState = useRemember({
-        isOpen: true,
+        isOpen: true
     });
 
-    function handleAllergenChange(allergens: string[]) {
-        const filters = { ...page.props.query };
-
-        if (allergens && allergens.length > 0) {
-            filters.allergens = allergens;
-        } else {
-            delete filters.allergens;
-        }
-
-        const queryString = new URLSearchParams(filters).toString();
+    function handleAllergenChange() {
+        const queryString = qs.stringify(stateManager.filters, { arrayFormat: 'brackets' });
         const currentHash = window.location.hash;
+        const currentPath = window.location.pathname;
 
         const finalUrl = queryString
-            ? `${index().url}?${queryString}${currentHash}`
-            : `${index().url}${currentHash}`;
+            ? `${currentPath}?${queryString}${currentHash}`
+            : `${currentPath}${currentHash}`;
 
         router.replace({
             url: finalUrl,
+            preserveScroll: true,
+            preserveState: true,
             props: (currentProps) => ({
-                ...currentProps,
-                query: {
-                    ...filters,
-                },
-            }),
+                ...currentProps
+            })
         });
 
-        mapManager.fetchFeaturesForCurrentBounds(filters);
+        fetchManager.fetchFeaturesForCurrentBounds();
     }
 </script>
 
@@ -69,7 +59,7 @@
     <Collapsible.Content>
         <ToggleGroup.Root
             type="multiple"
-            value={allergenArr}
+            bind:value={stateManager.allergenIDs}
             onValueChange={handleAllergenChange}
             spacing={2}
             class="flex flex-wrap pt-2"
