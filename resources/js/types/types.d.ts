@@ -1,18 +1,10 @@
 declare namespace App {
     namespace Data {
-        export type AllergenData = {
-            id: number;
-            name: string;
-        };
         export type BoundingBox = {
             readonly north: number;
             readonly south: number;
             readonly east: number;
             readonly west: number;
-        };
-        export type DietaryTagData = {
-            id: number;
-            name: string;
         };
         export type GalleryImageData = {
             id: number;
@@ -20,56 +12,104 @@ declare namespace App {
             thumb_url: string;
             order: number;
         };
-        export type MenuItemData = {
-            id: number;
-            name: string;
-            description: string;
-            createdAt: string;
-            allergens?: App.Data.AllergenData[];
-            dietaryTags?: App.Data.DietaryTagData[];
-            photoUrl: string;
-        };
-        export type OsmDetailData = {
-            id: number;
-            name: string | null;
-            cuisine: string | null;
-            street: string | null;
-            city: string | null;
-            geom: { type: 'Point'; coordinates: [number, number] };
-            gallery_images: App.Data.GalleryImageData[];
-        };
-        export type OsmFeatureData = {
-            id: number;
-            osm_type: string;
-            osm_id: number;
-            name: string;
-            type: string | null;
-            tags: Record<string, any>;
-            geom: { type: 'Point'; coordinates: [number, number] };
-            photos?: App.Data.PhotoData[];
-        };
-        export type OsmGeoJSONCollectionData = {
-            type: 'FeatureCollection';
-            features: unknown[];
-        };
         export type PhotoData = {
             id: string;
             url: string;
         };
-        export type ReviewData = {
-            id: number;
-            description: string | null;
-            rating: number;
-            created_at: string;
-            user?: App.Data.User.UserMinData;
-            photos?: App.Data.PhotoData[];
-        };
+        namespace Allergen {
+            export type AllergenData = {
+                id: number;
+                name: string;
+            };
+        }
+        namespace DietaryTag {
+            export type DietaryTagData = {
+                id: number;
+                name: string;
+            };
+        }
+        namespace MenuItem {
+            export type MenuItemData = {
+                id: number;
+                name: string;
+                description: string;
+                createdAt: string;
+                allergens?: App.Data.Allergen.AllergenData[];
+                dietaryTags?: App.Data.DietaryTag.DietaryTagData[];
+                photoUrl: string;
+            };
+        }
+        namespace OsmData {
+            export type FilterOsmDataData = {
+                south: number | null;
+                west: number | null;
+                north: number | null;
+                east: number | null;
+                userLat: number | null;
+                userLng: number | null;
+                allergens: (string | number)[] | null;
+            };
+            export type OsmFeatureData = {
+                id: number;
+                osm_type: string;
+                osm_id: number;
+                name: string;
+                type: string | null;
+                tags: Record<string, any>;
+                geom: { type: 'Point'; coordinates: [number, number] };
+                average_rating: number | null;
+                photos?: App.Data.PhotoData[];
+            };
+            export type OsmGeoJSONCollectionData = {
+                type: 'FeatureCollection';
+                features: App.Data.OsmData.OsmGeoJSONFeatureData[];
+            };
+            export type OsmGeoJSONFeatureData = {
+                type: 'Feature';
+                id: number;
+                geometry: { type: 'Point'; coordinates: [number, number] };
+                properties: App.Data.OsmData.OsmGeoJSONPropertiesData;
+            };
+            export type OsmGeoJSONPropertiesData = {
+                name: string;
+                total_items_count: number | null;
+                safe_items_count: number | null;
+                average_rating: number | null;
+                distance: number | null;
+                cuisine: string | null;
+                opening_hours: string | null;
+                amenity: string | null;
+                thumbnail_url: string | null;
+            };
+            export type SearchOsmDataData = {
+                search: string;
+            };
+            export type UpdateOsmDataData = {
+                id: number;
+                name: string;
+                type: string | null;
+                cuisine: string[];
+                diet: Record<string, string | null>;
+                photos: Record<string, any>[];
+                opening_hours: string | null;
+            };
+        }
+        namespace Review {
+            export type ReviewData = {
+                id: number;
+                description: string | null;
+                rating: number;
+                created_at: string;
+                user?: App.Data.User.UserMinData;
+                photos?: App.Data.PhotoData[];
+            };
+        }
         namespace User {
             export type UserData = {
                 id: number;
                 name: string;
                 email: string;
-                reviews?: App.Data.ReviewData[];
+                reviews?: App.Data.Review.ReviewData[];
             };
             export type UserMinData = {
                 name: string;
