@@ -2,7 +2,6 @@
 
 namespace App\Data\OsmData;
 
-use App\Http\Requests\UpdateOsmDataRequest;
 use App\Models\OsmData;
 use Spatie\LaravelData\Data;
 
@@ -16,26 +15,29 @@ class UpdateOsmDataData extends Data
     public function __construct(
         public int $id,
         public string $name,
-        public ?string $type,
-        public array $cuisine,
-        public array $diet,
-        public array $photos,
-        public ?string $opening_hours,
+        public ?string $type = null,
+        public array $cuisine = [],
+        public array $diet = [],
+        public array $photos = [],
+        public ?string $opening_hours = null,
     ) {}
 
-    public static function fromRequest(UpdateOsmDataRequest $request): self
+    /**
+     * @return array<string, array<int, string>>
+     */
+    public static function rules(): array
     {
-        $validated = $request->validated();
-
-        return new self(
-            id: $validated['id'],
-            name: $validated['name'],
-            type: self::filledString($validated['type'] ?? null),
-            cuisine: $validated['cuisine'] ?? [],
-            diet: $validated['diet'] ?? [],
-            photos: $validated['photos'] ?? [],
-            opening_hours: self::filledString($validated['opening_hours'] ?? null),
-        );
+        return [
+            'id' => ['required', 'integer', 'exists:osm_data,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:255'],
+            'opening_hours' => ['nullable', 'string'],
+            'photos' => ['array'],
+            'cuisine' => ['array'],
+            'cuisine.*' => ['string'],
+            'diet' => ['array'],
+            'diet.*' => ['string'],
+        ];
     }
 
     /**
@@ -70,7 +72,7 @@ class UpdateOsmDataData extends Data
 
         return [
             'name' => $this->name,
-            'type' => $this->type,
+            'type' => self::filledString($this->type),
             'tags' => $tags,
         ];
     }
@@ -91,6 +93,7 @@ class UpdateOsmDataData extends Data
         $tags = $osmData->tags ?? [];
 
         return new self(
+            id: $osmData->id,
             name: $osmData->name,
             type: $osmData->type,
             cuisine: self::tagListFromString($tags['cuisine'] ?? null),
@@ -101,11 +104,12 @@ class UpdateOsmDataData extends Data
                 'thumb_url' => $media->getUrl('thumb'),
             ])->toArray(),
             opening_hours: $tags['opening_hours'] ?? null,
-            id: $osmData->id,
         );
     }
 
     /**
+     * collect a tag array separated by ';' for example cuisine=italian;pizza => ['italian', 'pizza']
+     *
      * @return array<int, string>
      */
     private static function tagListFromString(mixed $value, string $separator = ';'): array
@@ -118,8 +122,13 @@ class UpdateOsmDataData extends Data
     }
 
     /**
-     * Collect tags whose key starts with the given prefix into an associative
-     * array keyed by the remainder of the key (e.g. `diet:vegan` => `vegan`).
+     * collect tags whose key starts with the given prefix into an associative
+     * array keyed by the remainder of the key
+     * `diet:vegan=yes,diet:gluten_free=yes` =>
+     * `{
+     * "vegan": "yes",
+     * "gluten_free": "yes"
+     * }`.
      *
      * @param  array<string, mixed>  $tags
      * @return array<string, string|null>

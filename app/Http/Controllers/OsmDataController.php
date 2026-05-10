@@ -10,6 +10,7 @@ use App\Data\ReviewData;
 use App\Data\UpdateOsmDataData;
 use App\Http\Requests\OsmData\GetIndexOsmDataRequest;
 use App\Http\Requests\UpdateOsmDataRequest;
+use App\Data\OsmData\UpdateOsmDataData;
 use App\Http\Resources\MapFeatureCollection;
 use App\Models\Allergen;
 use App\Models\OsmData;
@@ -32,11 +33,11 @@ class OsmDataController extends Controller
         ]);
     }
 
-    public function update(OsmData $osmData, UpdateOsmDataRequest $updateOsmDataRequest, UpdateOsmDataAction $updateOsmDataAction): RedirectResponse
+    public function update(OsmData $osmData, UpdateOsmDataData $data, UpdateOsmDataAction $updateOsmDataAction): RedirectResponse
     {
         Gate::authorize('update', $osmData);
 
-        $updateOsmDataAction->execute($osmData, UpdateOsmDataData::fromRequest($updateOsmDataRequest));
+        $updateOsmDataAction->execute($osmData, $data);
 
         return redirect()->route('map.show', $osmData);
     }
