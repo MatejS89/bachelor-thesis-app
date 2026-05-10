@@ -1,4 +1,3 @@
-import { page, useHttp } from '@inertiajs/svelte';
 import type { FeatureCollection, Point, Feature, BBox } from 'geojson';
 import maplibregl, {
     FullscreenControl,
@@ -21,36 +20,19 @@ const SOURCES = {
 const LAYERS = {
     CUSTOM_FEATURES_CIRCLES: 'custom-features-layer',
     CUSTOM_FEATURES_LABELS: 'custom-features-label-layer',
+    CUSTOM_FEATURES_CLUSTERS: 'custom-features-clusters-layer',
+    CUSTOM_FEATURES_CLUSTER_COUNT: 'custom-features-cluster-count-layer',
     SEARCH_RESULTS_CIRCLES: 'search-results-layer',
 } as const;
 
 export class MapManager {
-    constructor(onFeatureClick: (id: number) => void) {
-        this.onFeatureClick = onFeatureClick;
+    constructor(
+        private readonly onFeatureClick: (id: number) => void,
+        private readonly triggerFetch: () => void,
+    ) {}
 
-        this.http = useHttp({
-            north: null as number | null,
-            south: null as number | null,
-            east: null as number | null,
-            west: null as number | null,
-            allergens: [] as string[],
-        });
-    }
-
-    public get isProcessing(): boolean {
-        return this.http.processing;
-    }
-
-    private http;
-
-    private readonly onFeatureClick: (id: number) => void;
     map: Map | undefined = $state<Map>();
     userLocation: { lat: number; lng: number } | null = $state(null);
-
-    public featureData: FeatureCollection = $state({
-        type: 'FeatureCollection',
-        features: [],
-    });
 
     private geolocateControl: GeolocateControl | undefined;
     private hoverMarker: maplibregl.Marker | null = null;
@@ -70,35 +52,20 @@ export class MapManager {
     }
 
     public handleGeolocate() {
-        this.fetchFeaturesForCurrentBounds();
+        this.triggerFetch();
     }
 
-    public fetchFeaturesForCurrentBounds = (query?: any) => {
-        const bounds = this.getBounds();
-
-        if (!bounds) {
+    private fetchAfterMove() {
+        if (!this.map) {
             return;
         }
 
-        this.http.north = bounds.north;
-        this.http.south = bounds.south;
-        this.http.east = bounds.east;
-        this.http.west = bounds.west;
-
-        if (query) {
-            this.http.allergens = query.allergens;
+        if (this.map.isMoving()) {
+            this.map.once('moveend', () => this.triggerFetch());
         } else {
-            this.http.allergens = page.props.query.allergens;
+            this.triggerFetch();
         }
-
-        this.http.get('/map-data', {
-            onSuccess: (data) => {
-                const currentData = data as FeatureCollection<Point>;
-
-                this.setFeatures(currentData);
-            },
-        });
-    };
+    }
 
     initialize(container: HTMLElement) {
         this.map = new maplibregl.Map({
@@ -116,16 +83,65 @@ export class MapManager {
 
         this.map.addControl(this.geolocateControl);
 
-        this.geolocateControl.on('geolocate', () =>
-            this.fetchFeaturesForCurrentBounds(),
-        );
+        this.geolocateControl.on('geolocate', (e) => {
+            const position = e as GeolocationPosition;
+
+            this.userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+            };
+
+            this.fetchAfterMove();
+        });
 
         this.map.addControl(new FullscreenControl());
 
         this.attachLayerInteractions(LAYERS.CUSTOM_FEATURES_CIRCLES);
         this.attachLayerInteractions(LAYERS.CUSTOM_FEATURES_LABELS);
+        this.attachClusterInteractions();
 
-        this.fetchFeaturesForCurrentBounds();
+        this.triggerFetch();
+    }
+
+    private attachClusterInteractions() {
+        if (!this.map) {
+            return;
+        }
+
+        const layerId = LAYERS.CUSTOM_FEATURES_CLUSTERS;
+
+        this.map.on('click', layerId, async (e) => {
+            if (!this.map || !e.features || e.features.length === 0) {
+                return;
+            }
+
+            const feature = e.features[0];
+            const clusterId = feature.properties?.cluster_id;
+
+            if (clusterId === undefined || feature.geometry.type !== 'Point') {
+                return;
+            }
+
+            const source = this.map.getSource(
+                SOURCES.CUSTOM_FEATURES,
+            ) as maplibregl.GeoJSONSource;
+
+            const zoom = await source.getClusterExpansionZoom(clusterId);
+            const coordinates = feature.geometry.coordinates as [
+                number,
+                number,
+            ];
+
+            this.map.easeTo({ center: coordinates, zoom });
+        });
+
+        this.map.on('mouseenter', layerId, () => {
+            this.map!.getCanvas().style.cursor = 'pointer';
+        });
+
+        this.map.on('mouseleave', layerId, () => {
+            this.map!.getCanvas().style.cursor = '';
+        });
     }
 
     private attachLayerInteractions(layerId: string) {
@@ -138,7 +154,7 @@ export class MapManager {
                 const feature = e.features[0];
                 const featureId = feature.id as number;
 
-                if (featureId) {
+                if (featureId !== null) {
                     this.onFeatureClick(featureId);
                 }
             }
@@ -155,6 +171,9 @@ export class MapManager {
 
     toggleCustomFeatures(visible: boolean) {
         this.setLayerVisibility(LAYERS.CUSTOM_FEATURES_CIRCLES, visible);
+        this.setLayerVisibility(LAYERS.CUSTOM_FEATURES_LABELS, visible);
+        this.setLayerVisibility(LAYERS.CUSTOM_FEATURES_CLUSTERS, visible);
+        this.setLayerVisibility(LAYERS.CUSTOM_FEATURES_CLUSTER_COUNT, visible);
     }
 
     toggleSearchResults(visible: boolean) {
@@ -162,8 +181,6 @@ export class MapManager {
     }
 
     setFeatures(featureCollection: FeatureCollection<Point>) {
-        this.featureData = featureCollection;
-
         if (!this.map) {
             return;
         }
@@ -179,6 +196,19 @@ export class MapManager {
                 this.map!.addSource(SOURCES.CUSTOM_FEATURES, {
                     type: 'geojson',
                     data: featureCollection,
+                    cluster: true,
+                    clusterMaxZoom: 14,
+                    clusterRadius: 50,
+                    clusterProperties: {
+                        safe_items_count: [
+                            '+',
+                            ['get', 'safe_items_count'],
+                        ],
+                        total_items_count: [
+                            '+',
+                            ['get', 'total_items_count'],
+                        ],
+                    },
                 });
 
                 const colorExpression = buildRatioColorExpression(
@@ -187,9 +217,49 @@ export class MapManager {
                 );
 
                 this.map!.addLayer({
+                    id: LAYERS.CUSTOM_FEATURES_CLUSTERS,
+                    type: 'circle',
+                    source: SOURCES.CUSTOM_FEATURES,
+                    filter: ['has', 'point_count'],
+                    paint: {
+                        'circle-radius': [
+                            'step',
+                            ['get', 'point_count'],
+                            14,
+                            10,
+                            18,
+                            50,
+                            22,
+                        ],
+                        'circle-color': colorExpression,
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#ffffff',
+                    },
+                });
+
+                this.map!.addLayer({
+                    id: LAYERS.CUSTOM_FEATURES_CLUSTER_COUNT,
+                    type: 'symbol',
+                    source: SOURCES.CUSTOM_FEATURES,
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': ['get', 'point_count_abbreviated'],
+                        'text-font': [
+                            'Open Sans Regular',
+                            'Arial Unicode MS Regular',
+                        ],
+                        'text-size': 12,
+                    },
+                    paint: {
+                        'text-color': '#ffffff',
+                    },
+                });
+
+                this.map!.addLayer({
                     id: LAYERS.CUSTOM_FEATURES_CIRCLES,
                     type: 'circle',
                     source: SOURCES.CUSTOM_FEATURES,
+                    filter: ['!', ['has', 'point_count']],
                     paint: {
                         'circle-radius': 6,
                         'circle-color': colorExpression,
@@ -203,6 +273,7 @@ export class MapManager {
                     type: 'symbol',
                     source: SOURCES.CUSTOM_FEATURES,
                     minzoom: 14,
+                    filter: ['!', ['has', 'point_count']],
                     layout: {
                         'text-field': ['get', 'name'],
                         'text-font': [
@@ -389,6 +460,7 @@ export class MapManager {
         }
 
         this.map.flyTo({ center: [lng, lat], zoom });
+        this.fetchAfterMove();
     }
 
     fitToFeatures(bbox: BBox) {
@@ -404,10 +476,9 @@ export class MapManager {
         this.map.fitBounds(bounds, {
             padding: 50,
             maxZoom: 15,
-            animate: false,
         });
 
-        this.fetchFeaturesForCurrentBounds();
+        this.fetchAfterMove();
     }
 
     triggerGeolocation() {
@@ -434,5 +505,9 @@ export class MapManager {
             north: round(bounds.getNorth()),
             east: round(bounds.getEast()),
         };
+    }
+
+    getUserLocation(): { lat: number; lng: number } | null {
+        return this.userLocation;
     }
 }
