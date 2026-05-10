@@ -17,7 +17,7 @@
     let {
         status = '',
         canResetPassword,
-        canRegister,
+        canRegister
     }: {
         status?: string;
         canResetPassword: boolean;
@@ -40,9 +40,6 @@
     <Form
         {...store.form()}
         resetOnSuccess={['password']}
-        options={{
-            replace: true,
-        }}
         class="flex flex-col gap-6"
     >
         {#snippet children({ errors, processing })}
