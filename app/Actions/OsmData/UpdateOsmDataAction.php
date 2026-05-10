@@ -3,7 +3,7 @@
 namespace App\Actions\OsmData;
 
 use App\Actions\Utils\SyncOrderedMediaAction;
-use App\Data\UpdateOsmDataData;
+use App\Data\OsmData\UpdateOsmDataData;
 use App\Models\OsmData;
 use Illuminate\Support\Facades\DB;
 
