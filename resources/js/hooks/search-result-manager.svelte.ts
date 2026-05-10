@@ -1,4 +1,5 @@
 import type { BBox, Feature, Point } from 'geojson';
+import { search as searchRoute } from '@/routes/map';
 
 const EXCLUDED_OSM_KEYS = ['amenity'];
 
@@ -77,7 +78,12 @@ export class SearchManager {
         }
 
         const photonUrl = `https://photon.komoot.io/api/?${photonParams.toString()}`;
-        const localUrl = `/map/search?search=${encodeURIComponent(trimmedQuery)}`;
+
+        const localParams: App.Data.OsmData.SearchOsmDataData = {
+            search: trimmedQuery,
+        };
+
+        const localUrl = `${searchRoute().url}?${new URLSearchParams(localParams).toString()}`;
 
         try {
             const [photonRes, serverRes] = await Promise.all([
