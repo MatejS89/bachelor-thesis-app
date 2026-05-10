@@ -12,85 +12,32 @@
     import { Input } from '@/components/ui/input';
     import {
         osmAmenityTypes,
-        osmAtmosphereTags,
         osmBooleanValues,
-        osmContactTags,
         osmCuisineValues,
-        osmDietTags,
-        osmFacilityTags,
-        osmFoodOptionTags,
-        osmIdentityTags,
-        osmServiceTags
+        osmDietTags
     } from '@/lib/osm-tags';
     import { show, update } from '@/routes/map';
     import type { ImageItem } from '@/types/imageitem';
 
-    let { osmData }: { osmData: App.Data.OsmData.OsmFeatureData } = $props();
-
-    const standardTagKeys = [
-        ...osmServiceTags,
-        ...osmFacilityTags,
-        ...osmAtmosphereTags,
-        ...osmFoodOptionTags,
-        ...osmContactTags,
-        ...osmIdentityTags,
-        { key: 'stars' },
-        { key: 'michelin_guide' },
-        { key: 'breakfast' },
-        { key: 'happy_hours' },
-        { key: 'description' }
-    ].map((t) => t.key);
-
-    function normalizeTags(tags: Record<string, unknown> = {}) {
-        return Object.fromEntries(
-            Object.entries(tags).map(([key, value]) => [
-                key,
-                value === null || value === undefined ? '' : String(value)
-            ])
-        );
-    }
+    let { osmData }: { osmData: App.Data.OsmData.UpdateOsmDataData } = $props();
 
     function initialFormData() {
-        const photos: ImageItem[] = (osmData.photos || []).map((photo) => ({
-            id: photo.id.toString(),
-            url: photo.url,
-            isExisting: true
-        }));
-
-        const allTags = normalizeTags(osmData.tags ?? {});
-
-        const cuisine = (allTags.cuisine ?? '')
-            .split(';')
-            .map((c) => c.trim())
-            .filter(Boolean);
-
-        const diet: Record<string, string> = {};
-
-        for (const tag of osmDietTags) {
-            const suffix = tag.key.replace('diet:', '');
-            const v = allTags[tag.key];
-
-            if (v) {
-diet[suffix] = v;
-}
-        }
-
-        const tags: Record<string, string> = {};
-
-        for (const key of standardTagKeys) {
-            if (allTags[key] !== undefined) {
-                tags[key] = allTags[key];
-            }
-        }
-
         return {
-            name: osmData.name ?? '',
-            type: osmData.type ?? osmData.tags?.amenity ?? '',
-            cuisine,
-            diet,
-            photos,
-            opening_hours: allTags.opening_hours ?? '',
-            tags
+            name: osmData.name,
+            type: osmData.type ?? '',
+            cuisine: [...osmData.cuisine],
+            diet: Object.fromEntries(
+                Object.entries(osmData.diet).map(([k, v]) => [k, v ?? ''])
+            ),
+            photos: osmData.photos.map(
+                (photo): ImageItem => ({
+                    id: String(photo.id),
+                    url: String(photo.url),
+                    isExisting: true
+                })
+            ),
+            opening_hours: osmData.opening_hours ?? '',
+            id: osmData.id
         };
     }
 
@@ -101,7 +48,7 @@ diet[suffix] = v;
         diet: Record<string, string>;
         photos: ImageItem[];
         opening_hours: string;
-        tags: Record<string, string>;
+        id: number;
     }>(initialFormData());
 
     function onSubmit(e: Event) {
