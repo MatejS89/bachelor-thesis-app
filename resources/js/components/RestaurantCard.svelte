@@ -1,14 +1,25 @@
 <script lang="ts">
-    import { Link, page } from '@inertiajs/svelte';
-    import { Image } from 'lucide-svelte';
+    import { Link } from '@inertiajs/svelte';
+    import { Image, Star } from 'lucide-svelte';
     import OpeningBadge from '@/components/OpeningBadge.svelte';
     import { Badge } from '@/components/ui/badge';
     import * as Item from '@/components/ui/item/index';
     import { show } from '@/routes/map';
+    import { getAppContext } from '@/state/appState.svelte';
     import type { StatusColor } from '@/utils/get_color';
     import { getRatioColor } from '@/utils/get_color';
 
     let { feature } = $props();
+
+    let { stateManager } = getAppContext();
+
+    function formatDistance(meters: number): string {
+        if (meters < 1000) {
+            return `${Math.round(meters / 10) * 10} m`;
+        }
+
+        return `${(meters / 1000).toFixed(1)} km`;
+    }
 
     let status = $derived(
         () =>
@@ -45,7 +56,7 @@
     class={`gap-4 bg-card border-2 ${borderClasses[status()]}`}
 >
     {#snippet child({ props })}
-        <Link href={show(feature.id)} data={page.props.query} {...props}>
+        <Link href={show(feature.id)} data={stateManager.filters} {...props}>
             <Item.Media variant="image" class="w-32 md:w-40 shrink-0 h-full">
                 {#if feature.properties.thumbnail_url}
                     <img
@@ -65,12 +76,37 @@
                 {/if}
             </Item.Media>
 
-            <Item.Content>
-                <Item.Title class="text-md lg:text-lg font-semibold ">
+            <Item.Content class="grid grid-cols-[1fr_auto] gap-x-2">
+                <Item.Title class="text-md lg:text-lg font-semibold min-w-0">
                     {feature.properties.name || 'Unnamed location'}
                 </Item.Title>
 
-                <Item.Description class="flex flex-col gap-0.5 mt-1 text-sm">
+                {#if feature.properties?.average_rating != null || feature.properties?.distance != null}
+                    <div class="row-span-2 self-start flex flex-col items-end gap-0.5 shrink-0">
+                        {#if feature.properties?.average_rating != null}
+                            <span
+                                class="flex items-center gap-1 text-sm font-semibold"
+                                aria-label="Average rating: {feature.properties.average_rating.toFixed(
+                                    1,
+                                )} out of 5"
+                            >
+                                <Star
+                                    class="size-4 fill-yellow-400 text-yellow-400"
+                                    aria-hidden="true"
+                                />
+                                {feature.properties.average_rating.toFixed(1)}
+                            </span>
+                        {/if}
+
+                        {#if feature.properties?.distance != null}
+                            <span class="text-xs text-muted-foreground">
+                                {formatDistance(feature.properties.distance)}
+                            </span>
+                        {/if}
+                    </div>
+                {/if}
+
+                <Item.Description class="col-start-1 flex flex-col gap-0.5 mt-1 text-sm">
                     <dl class="flex flex-col gap-0.5">
                         <Badge class={`shrink-0 ${badgeClasses[status()]}`}>
                             {badgeLabels[status()]}
