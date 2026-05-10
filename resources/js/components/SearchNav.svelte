@@ -4,17 +4,20 @@
     import { MapPin, Navigation, SearchX } from 'lucide-svelte';
     import * as Command from '@/components/ui/command/index';
     import { Spinner } from '@/components/ui/spinner';
+    import { SearchManager } from '@/hooks/search-result-manager.svelte';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
     import getIconForFeature from '@/utils/get-osm_data-icons';
 
     const DEBOUNCE_MS = 300;
 
-    let { mapManager, searchManager } = getAppContext();
+    let { mapManager } = getAppContext();
 
     let containerEl: HTMLElement;
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
     let suppressNextSearch = false;
+
+    let searchManager = new SearchManager();
 
     const hasResults = $derived(
         searchManager.localResults.length > 0 ||
