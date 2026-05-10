@@ -13,8 +13,8 @@
 
     let { allergens } = $props();
 
-    let { mapManager  } = getAppContext();
-    let features = $derived(mapManager.featureData?.features ?? []);
+    let { mapManager, fetchManager } = getAppContext();
+    let features = $derived(fetchManager.featureData?.features ?? []);
 
     let virtualListElement = $state<HTMLElement | null>(null);
 
@@ -58,7 +58,7 @@
     bind:this={virtualListElement}
     scroll-region=""
 >
-    {#if mapManager.isProcessing}
+    {#if fetchManager.isProcessing}
         <Spinner class="mx-auto size-8 mt-4" />
     {:else if features.length === 0}
         <Empty.Root>
