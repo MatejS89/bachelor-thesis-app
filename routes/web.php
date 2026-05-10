@@ -11,7 +11,7 @@ Route::inertia('/', 'Welcome')->name('home');
 
 Route::get('map/search', [OsmDataController::class, 'search'])->name('map.search');
 
-Route::post('map/filter', [OsmDataController::class, 'mapData'])->name('map.filter');
+Route::post('map/filter', [OsmDataController::class, 'filter'])->name('map.filter');
 
 Route::resource('map/{osmData}/review', ReviewController::class)
     ->names('map.review')
