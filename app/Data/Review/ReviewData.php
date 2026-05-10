@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Review;
 
+use App\Data\PhotoData;
 use App\Data\User\UserMinData;
 use App\Models\Review;
 use Carbon\Carbon;
