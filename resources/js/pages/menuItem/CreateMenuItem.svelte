@@ -44,7 +44,7 @@
     }
 </script>
 
-<div class="p-4">
+<div class="p-4 overflow-y-auto">
     <div class="flex items-center gap-4 mb-6">
         <Link
             class={buttonVariants({
