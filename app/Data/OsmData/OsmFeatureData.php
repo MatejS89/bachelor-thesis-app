@@ -28,6 +28,8 @@ class OsmFeatureData extends Data
 
     public Point $geom;
 
+    public ?float $average_rating;
+
     /** @var Collection<PhotoData>|Lazy */
     public Lazy|Collection $photos;
 
@@ -41,6 +43,9 @@ class OsmFeatureData extends Data
             'type' => $osmData->type,
             'tags' => $osmData->tags,
             'geom' => $osmData->geom,
+            'average_rating' => $osmData->average_rating !== null
+                ? (float) $osmData->average_rating
+                : null,
 
             'photos' => Lazy::whenLoaded('media', $osmData, function () use ($osmData) {
                 return PhotoData::collect($osmData->getMedia('photos'));
