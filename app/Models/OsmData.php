@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Data\BoundingBox;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
@@ -41,14 +39,6 @@ class OsmData extends Model implements HasMedia
             ->nonQueued();
     }
 
-    public function scopeWithinBoundingBox($query, BoundingBox $box)
-    {
-        return $query->whereRaw(
-            DB::raw('geom && ST_MakeEnvelope(?, ?, ?, ?, 4326)'),
-            [$box->west, $box->south, $box->east, $box->north]
-        );
-    }
-
     public function menuItems(): HasMany
     {
         return $this->hasMany(MenuItem::class);
@@ -72,5 +62,15 @@ class OsmData extends Model implements HasMedia
             'menuItems as total_items_count',
             'menuItems as safe_items_count' => fn ($menuQuery) => $menuQuery->withoutAllergens($allergens),
         ]);
+    }
+
+    public function scopeWithAverageRating(Builder $query): void
+    {
+        $query->withAvg('reviews as average_rating', 'rating');
+    }
+
+    public function loadAverageRating(): static
+    {
+        return $this->loadAvg('reviews as average_rating', 'rating');
     }
 }
