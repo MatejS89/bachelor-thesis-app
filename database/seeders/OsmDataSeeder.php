@@ -45,7 +45,7 @@ class OsmDataSeeder extends Seeder
             '--database='.$config['database'],
             '--host='.$config['host'],
             '--port='.$config['port'],
-            '--username='.$config['username'],
+            '--user='.$config['username'],
             '--output=flex',
             '--style='.$styleFile,
             $osmFile,
