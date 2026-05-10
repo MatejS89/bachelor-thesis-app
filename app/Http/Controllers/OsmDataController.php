@@ -61,9 +61,10 @@ class OsmDataController extends Controller
         return response()->json($results);
     }
 
-    public function show(GetIndexOsmDataRequest $request, OsmData $osmData, CreatePolygonFromBBox $createPolygon): Response
+    public function show(OsmData $osmData): Response
     {
         $osmData->load('media');
+        $osmData->loadAverageRating();
 
         return Inertia::render('map/Show', [
             'selectedFeature' => fn () => OsmFeatureData::from($osmData),
@@ -80,6 +81,8 @@ class OsmDataController extends Controller
                     ->with(['allergens', 'dietaryTags', 'media'])
                     ->get()
             ),
+
+            'allergens' => Inertia::once(fn () => Allergen::all('name', 'id')),
         ]);
     }
 
