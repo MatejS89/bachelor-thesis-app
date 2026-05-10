@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
-    import { MapPin, ArrowLeft, ImagePlus } from 'lucide-svelte';
+    import { MapPin, ArrowLeft, ImagePlus, Star } from 'lucide-svelte';
     import ActionNav from '@/components/ActionNav.svelte';
     import MenuItemList from '@/components/MenuItemList.svelte';
     import OsmDataDetailContainer from '@/components/OsmDataDetailContainer.svelte';
@@ -11,20 +11,29 @@
     import * as Empty from '@/components/ui/empty/index';
     import * as Tabs from '@/components/ui/tabs/index';
     import { index, edit } from '@/routes/map';
+    import { getAppContext } from '@/state/appState.svelte';
+
+    let { stateManager } = getAppContext();
 
     let {
         selectedFeature: restaurantData,
         reviews,
-        menuItems
+        menuItems,
+        allergens
     }: {
         selectedFeature: App.Data.OsmData.OsmFeatureData;
-        reviews: App.Data.ReviewData[];
-        menuItems: App.Data.MenuItemData[];
+        reviews: App.Data.Review.ReviewData[];
+        menuItems: App.Data.MenuItem.MenuItemData[];
+        allergens: App.Data.Allergen.AllergenData[];
     } = $props();
+
+    $effect(() => {
+        stateManager.mapShown = false;
+    });
 </script>
 
 <div
-    class="p-3 h-full w-full flex flex-col gap-3 overflow-y-auto"
+    class="p-3 h-full w-full min-w-0 flex flex-col gap-3 overflow-y-auto overflow-x-hidden"
     scroll-region=""
 >
     <header class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
@@ -39,9 +48,26 @@
         >
             <ArrowLeft class="w-6 h-6" />
         </Link>
-        <h1 class="text-3xl font-bold tracking-tight self-center">
-            {restaurantData.name}
-        </h1>
+        <div class="flex items-center justify-between gap-4 self-center">
+            <h1 class="text-3xl font-bold tracking-tight">
+                {restaurantData.name}
+            </h1>
+
+            {#if restaurantData.average_rating != null}
+                <span
+                    class="flex items-center gap-1 text-lg font-semibold shrink-0"
+                    aria-label="Average rating: {restaurantData.average_rating.toFixed(
+                        1,
+                    )} out of 5"
+                >
+                    <Star
+                        class="size-5 fill-yellow-400 text-yellow-400"
+                        aria-hidden="true"
+                    />
+                    {restaurantData.average_rating.toFixed(1)}
+                </span>
+            {/if}
+        </div>
 
         <div class="flex justify-center items-start w-full self-center">
             <MapPin class="h-5 w-5 text-muted-foreground" />
@@ -117,7 +143,7 @@
         </Tabs.List>
 
         <Tabs.Content value="menu">
-            <MenuItemList {menuItems} {restaurantData} />
+            <MenuItemList {menuItems} {restaurantData} {allergens} />
         </Tabs.Content>
 
         <Tabs.Content value="reviews">
