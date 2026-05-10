@@ -5,13 +5,13 @@
         CardContent,
         CardDescription,
         CardHeader,
-        CardTitle
+        CardTitle,
     } from '@/components/ui/card';
 
     let {
         title = '',
         description = '',
-        children
+        children,
     }: {
         title?: string;
         description?: string;
@@ -19,9 +19,7 @@
     } = $props();
 </script>
 
-<div
-    class="flex w-full flex-col items-center justify-center gap-6 bg-muted"
->
+<div class="flex w-full flex-col items-center justify-center gap-6 bg-muted">
     <div class="flex w-full max-w-md flex-col gap-6">
         <div class="flex flex-col gap-6">
             <Card class="rounded-xl">
