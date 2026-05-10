@@ -34,7 +34,8 @@ local get_matching_amenitites = osm2pgsql.make_check_values_func({
     'food_court',
     'ice_cream',
     'pub',
-    'restaurant'
+    'restaurant',
+    'canteen'
 })
 
 local excluded_tags = {
