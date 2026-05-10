@@ -27,6 +27,6 @@ Route::resource('map', OsmDataController::class)
     ->parameters(['map' => 'osmData'])
     ->names('map')
     ->only(['update', 'show', 'edit', 'index'])
-    ->middlewareFor(['update'], ['auth', EncryptHistory::class]);
+    ->middlewareFor(['update', 'edit'], ['auth', EncryptHistory::class]);
 
 require __DIR__.'/settings.php';
