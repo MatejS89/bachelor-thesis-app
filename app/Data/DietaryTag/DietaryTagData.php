@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\DietaryTag;
 
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
