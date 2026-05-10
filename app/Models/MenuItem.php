@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[Fillable(['name', 'description'])]
 class MenuItem extends Model implements HasMedia
@@ -35,10 +36,23 @@ class MenuItem extends Model implements HasMedia
         return $this->belongsTo(OsmData::class);
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('photo')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(300)
+            ->height(300)
+            ->nonQueued();
+    }
+
     public function photoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->getFirstMediaUrl('photos'),
+            get: fn () => $this->getFirstMediaUrl('photo') ?: null
         );
     }
 
