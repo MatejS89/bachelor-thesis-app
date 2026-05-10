@@ -576,14 +576,14 @@
 {#snippet detailRow(item: DetailItem)}
     {@const Icon = item.icon}
     <div
-        class="flex items-start gap-3 rounded-md border border-border/60 bg-muted/25 p-3"
+        class="flex items-start gap-3 rounded-md border border-border/60 bg-muted/25 p-3 min-w-0"
     >
         <Icon class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
         <div class="min-w-0 flex-1">
-            <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start justify-between gap-3 min-w-0">
                 <p class="text-sm font-medium text-foreground">{item.label}</p>
                 {#if item.value}
-                    <p class="text-sm text-muted-foreground text-right">
+                    <p class="text-sm text-muted-foreground text-right break-words min-w-0">
                         {item.value}
                     </p>
                 {/if}
@@ -718,7 +718,7 @@
                     {#each contactItems as item (item.key)}
                         {@const Icon = item.icon}
                         <div
-                            class="flex items-start gap-3 rounded-md border border-border/60 bg-muted/25 p-3"
+                            class="flex items-start gap-3 rounded-md border border-border/60 bg-muted/25 p-3 min-w-0"
                         >
                             <Icon
                                 class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
@@ -753,13 +753,13 @@
                 <div class="grid gap-2 sm:grid-cols-2">
                     {#each identityItems as item (item.label)}
                         <div
-                            class="flex items-start justify-between gap-3 rounded-md border border-border/60 bg-muted/25 p-3"
+                            class="flex items-start justify-between gap-3 rounded-md border border-border/60 bg-muted/25 p-3 min-w-0"
                         >
-                            <p class="text-sm text-muted-foreground">
+                            <p class="text-sm text-muted-foreground shrink-0">
                                 {item.label}
                             </p>
                             <p
-                                class="text-right text-sm font-medium text-foreground"
+                                class="text-right text-sm font-medium text-foreground break-words min-w-0"
                             >
                                 {item.value}
                             </p>
@@ -768,10 +768,10 @@
 
                     {#if tags['addr:full']}
                         <div
-                            class="rounded-md border border-border/60 bg-muted/25 p-3 sm:col-span-2"
+                            class="rounded-md border border-border/60 bg-muted/25 p-3 sm:col-span-2 min-w-0"
                         >
                             <p class="text-sm text-muted-foreground">Address</p>
-                            <p class="text-sm font-medium text-foreground">
+                            <p class="text-sm font-medium text-foreground break-words">
                                 {tags['addr:full']}
                             </p>
                         </div>
