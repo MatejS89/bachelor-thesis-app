@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Review\StoreReviewAction;
-use App\Data\OsmFeatureData;
+use App\Data\OsmData\OsmFeatureData;
 use App\Http\Requests\StoreReviewRequest;
 use App\Models\OsmData;
 use App\Models\Review;
@@ -41,7 +41,7 @@ class ReviewController extends Controller
     {
         Gate::authorize('create', Review::class);
 
-        $review = $createReviewAction->execute(
+        $createReviewAction->execute(
             auth()->user(),
             $request->validated(),
             $osmData,
