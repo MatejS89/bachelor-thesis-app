@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\MenuItem;
 
+use App\Data\Allergen\AllergenData;
+use App\Data\DietaryTag\DietaryTagData;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
