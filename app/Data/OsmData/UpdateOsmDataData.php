@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\OsmData;
 
 use App\Http\Requests\UpdateOsmDataRequest;
 use App\Models\OsmData;
@@ -14,6 +14,7 @@ class UpdateOsmDataData extends Data
      * @param  array<int, array<string, mixed>>  $photos
      */
     public function __construct(
+        public int $id,
         public string $name,
         public ?string $type,
         public array $cuisine,
@@ -27,6 +28,7 @@ class UpdateOsmDataData extends Data
         $validated = $request->validated();
 
         return new self(
+            id: $validated['id'],
             name: $validated['name'],
             type: self::filledString($validated['type'] ?? null),
             cuisine: $validated['cuisine'] ?? [],
@@ -82,5 +84,59 @@ class UpdateOsmDataData extends Data
         $value = trim($value);
 
         return $value === '' ? null : $value;
+    }
+
+    public static function fromModel(OsmData $osmData): self
+    {
+        $tags = $osmData->tags ?? [];
+
+        return new self(
+            name: $osmData->name,
+            type: $osmData->type,
+            cuisine: self::tagListFromString($tags['cuisine'] ?? null),
+            diet: self::tagsByPrefix($tags, 'diet:'),
+            photos: $osmData->getMedia('gallery')->map(fn ($media) => [
+                'id' => $media->id,
+                'url' => $media->getUrl(),
+                'thumb_url' => $media->getUrl('thumb'),
+            ])->toArray(),
+            opening_hours: $tags['opening_hours'] ?? null,
+            id: $osmData->id,
+        );
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function tagListFromString(mixed $value, string $separator = ';'): array
+    {
+        if (! is_string($value)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', explode($separator, $value))));
+    }
+
+    /**
+     * Collect tags whose key starts with the given prefix into an associative
+     * array keyed by the remainder of the key (e.g. `diet:vegan` => `vegan`).
+     *
+     * @param  array<string, mixed>  $tags
+     * @return array<string, string|null>
+     */
+    private static function tagsByPrefix(array $tags, string $prefix): array
+    {
+        $result = [];
+        $prefixLength = strlen($prefix);
+
+        foreach ($tags as $key => $value) {
+            if (! is_string($key) || ! str_starts_with($key, $prefix)) {
+                continue;
+            }
+
+            $result[substr($key, $prefixLength)] = is_string($value) ? $value : null;
+        }
+
+        return $result;
     }
 }
