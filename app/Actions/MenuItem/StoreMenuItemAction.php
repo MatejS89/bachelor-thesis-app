@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class StoreMenuItemAction
 {
-    public function __construct(protected StoreMenuItemPhotoAction $storeMenuItemPhotosAction) {}
+    public function __construct(protected StoreMenuItemPhotoAction $storeMenuItemPhotoAction) {}
 
     public function execute(array $data, OsmData $osmData, ?UploadedFile $photo): MenuItem
     {
@@ -23,7 +23,7 @@ class StoreMenuItemAction
             $menuItem->dietaryTags()->sync($data['dietary_tags'] ?? []);
 
             if ($photo) {
-                $menuItem = $this->storeMenuItemPhotosAction->execute($menuItem, $photo);
+                $menuItem = $this->storeMenuItemPhotoAction->execute($menuItem, $photo);
             }
 
             return $menuItem;
