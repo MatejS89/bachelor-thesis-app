@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Image } from 'lucide-svelte';
     import { Badge } from '@/components/ui/badge/index';
-    import * as Card from '@/components/ui/card/index';
     import * as Item from '@/components/ui/item/index';
     import { COLOR_CONFIG } from '@/utils/get_color';
 
@@ -10,9 +9,9 @@
         allergens,
         dietaryTags = [],
     }: {
-        menuItem: App.Data.MenuItemData;
+        menuItem: App.Data.MenuItem.MenuItemData;
         allergens: string[];
-        dietaryTags: string[];
+        dietaryTags?: string[];
     } = $props();
 
     let containsAllergens = $derived(
