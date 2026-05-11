@@ -4,11 +4,11 @@
     import AppHead from '@/components/AppHead.svelte';
     import MapComp from '@/components/MapComp.svelte';
     import { Button } from '@/components/ui/button';
-    import { FetchManager } from '@/hooks/fetch-manager.svelte';
-    import { MapManager } from '@/hooks/map-manager.svelte';
-    import { StateManager } from '@/hooks/state-manager.svelte';
     import { show } from '@/routes/map';
     import { setAppContext } from '@/state/appState.svelte';
+    import { FetchManager } from '@/state/fetch-manager.svelte.js';
+    import { MapManager } from '@/state/map-manager.svelte.js';
+    import { StateManager } from '@/state/state-manager.svelte.js';
 
     let { children } = $props();
 

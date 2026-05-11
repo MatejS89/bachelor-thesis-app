@@ -72,6 +72,8 @@ export class MapManager {
             container: container,
             style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
             hash: true,
+            minZoom: 6,
+            center: [14.456, 50.055],
             attributionControl: { compact: true },
         });
 
@@ -200,14 +202,8 @@ export class MapManager {
                     clusterMaxZoom: 14,
                     clusterRadius: 50,
                     clusterProperties: {
-                        safe_items_count: [
-                            '+',
-                            ['get', 'safe_items_count'],
-                        ],
-                        total_items_count: [
-                            '+',
-                            ['get', 'total_items_count'],
-                        ],
+                        safe_items_count: ['+', ['get', 'safe_items_count']],
+                        total_items_count: ['+', ['get', 'total_items_count']],
                     },
                 });
 

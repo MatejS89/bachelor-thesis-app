@@ -8,8 +8,8 @@
     import SearchNav from '@/components/SearchNav.svelte';
     import * as Empty from '@/components/ui/empty/index';
     import { Spinner } from '@/components/ui/spinner';
-    import { IsMobile } from '@/hooks/is-mobile.svelte';
     import { getAppContext } from '@/state/appState.svelte';
+    import { IsMobile } from '@/state/is-mobile.svelte.js';
 
     let { allergens } = $props();
 
