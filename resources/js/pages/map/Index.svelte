@@ -56,7 +56,7 @@
 </nav>
 
 <ol
-    class="h-full w-full relative px-2 lg:overflow-y-auto will-change-transform bg-sidebar"
+    class="h-full w-full relative px-0.75 md:px-2 lg:overflow-y-auto will-change-transform bg-sidebar"
     bind:this={virtualListElement}
     scroll-region=""
 >
@@ -68,7 +68,8 @@
         </Empty.Root>
     {:else}
         <div
-            style="height: {$virtualizer.getTotalSize()}px; width: 100%; position: relative;"
+            class="w-full relative"
+            style="height: {$virtualizer.getTotalSize()}px"
         >
             {#each virtualListItems as virtualRow (virtualRow.index)}
                 {@const feature = features[virtualRow.index]}
