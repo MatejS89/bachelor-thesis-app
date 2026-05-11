@@ -20,7 +20,7 @@
 </script>
 
 <Item.Root
-    class="gap-4 border-2 bg-sidebar border-primary"
+    class="gap-4 border-2 bg-sidebar border-primary p-1.5 md:p-2"
     variant="outline"
 >
     {#snippet child({ props })}
