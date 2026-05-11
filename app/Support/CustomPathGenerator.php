@@ -13,7 +13,7 @@ class CustomPathGenerator implements PathGenerator
     protected function getBasePath(Media $media): string
     {
         $rootFolder = match ($media->model_type) {
-            OsmData::class => 'restaurants',
+            OsmData::class => 'osmData',
             Review::class => 'reviews',
             MenuItem::class => 'menuItems',
             default => 'misc',
