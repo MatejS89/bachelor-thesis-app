@@ -53,11 +53,11 @@
 
 <Item.Root
     variant="outline"
-    class={`gap-4 bg-card border-2 ${borderClasses[status()]}`}
+    class={`gap-4 bg-sidebar border-2 ${borderClasses[status()]}`}
 >
     {#snippet child({ props })}
         <Link href={show(feature.id)} data={stateManager.filters} {...props}>
-            <Item.Media variant="image" class="w-32 md:w-40 shrink-0 h-full">
+            <Item.Media variant="image" class="w-32 md:w-40 shrink-0 h-full border-accent border">
                 {#if feature.properties.thumbnail_url}
                     <img
                         src={feature.properties.thumbnail_url}
