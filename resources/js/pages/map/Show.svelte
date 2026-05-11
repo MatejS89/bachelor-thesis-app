@@ -33,7 +33,7 @@
 </script>
 
 <div
-    class="p-3 h-full w-full min-w-0 flex flex-col gap-3 overflow-y-auto overflow-x-hidden"
+    class="px-1.5 md:px-3 py-3 h-full w-full min-w-0 flex flex-col gap-3 overflow-y-auto overflow-x-hidden"
     scroll-region=""
 >
     <header class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
@@ -135,14 +135,14 @@
 
     <ActionNav {restaurantData} />
 
-    <Tabs.Root value="menu" class="w-full ">
+    <Tabs.Root value="menu">
         <Tabs.List class="w-full">
             <Tabs.Trigger value="menu">Menu</Tabs.Trigger>
 
             <Tabs.Trigger value="reviews">Reviews</Tabs.Trigger>
         </Tabs.List>
 
-        <Tabs.Content value="menu">
+        <Tabs.Content value="menu" class="-mx-1">
             <MenuItemList {menuItems} {restaurantData} {allergens} />
         </Tabs.Content>
 
