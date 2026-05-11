@@ -1,31 +1,26 @@
 <script lang="ts">
-    import { Image } from 'lucide-svelte';
+    import { CircleAlert } from '@lucide/svelte';
+    import { CircleCheck, Image } from 'lucide-svelte';
     import { Badge } from '@/components/ui/badge/index';
     import * as Item from '@/components/ui/item/index';
-    import { COLOR_CONFIG } from '@/utils/get_color';
 
     let {
         menuItem,
-        allergens,
-        dietaryTags = [],
+        allergens
     }: {
         menuItem: App.Data.MenuItem.MenuItemData;
         allergens: string[];
-        dietaryTags?: string[];
     } = $props();
 
     let containsAllergens = $derived(
         menuItem.allergens?.some((allergen) =>
-            allergens.includes(allergen.id.toString()),
-        ) ?? false,
+            allergens.includes(allergen.id.toString())
+        ) ?? false
     );
 </script>
 
 <Item.Root
-    class="gap-4 border-2"
-    style="border-color: {containsAllergens
-        ? COLOR_CONFIG.mapColors.red
-        : COLOR_CONFIG.mapColors.green}"
+    class="gap-4 border-2 bg-sidebar border-primary"
     variant="outline"
 >
     {#snippet child({ props })}
@@ -47,25 +42,29 @@
             </Item.Media>
 
             <Item.Content class="flex-1 min-w-0">
-                <Item.Title
-                    class="flex flex-row gap-1 md:gap-2 items-center text-sm md:text-lg flex-wrap"
+                <Badge
+                    variant={containsAllergens ? 'destructive' : 'success'}
+                    class="h-auto text-sm lg:text-base {containsAllergens ? 'font-semibold' : ''}"
                 >
-                    <span class="truncate">{menuItem.name}</span>
+                    {#if containsAllergens}
+                        <CircleAlert />
+                    {:else}
+                        <CircleCheck />
+                    {/if}
+                    {containsAllergens ? 'Not Safe' : 'Safe'}
+                </Badge>
+
+                <Item.Title
+                    class="flex flex-row gap-1 md:gap-2 text-lg md:text-lg flex-wrap items-baseline font-semibold"
+                >
+                    <span class="wrap-anywhere min-w-0">{menuItem.name}</span>
 
                     {#if menuItem.dietaryTags && menuItem.dietaryTags.length > 0}
-                        <ul class="flex flex-row flex-wrap items-center gap-1">
+                        <ul class="flex flex-row flex-wrap gap-1">
                             {#each menuItem.dietaryTags as dietaryTag (dietaryTag.id)}
-                                {@const hexColor = dietaryTags.includes(
-                                    dietaryTag.id.toString(),
-                                )
-                                    ? COLOR_CONFIG.mapColors.red
-                                    : COLOR_CONFIG.mapColors.green}
                                 <Badge
                                     variant="outline"
-                                    class="font-semibold text-xs md:text-sm uppercase whitespace-normal h-auto text-center leading-tight px-1.5"
-                                    style="
-                                    color: {hexColor};
-                                    border-color: {hexColor};"
+                                    class="h-auto text-sm md:text-base whitespace-normal text-center leading-tight px-1.5"
                                 >
                                     {dietaryTag.name}
                                 </Badge>
@@ -75,24 +74,27 @@
                 </Item.Title>
 
                 {#if menuItem.allergens && menuItem.allergens.length > 0}
-                    <ul class="flex flex-row flex-wrap items-center gap-1 mt-1">
-                        {#each menuItem.allergens as allergen (allergen.id)}
-                            {@const hexColor = allergens.includes(
-                                allergen.id.toString(),
-                            )
-                                ? COLOR_CONFIG.mapColors.red
-                                : COLOR_CONFIG.mapColors.green}
-                            <Badge
-                                variant="outline"
-                                class="font-semibold text-xs md:text-sm uppercase whitespace-normal h-auto text-center leading-tight px-1.5"
-                                style="
-                                color: {hexColor};
-                                border-color: {hexColor};"
-                            >
-                                {allergen.name}
-                            </Badge>
-                        {/each}
-                    </ul>
+                    <div class="flex flex-row gap-2 items-center">
+                        <ul class="flex flex-row flex-wrap items-center gap-1 mt-1">
+                            <li>Contains:</li>
+                            {#each menuItem.allergens as allergen (allergen.id)}
+                                {@const containsCurrAllergen = allergens.includes(
+                                    allergen.id.toString(),
+                                )}
+                                <Badge
+                                    variant={containsCurrAllergen ? "destructive" : "outline"}
+                                    class="h-auto text-sm md:text-base whitespace-normal text-center leading-tight {containsCurrAllergen ? 'font-semibold' : ''}"
+                                >
+
+                                    {#if containsCurrAllergen}
+                                        <CircleAlert />
+                                    {/if}
+
+                                    {allergen.name}
+                                </Badge>
+                            {/each}
+                        </ul>
+                    </div>
                 {/if}
 
                 <Item.Description class="text-sm md:text-md leading-relaxed">
