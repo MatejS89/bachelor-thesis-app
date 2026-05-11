@@ -50,11 +50,13 @@
     class="shrink-0 top-12 lg:top-0 lg:static flex flex-col sticky z-40 bg-background border-b shadow-xs"
 >
     <SearchNav />
+    <div class="px-4">
     <AllergenFilter {allergens} />
+    </div>
 </nav>
 
 <ol
-    class="h-full w-full relative px-2 lg:overflow-y-auto will-change-transform"
+    class="h-full w-full relative px-2 lg:overflow-y-auto will-change-transform bg-sidebar"
     bind:this={virtualListElement}
     scroll-region=""
 >
