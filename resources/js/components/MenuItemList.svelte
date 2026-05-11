@@ -65,7 +65,7 @@
         {/if}
     </Card.Content>
 
-    <Card.Content class="px-2">
+    <Card.Content class="px-0.5 md:px-2">
         {#if visibleMenuItems.length > 0}
             <ul class="flex flex-col gap-4">
                 {#each visibleMenuItems as menuItem (menuItem.id)}
