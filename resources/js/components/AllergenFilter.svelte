@@ -2,7 +2,6 @@
     import { router, useRemember } from '@inertiajs/svelte';
     import { ChevronDown, ChevronUp } from 'lucide-svelte';
     import qs from 'qs';
-    import { Button } from '@/components/ui/button';
     import * as Collapsible from '@/components/ui/collapsible';
     import * as ToggleGroup from '@/components/ui/toggle-group';
     import { getAppContext } from '@/state/appState.svelte';
@@ -44,7 +43,7 @@
     <Collapsible.Trigger
         class="flex items-center justify-between w-full"
     >
-        <h4 class="text-sm font-medium leading-none">Allergen Filters</h4>
+        <h4 class="text-sm md:text-base leading-none">Allergen Filters</h4>
 
         <span class="inline-flex items-center justify-center w-9 h-9">
             {#if allergenDropdownState.isOpen}
@@ -61,7 +60,7 @@
             bind:value={stateManager.allergenIDs}
             onValueChange={handleAllergenChange}
             spacing={2}
-            class="flex flex-wrap pb-2"
+            class="flex flex-wrap py-2"
             variant="outline"
         >
             {#each allergens as allergen (allergen.id)}
