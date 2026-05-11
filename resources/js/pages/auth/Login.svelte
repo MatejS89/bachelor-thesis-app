@@ -15,11 +15,9 @@
 
     let {
         status = '',
-        canResetPassword,
         canRegister
     }: {
         status?: string;
-        canResetPassword: boolean;
         canRegister: boolean;
     } = $props();
 </script>
