@@ -27,15 +27,15 @@
     ];
 </script>
 
-<Card.Root class="z-100 w-max shadow-lg bg-card/95 {className} p-2">
+<Card.Root class="z-100 w-max shadow-lg {className} p-2 border-primary border-2" style="background-color: color-mix(in oklch, var(--color-accent) 60%, white);">
     <Card.Content class="flex flex-col gap-1.5 p-0">
         {#each legendItems as item (item.label)}
             <div class="flex items-center gap-2">
                 <span
-                    class="w-2.5 h-2.5 shrink-0 rounded-full border border-black/10 shadow-sm"
+                    class="w-3.5 h-3.5 shrink-0 rounded-full border shadow-sm"
                     style="background-color: {item.color};"
                 ></span>
-                <span class="text-xs font-medium text-foreground leading-none">
+                <span class="text-sm lg:text-base leading-none text-accent-foreground">
                     {item.label}
                 </span>
             </div>
