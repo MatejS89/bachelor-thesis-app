@@ -4,9 +4,9 @@
     import { MapPin, Navigation, SearchX } from 'lucide-svelte';
     import * as Command from '@/components/ui/command/index';
     import { Spinner } from '@/components/ui/spinner';
-    import { SearchManager } from '@/hooks/search-result-manager.svelte';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
+    import { SearchManager } from '@/state/search-result-manager.svelte.js';
     import getIconForFeature from '@/utils/get-osm_data-icons';
 
     const DEBOUNCE_MS = 300;
@@ -14,8 +14,25 @@
     let { mapManager } = getAppContext();
 
     let containerEl: HTMLElement;
+    let commandInputRef: HTMLInputElement | null = $state(null);
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
     let suppressNextSearch = false;
+
+    $effect(() => {
+        const input = commandInputRef;
+
+        if (!input) {
+            return;
+        }
+
+        const label = input
+            .closest('[data-slot="command"]')
+            ?.querySelector<HTMLLabelElement>('[data-command-input-label]');
+
+        if (label && !label.htmlFor) {
+            label.htmlFor = input.id;
+        }
+    });
 
     let searchManager = new SearchManager();
 
@@ -72,8 +89,6 @@
 
         await searchManager.search(mapManager.userLocation);
 
-        // mapManager.displaySearchResults(results);
-
         searchManager.showDropdown = true;
     }
 
@@ -126,6 +141,8 @@
     >
         <div class="relative">
             <Command.Input
+                class="text-base"
+                bind:ref={commandInputRef}
                 bind:value={searchManager.query}
                 placeholder="Search for a location or restaurant name..."
                 onkeydown={handleKeydown}
