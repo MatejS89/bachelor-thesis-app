@@ -22,6 +22,7 @@ class MapFeatureResource extends JsonResource
                 'opening_hours' => $this->tags['opening_hours'] ?? null,
                 'cuisine' => $this->tags['cuisine'] ?? null,
                 'amenity' => $this->type,
+                'thumbnail_url' => $this->getFirstMediaUrl('photos', 'thumb') ?: null,
             ],
         ];
     }
