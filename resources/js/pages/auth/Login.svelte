@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Form, router } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
@@ -12,7 +12,6 @@
     import AuthBase from '@/layouts/AuthLayout.svelte';
     import { register } from '@/routes';
     import { store } from '@/routes/login';
-    import { request } from '@/routes/password';
 
     let {
         status = '',
@@ -58,14 +57,7 @@
                 </div>
 
                 <div class="grid gap-2">
-                    <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
-                        {#if canResetPassword}
-                            <TextLink href={request()} class="text-sm">
-                                Forgot password?
-                            </TextLink>
-                        {/if}
-                    </div>
+                    <Label for="password">Password</Label>
                     <PasswordInput
                         id="password"
                         name="password"
