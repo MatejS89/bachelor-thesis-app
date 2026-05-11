@@ -18,13 +18,13 @@
     }>({
         rating: 0,
         description: '',
-        photos: [],
+        photos: []
     });
 
     let {
-        osmData,
+        osmData
     }: {
-        osmData: App.Data.OsmFeatureData;
+        osmData: App.Data.OsmData.OsmFeatureData;
     } = $props();
 
     let hoverRating = $state(0);
@@ -34,7 +34,7 @@
 
         form.transform((data) => ({
             ...data,
-            photos: data.photos.map((item) => item.file),
+            photos: data.photos.map((item) => item.file)
         })).submit(store(osmData));
     }
 </script>
