@@ -50,7 +50,7 @@
     class="shrink-0 top-12 lg:top-0 lg:static flex flex-col sticky z-40 bg-background border-b shadow-xs"
 >
     <SearchNav />
-    <div class="px-4">
+    <div class="px-4 py-2">
     <AllergenFilter {allergens} />
     </div>
 </nav>
