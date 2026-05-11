@@ -40,10 +40,16 @@
 </script>
 
 <Card.Root>
-    <Card.Header class="flex flex-wrap items-center justify-between gap-2">
-        <Card.Title>Menu</Card.Title>
+    <Card.Header>
+        <Card.Title class="text-base">Menu</Card.Title>
+    </Card.Header>
 
-        {#if allergens.length > 0 && menuItems.length > 0}
+    <Card.Content>
+        <AllergenFilter allergens={availableAllergens} />
+    </Card.Content>
+
+    <Card.Content>
+        {#if menuItems.length > 0}
             <div class="flex items-center gap-2">
                 <Checkbox
                     id="hide-unsafe-items"
@@ -51,15 +57,13 @@
                 />
                 <Label
                     for="hide-unsafe-items"
-                    class="text-sm font-normal cursor-pointer"
+                    class="text-base font-normal cursor-pointer"
                 >
-                    Hide items with my allergens
+                    Hide items with selected allergens
                 </Label>
             </div>
         {/if}
-    </Card.Header>
-
-    <AllergenFilter allergens={availableAllergens} />
+    </Card.Content>
 
     <Card.Content class="px-2">
         {#if visibleMenuItems.length > 0}
