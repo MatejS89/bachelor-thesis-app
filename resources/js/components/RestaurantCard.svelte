@@ -53,7 +53,7 @@
 
 <Item.Root
     variant="outline"
-    class={`gap-4 bg-sidebar border-2 ${borderClasses[status()]}`}
+    class={`gap-4 bg-sidebar px-1.5 py-1.5 border-2 ${borderClasses[status()]}`}
 >
     {#snippet child({ props })}
         <Link href={show(feature.id)} data={stateManager.filters} {...props}>
