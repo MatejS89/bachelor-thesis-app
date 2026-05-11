@@ -39,21 +39,20 @@
 
 <Collapsible.Root
     bind:open={allergenDropdownState.isOpen}
-    class="w-full px-3 py-2"
+    class="w-full"
 >
-    <Collapsible.Trigger>
-        <div class="flex items-center justify-between w-full">
-            <h4 class="text-sm font-medium leading-none">Allergen Filters</h4>
+    <Collapsible.Trigger
+        class="flex items-center justify-between w-full"
+    >
+        <h4 class="text-sm font-medium leading-none">Allergen Filters</h4>
 
-            <Button variant="ghost" size="sm" class="w-9 p-0">
-                {#if allergenDropdownState.isOpen}
-                    <ChevronUp class="h-4 w-4" />
-                {:else}
-                    <ChevronDown class="h-4 w-4" />
-                {/if}
-                <span class="sr-only">Toggle allergen filters</span>
-            </Button>
-        </div>
+        <span class="inline-flex items-center justify-center w-9 h-9">
+            {#if allergenDropdownState.isOpen}
+                <ChevronUp class="h-4 w-4" />
+            {:else}
+                <ChevronDown class="h-4 w-4" />
+            {/if}
+        </span>
     </Collapsible.Trigger>
 
     <Collapsible.Content>
@@ -62,7 +61,7 @@
             bind:value={stateManager.allergenIDs}
             onValueChange={handleAllergenChange}
             spacing={2}
-            class="flex flex-wrap pt-2"
+            class="flex flex-wrap pb-2"
             variant="outline"
         >
             {#each allergens as allergen (allergen.id)}
