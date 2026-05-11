@@ -21,15 +21,15 @@ class OsmData extends Model implements HasMedia
     use HasSpatial;
     use InteractsWithMedia;
 
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('gallery');
-    }
-
     protected $casts = [
         'geom' => Point::class,
         'tags' => 'array',
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('photos');
+    }
 
     public function registerMediaConversions(?Media $media = null): void
     {

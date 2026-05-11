@@ -98,7 +98,7 @@ class UpdateOsmDataData extends Data
             type: $osmData->type,
             cuisine: self::tagListFromString($tags['cuisine'] ?? null),
             diet: self::tagsByPrefix($tags, 'diet:'),
-            photos: $osmData->getMedia('gallery')->map(fn ($media) => [
+            photos: $osmData->getMedia('photos')->map(fn ($media) => [
                 'id' => $media->id,
                 'url' => $media->getUrl(),
                 'thumb_url' => $media->getUrl('thumb'),
