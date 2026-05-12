@@ -146,7 +146,7 @@
             <MenuItemList {menuItems} {restaurantData} {allergens} />
         </Tabs.Content>
 
-        <Tabs.Content value="reviews">
+        <Tabs.Content value="reviews" class="-mx-1">
             <ReviewList {reviews} {restaurantData} />
         </Tabs.Content>
     </Tabs.Root>
