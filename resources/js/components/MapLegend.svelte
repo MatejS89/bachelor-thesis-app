@@ -27,7 +27,8 @@
     ];
 </script>
 
-<Card.Root class="z-100 w-max shadow-lg {className} p-2 border-primary border-2" style="background-color: color-mix(in oklch, var(--color-accent) 60%, white);">
+<Card.Root class="z-100 w-max shadow-lg {className} p-2 border-primary border-2 bg-[color-mix(in_oklch,var(--color-accent)_60%,white)]
+           dark:bg-accent">
     <Card.Content class="flex flex-col gap-1.5 p-0">
         {#each legendItems as item (item.label)}
             <div class="flex items-center gap-2">
