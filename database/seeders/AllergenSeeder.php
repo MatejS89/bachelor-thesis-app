@@ -10,7 +10,7 @@ class AllergenSeeder extends Seeder
     public function run(): void
     {
         $allergens = [
-            'Cereals',
+            'Cereals (Gluten)',
             'Crustaceans',
             'Eggs',
             'Fish',
@@ -26,10 +26,11 @@ class AllergenSeeder extends Seeder
             'Molluscs',
         ];
 
-        foreach ($allergens as $allergen) {
-            Allergen::firstOrCreate([
-                'name' => $allergen,
-            ]);
+        foreach ($allergens as $index => $allergen) {
+            Allergen::firstOrCreate(
+                ['name' => $allergen],
+                ['label' => $index + 1]
+            );
         }
     }
 }
