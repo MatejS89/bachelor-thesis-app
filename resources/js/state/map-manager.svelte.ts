@@ -455,8 +455,8 @@ export class MapManager {
             return;
         }
 
+        this.map.once('moveend', () => this.triggerFetch());
         this.map.flyTo({ center: [lng, lat], zoom });
-        this.fetchAfterMove();
     }
 
     fitToFeatures(bbox: BBox) {
