@@ -123,9 +123,15 @@
         }
     }
 
-    function selectRestaurantResult(featureId: number) {
+    function selectRestaurantResult(feature: Feature) {
         searchManager.showDropdown = false;
-        router.get(show(featureId));
+
+        if (feature.geometry?.type === 'Point') {
+            const [lng, lat] = feature.geometry.coordinates;
+            mapManager.flyToLocation(lng, lat, 16);
+        }
+
+        router.get(show(feature.id as number));
     }
 
     function selectCurrentLocation() {
@@ -195,9 +201,7 @@
                                         <Command.Item
                                             value={`local-${feature.id}`}
                                             onSelect={() =>
-                                                selectRestaurantResult(
-                                                    feature.id,
-                                                )}
+                                                selectRestaurantResult(feature)}
                                         >
                                             <FeatureIcon />
                                             <span class="truncate">
