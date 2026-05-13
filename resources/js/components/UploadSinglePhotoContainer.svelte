@@ -6,16 +6,15 @@
 
     let {
         file = $bindable(null),
+        maxSizeMB,
         invalid = undefined,
         disabled = false,
-        maxSizeMB = 5,
-        accept = 'image/jpeg, image/png, image/webp',
-        onReject,
+        onReject
     }: {
         file: File | null;
+        maxSizeMB: number;
         invalid?: string;
         disabled?: boolean;
-        maxSizeMB?: number;
         accept?: string;
         onReject?: (reason: string) => void;
     } = $props();
@@ -116,7 +115,7 @@
     <input
         id="photo"
         type="file"
-        {accept}
+        accept='image/*'
         class="hidden"
         aria-invalid={invalid ? true : undefined}
         bind:this={fileInput}
