@@ -5,12 +5,12 @@ import maplibregl, {
     NavigationControl,
 } from 'maplibre-gl';
 import type { Map } from 'maplibre-gl';
-import type { BoundingBox } from '@/types';
 import {
     buildRatioColorExpression,
     getRatioColor,
     COLOR_CONFIG,
-} from '@/utils/get_color';
+} from '@/lib/get_color';
+import type { BoundingBox } from '@/types';
 
 const SOURCES = {
     CUSTOM_FEATURES: 'custom-features',
