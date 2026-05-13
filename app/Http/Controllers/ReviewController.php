@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Review\StoreReviewAction;
 use App\Data\OsmData\OsmFeatureData;
-use App\Http\Requests\StoreReviewRequest;
+use App\Http\Requests\Review\StoreReviewRequest;
 use App\Models\OsmData;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
@@ -14,14 +14,6 @@ use Inertia\Inertia;
 
 class ReviewController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -49,37 +41,5 @@ class ReviewController extends Controller
         );
 
         return redirect()->route('map.show', $osmData);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Review $review)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Review $review)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Review $review)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Review $review)
-    {
-        //
     }
 }
