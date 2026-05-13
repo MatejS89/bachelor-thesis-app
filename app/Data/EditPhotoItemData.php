@@ -7,6 +7,7 @@ use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Attributes\Validation\RequiredIf;
 use Spatie\LaravelData\Data;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 
 class EditPhotoItemData extends Data
 {
@@ -18,6 +19,7 @@ class EditPhotoItemData extends Data
         public ?int $id = null,
 
         #[RequiredIf('kind', 'new')]
+        #[LiteralTypeScriptType('File | null')]
         public ?UploadedFile $file = null,
 
         public ?string $url = null,
