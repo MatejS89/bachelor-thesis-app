@@ -38,13 +38,13 @@
             diet: Object.fromEntries(
                 Object.entries(osmData.diet).map(([k, v]) => [k, v ?? ''])
             ),
-            photos: osmData.photos.map(
+            photos: osmData.photos ? osmData.photos.map(
                 (photo): ImageItem => ({
                     id: String(photo.id),
                     url: String(photo.url),
                     isExisting: true
                 })
-            ),
+            ) : [],
             opening_hours: osmData.opening_hours ?? '',
             id: osmData.id
         };
