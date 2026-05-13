@@ -126,12 +126,12 @@
     function selectRestaurantResult(feature: Feature) {
         searchManager.showDropdown = false;
 
+        router.get(show(feature.id as number));
+
         if (feature.geometry?.type === 'Point') {
             const [lng, lat] = feature.geometry.coordinates;
             mapManager.flyToLocation(lng, lat, 16);
         }
-
-        router.get(show(feature.id as number));
     }
 
     function selectCurrentLocation() {
