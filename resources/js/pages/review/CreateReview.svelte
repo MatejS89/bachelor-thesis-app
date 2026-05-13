@@ -22,9 +22,13 @@
     });
 
     let {
-        osmData
+        osmData,
+        maxPhotos,
+        maxPhotoSizeKb
     }: {
         osmData: App.Data.OsmData.OsmFeatureData;
+        maxPhotos: number;
+        maxPhotoSizeKb: number;
     } = $props();
 
     let hoverRating = $state(0);
@@ -139,6 +143,8 @@
                             bind:items={form.photos}
                             invalid={!!form.errors.photos}
                             disabled={form.processing}
+                            maxFiles={maxPhotos}
+                            maxFileSizeKb={maxPhotoSizeKb}
                         />
                     </Field.Group>
                 </Card.Content>

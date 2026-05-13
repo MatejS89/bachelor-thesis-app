@@ -11,15 +11,20 @@
     let {
         items = $bindable(),
         invalid = false,
-        disabled = false
+        disabled = false,
+        maxFiles = Infinity,
+        maxFileSizeKb = Infinity
     }: {
         items: ImageItem[];
         invalid?: boolean;
         disabled?: boolean;
+        maxFiles?: number;
+        maxFileSizeKb?: number;
     } = $props();
 
     let fileInput = $state<HTMLInputElement | null>(null);
     let snapshot: ImageItem[] = [];
+    let errors = $state<string[]>([]);
 
     function onDragStart() {
         snapshot = items.slice();
@@ -37,13 +42,33 @@
 
     function handleFileSelect(e: Event) {
         const target = e.target as HTMLInputElement;
+        errors = [];
 
         if (target.files) {
-            const validFiles = Array.from(target.files).filter((file) =>
+            const imageFiles = Array.from(target.files).filter((file) =>
                 file.type.startsWith('image/')
             );
 
-            const newItems = validFiles.map((file) => ({
+            const oversized = imageFiles.filter((f) => f.size / 1024 > maxFileSizeKb);
+
+            if (oversized.length > 0) {
+                const limitMb = maxFileSizeKb >= 1024
+                    ? `${(maxFileSizeKb / 1024).toFixed(0)} MB`
+                    : `${maxFileSizeKb} KB`;
+                errors = [...errors, `${oversized.length} file(s) exceed the ${limitMb} size limit and were not added.`];
+            }
+
+            const validFiles = imageFiles.filter((f) => f.size / 1024 <= maxFileSizeKb);
+
+            const remainingSlots = maxFiles - items.length;
+
+            if (validFiles.length > remainingSlots) {
+                errors = [...errors, `Only ${remainingSlots} more photo(s) can be added (maximum ${maxFiles}).`];
+            }
+
+            const allowedFiles = validFiles.slice(0, remainingSlots);
+
+            const newItems = allowedFiles.map((file) => ({
                 id: crypto.randomUUID(),
                 file: file,
                 url: URL.createObjectURL(file),
@@ -149,10 +174,18 @@
         </DragDropProvider>
     </div>
 
-    {#if items.length > 0}
-        <p class="text-xs text-muted-foreground text-right">
-            {items.length}
-            {items.length === 1 ? 'photo' : 'photos'} attached
-        </p>
-    {/if}
+    <div class="flex flex-col">
+        {#if errors.length > 0}
+            {#each errors as error (error)}
+                <Field.Error>{error}</Field.Error>
+            {/each}
+        {/if}
+
+        {#if items.length > 0}
+            <p class="text-xs text-muted-foreground text-right">
+                {items.length}{maxFiles !== Infinity ? `/${maxFiles}` : ''}
+                {items.length === 1 ? 'photo' : 'photos'} attached
+            </p>
+        {/if}
+    </div>
 </Field.Field>

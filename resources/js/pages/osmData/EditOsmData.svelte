@@ -19,7 +19,15 @@
     import { show, update } from '@/routes/map';
     import type { ImageItem } from '@/types/imageitem';
 
-    let { osmData }: { osmData: App.Data.OsmData.UpdateOsmDataData } = $props();
+    let {
+        osmData,
+        maxPhotos,
+        maxPhotoSizeKb
+    }: {
+        osmData: App.Data.OsmData.UpdateOsmDataData;
+        maxPhotos: number;
+        maxPhotoSizeKb: number;
+    } = $props();
 
 
     function initialFormData() {
@@ -158,7 +166,11 @@
 
             <Field.Set class="rounded-lg border p-4">
                 <Field.Field>
-                    <DragAndDropPhotoContainer bind:items={form.photos} />
+                    <DragAndDropPhotoContainer
+                        bind:items={form.photos}
+                        maxFiles={maxPhotos}
+                        maxFileSizeKb={maxPhotoSizeKb}
+                    />
                 </Field.Field>
             </Field.Set>
 
