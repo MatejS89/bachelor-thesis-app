@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
+    import AppearanceToggle from '@/components/AppearanceToggle.svelte';
     import NavUser from '@/components/NavUser.svelte';
     import { buttonVariants } from '@/components/ui/button';
     import { login } from '@/routes';
@@ -17,16 +18,20 @@
             <span class="font-bold text-2xl sm:inline-block">{appName}</span>
         </Link>
 
-        {#if auth.user}
-            <NavUser />
-        {:else}
-            <Link
-                href={login()}
-                class={buttonVariants({ variant: 'default' })}
-                as="button"
-            >
-                Log in
-            </Link>
-        {/if}
+        <nav class="flex items-center gap-2">
+            <AppearanceToggle />
+
+            {#if auth.user}
+                <NavUser />
+            {:else}
+                <Link
+                    href={login()}
+                    class={buttonVariants({ variant: 'default' })}
+                    as="button"
+                >
+                    Log in
+                </Link>
+            {/if}
+        </nav>
     </div>
 </header>
