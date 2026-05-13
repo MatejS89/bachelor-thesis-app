@@ -4,9 +4,7 @@ namespace App\Data\OsmData;
 
 use App\Data\EditPhotoItemData;
 use App\Models\OsmData;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
 class UpdateOsmDataData extends Data
 {
@@ -16,8 +14,8 @@ class UpdateOsmDataData extends Data
         public ?string $type = null,
         public array $cuisine = [],
         public array $diet = [],
-        #[DataCollectionOf(EditPhotoItemData::class)]
-        public ?DataCollection $photos = null,
+        /** @var EditPhotoItemData[]|null */
+        public ?array $photos = null,
         public ?string $opening_hours = null,
     ) {}
 
@@ -105,12 +103,9 @@ class UpdateOsmDataData extends Data
     {
         $tags = $osmData->tags ?? [];
 
-        $photos = EditPhotoItemData::collect(
-            $osmData->getMedia('photos')
-                ->map(fn ($media) => EditPhotoItemData::fromMedia($media))
-                ->all(),
-            DataCollection::class,
-        );
+        $photos = $osmData->getMedia('photos')
+            ->map(fn ($media) => EditPhotoItemData::fromMedia($media))
+            ->all();
 
         return new self(
             id: $osmData->id,
