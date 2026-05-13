@@ -1,40 +1,26 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('osm_data', function (Blueprint $table) {
-            $table->id();
-            $table->string('osm_type')->nullable();
-            $table->bigInteger('osm_id')->nullable();
-            $table->text('name')->nullable();
-            $table->text('type')->nullable();
-            $table->text('cuisine')->nullable();
-            $table->text('opening_hours')->nullable();
-            $table->text('street')->nullable();
-            $table->text('housenumber')->nullable();
-            $table->text('city')->nullable();
-            $table->text('postcode')->nullable();
-            $table->text('website')->nullable();
-            $table->text('phone')->nullable();
-            $table->text('email')->nullable();
-            $table->geometry('geom', 'POINT', 4326);
-        });
+        Artisan::call('osm:import', [], $this->getOutput());
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('osm_data');
+        foreach (['osm2pgsql_properties', 'planet_osm_nodes', 'planet_osm_ways', 'planet_osm_rels'] as $t) {
+            Schema::dropIfExists($t);
+        }
+    }
+
+    private function getOutput()
+    {
+        return app(ConsoleOutput::class);
     }
 };
