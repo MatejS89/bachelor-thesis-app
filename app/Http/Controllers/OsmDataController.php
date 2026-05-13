@@ -51,6 +51,7 @@ class OsmDataController extends Controller
     public function search(SearchOsmDataData $data): JsonResponse
     {
         $results = OsmData::query()
+            ->select('id', 'name', 'geom')
             ->where('name', 'ilike', "%{$data->search}%")
             ->limit(3)
             ->get();
