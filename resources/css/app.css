@@ -81,9 +81,9 @@ img {
     --secondary-foreground: hsl(0 4.7619% 95.8824%);
     --muted: hsl(330 6.2500% 25.0980%);
     --muted-foreground: hsl(324.0000 5.4348% 63.9216%);
-    --accent: hsl(71.2500 21.6216% 29.0196%);
+    --accent: hsl(298.2353 33.3333% 20%);
     --accent-foreground: hsl(346.1538 14.9425% 82.9412%);
-    --destructive: hsl(0 100% 59.0196%);
+    --destructive: hsl(348.1034 96.6667% 52.9412%);
     --destructive-foreground: hsl(0 0% 100%);
     --border: hsl(330 6.2500% 25.0980%);
     --input: hsl(330 6.2500% 25.0980%);
