@@ -6,12 +6,12 @@
     import * as Carousel from '@/components/ui/carousel/index';
     import * as Empty from '@/components/ui/empty/index';
     import { Separator } from '@/components/ui/separator';
+    import formatLocal from '@/lib/format-date';
     import { create as createReview } from '@/routes/map/review';
-    import formatLocal from '@/utils/format-date';
 
     let {
         restaurantData,
-        reviews,
+        reviews
     }: {
         restaurantData: App.Data.OsmFeatureData;
         reviews: App.Data.ReviewData[];
@@ -29,11 +29,11 @@
                 <article class="flex flex-col gap-1">
                     <div class="flex items-center justify-between mb-1">
                         <span class="text-sm lg:text-base text-foreground"
-                            >{review?.user?.name}</span
+                        >{review?.user?.name}</span
                         >
                         <time
                             class="text-sm datetime={review.created_at} text-muted-foreground"
-                            >{formatLocal(review.created_at)}</time
+                        >{formatLocal(review.created_at)}</time
                         >
                     </div>
                     <div class="flex items-center gap-0.5 text-yellow-500 mb-2">

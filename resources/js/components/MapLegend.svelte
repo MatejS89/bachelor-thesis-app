@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Card from '@/components/ui/card/index';
-    import { COLOR_CONFIG } from '@/utils/get_color';
+    import { COLOR_CONFIG } from '@/lib/get_color';
 
     const highPct = COLOR_CONFIG.thresholds.high * 100;
     const medPct = COLOR_CONFIG.thresholds.medium * 100;

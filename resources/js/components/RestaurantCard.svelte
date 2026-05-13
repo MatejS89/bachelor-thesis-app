@@ -4,10 +4,10 @@
     import OpeningBadge from '@/components/OpeningBadge.svelte';
     import { Badge } from '@/components/ui/badge';
     import * as Item from '@/components/ui/item/index';
+    import type { StatusColor } from '@/lib/get_color';
+    import { getRatioColor } from '@/lib/get_color';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
-    import type { StatusColor } from '@/utils/get_color';
-    import { getRatioColor } from '@/utils/get_color';
 
     let { feature } = $props();
 

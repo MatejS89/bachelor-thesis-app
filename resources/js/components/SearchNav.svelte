@@ -4,10 +4,10 @@
     import { MapPin, Navigation, SearchX } from 'lucide-svelte';
     import * as Command from '@/components/ui/command/index';
     import { Spinner } from '@/components/ui/spinner';
+    import getIconForFeature from '@/lib/get-osm_data-icons';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
     import { SearchManager } from '@/state/search-result-manager.svelte.js';
-    import getIconForFeature from '@/utils/get-osm_data-icons';
 
     const DEBOUNCE_MS = 300;
 

@@ -4,13 +4,13 @@
         ExternalLink,
         SquarePen,
         Star,
-        UtensilsCrossed,
+        UtensilsCrossed
     } from 'lucide-svelte';
     import { buttonVariants } from '@/components/ui/button';
+    import createNavigationLink from '@/lib/navigation';
     import { edit } from '@/routes/map';
     import { create as createMenuItem } from '@/routes/map/menuitem';
     import { create as createReview } from '@/routes/map/review';
-    import createNavigationLink from '@/utils/navigation';
 
     let { restaurantData }: { restaurantData: App.Data.OsmFeatureData } =
         $props();
