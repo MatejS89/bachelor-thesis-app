@@ -27,6 +27,7 @@ class MenuItemController extends Controller
             'allergens' => AllergenData::collect(Allergen::all()),
             'dietaryTags' => DietaryTagData::collect(DietaryTag::all()),
             'osmData' => OsmFeatureData::from($osmData),
+            'maxPhotoSizeKb' => config('file-uploads.max_photo_size_in_kb'),
         ]);
     }
 
