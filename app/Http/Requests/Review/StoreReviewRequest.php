@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Review;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,10 +23,14 @@ class StoreReviewRequest extends FormRequest
      */
     public function rules(): array
     {
+        $maxPhotoSizeInKilobytes = config('file-uploads.max_photo_size_in_kb');
+        $maxPhotoCount = config('file-uploads.max_review_photos');
+
         return [
             'rating' => ['required', 'integer', 'between:1,5'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'photos.*' => ['nullable', 'image', 'max:10000'],
+            'photos' => ['array', 'max:'.$maxPhotoCount],
+            'photos.*' => ['image', 'max:'.$maxPhotoSizeInKilobytes],
         ];
     }
 }
