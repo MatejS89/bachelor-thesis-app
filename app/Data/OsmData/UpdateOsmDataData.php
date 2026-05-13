@@ -2,23 +2,22 @@
 
 namespace App\Data\OsmData;
 
+use App\Data\EditPhotoItemData;
 use App\Models\OsmData;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class UpdateOsmDataData extends Data
 {
-    /**
-     * @param  array<int, string>  $cuisine
-     * @param  array<string, string|null>  $diet
-     * @param  array<int, array<string, mixed>>  $photos
-     */
     public function __construct(
         public int $id,
         public string $name,
         public ?string $type = null,
         public array $cuisine = [],
         public array $diet = [],
-        public array $photos = [],
+        #[DataCollectionOf(EditPhotoItemData::class)]
+        public ?DataCollection $photos = null,
         public ?string $opening_hours = null,
     ) {}
 
@@ -27,12 +26,23 @@ class UpdateOsmDataData extends Data
      */
     public static function rules(): array
     {
+        $maxPhotoSizeInKb = config('file-uploads.max_photo_size_in_kb');
+        $maxPhotoCount = config('file-uploads.max_osmdata_photos');
+
         return [
             'id' => ['required', 'integer', 'exists:osm_data,id'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['nullable', 'string', 'max:255'],
             'opening_hours' => ['nullable', 'string'],
-            'photos' => ['array'],
+            'photos' => ['array', 'max:'.$maxPhotoCount],
+            'photos.*.kind' => ['required', 'in:existing,new'],
+            'photos.*.id' => ['required_if:photos.*.kind,existing', 'integer'],
+            'photos.*.file' => [
+                'required_if:photos.*.kind,new',
+                'file',
+                'max:'.$maxPhotoSizeInKb,
+                'image',
+            ],
             'cuisine' => ['array'],
             'cuisine.*' => ['string'],
             'diet' => ['array'],
@@ -57,17 +67,20 @@ class UpdateOsmDataData extends Data
             $tags['cuisine'] = implode(';', $cuisine);
         }
 
+        foreach (array_keys($tags) as $existingKey) {
+            if (is_string($existingKey) && str_starts_with($existingKey, 'diet:')) {
+                unset($tags[$existingKey]);
+            }
+        }
+
         foreach ($this->diet as $key => $value) {
             $filledValue = self::filledString($value);
-            $tagKey = "diet:$key";
 
             if ($filledValue === null) {
-                unset($tags[$tagKey]);
-
                 continue;
             }
 
-            $tags[$tagKey] = $filledValue;
+            $tags["diet:$key"] = $filledValue;
         }
 
         return [
@@ -92,17 +105,20 @@ class UpdateOsmDataData extends Data
     {
         $tags = $osmData->tags ?? [];
 
+        $photos = EditPhotoItemData::collect(
+            $osmData->getMedia('photos')
+                ->map(fn ($media) => EditPhotoItemData::fromMedia($media))
+                ->all(),
+            DataCollection::class,
+        );
+
         return new self(
             id: $osmData->id,
             name: $osmData->name,
             type: $osmData->type,
             cuisine: self::tagListFromString($tags['cuisine'] ?? null),
             diet: self::tagsByPrefix($tags, 'diet:'),
-            photos: $osmData->getMedia('photos')->map(fn ($media) => [
-                'id' => $media->id,
-                'url' => $media->getUrl(),
-                'thumb_url' => $media->getUrl('thumb'),
-            ])->toArray(),
+            photos: $photos,
             opening_hours: $tags['opening_hours'] ?? null,
         );
     }
