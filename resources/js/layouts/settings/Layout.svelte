@@ -1,18 +1,18 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
-    import Heading from '@/components/Heading.svelte';
     import { Button } from '@/components/ui/button';
     import { Separator } from '@/components/ui/separator';
-    import { currentUrlState } from '@/lib/currentUrl';
     import { toUrl } from '@/lib/utils';
     import { edit as editAppearance } from '@/routes/appearance';
     import { edit as editProfile } from '@/routes/profile';
     import { edit as editSecurity } from '@/routes/security';
     import type { NavItem } from '@/types';
+    import Heading from '@/components/Heading.svelte';
+    import { currentUrlState } from '@/lib/currentUrl';
 
     let {
-        children,
+        children
     }: {
         children?: Snippet;
     } = $props();
@@ -20,16 +20,16 @@
     const sidebarNavItems: NavItem[] = [
         {
             title: 'Profile',
-            href: editProfile(),
+            href: editProfile()
         },
         {
             title: 'Security',
-            href: editSecurity(),
+            href: editSecurity()
         },
         {
             title: 'Appearance',
-            href: editAppearance(),
-        },
+            href: editAppearance()
+        }
     ];
 
     const { currentUrl, isCurrentOrParentUrl } = currentUrlState();
