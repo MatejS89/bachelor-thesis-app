@@ -27,6 +27,12 @@
         allergens: App.Data.Allergen.AllergenData[];
     } = $props();
 
+    const address = $derived([
+        [restaurantData.tags['addr:street'], restaurantData.tags['addr:housenumber']].filter(Boolean).join(' '),
+        restaurantData.tags['addr:city'],
+        restaurantData.tags['addr:postcode'],
+    ].filter(Boolean).join(', '));
+
     $effect(() => {
         stateManager.mapShown = false;
     });
@@ -69,16 +75,15 @@
             {/if}
         </div>
 
-        <div class="flex justify-center items-start w-full self-center">
-            <MapPin class="h-5 w-5 text-muted-foreground" />
-        </div>
+        {#if address}
+            <div class="flex justify-center items-start w-full self-center">
+                <MapPin class="h-5 w-5 text-muted-foreground" />
+            </div>
 
-        <p class="text-muted-foreground text-lg leading-snug self-center">
-            {restaurantData.tags['addr:street']}
-            {restaurantData.tags['addr:housenumber']}
-            , {restaurantData.tags['addr:city']}
-            {restaurantData.tags['addr:postcode']}
-        </p>
+            <p class="text-muted-foreground text-lg leading-snug self-center">
+                {address}
+            </p>
+        {/if}
     </header>
 
     <div class="w-full px-12">
