@@ -21,6 +21,7 @@
 
     let { osmData }: { osmData: App.Data.OsmData.UpdateOsmDataData } = $props();
 
+
     function initialFormData() {
         return {
             name: osmData.name,
@@ -54,7 +55,14 @@
     function onSubmit(e: Event) {
         e.preventDefault();
 
-        form.submit(update(osmData));
+        form.transform((data) => ({
+            ...data,
+            photos: data.photos.map((p) =>
+                p.isExisting
+                    ? { kind: 'existing', id: Number(p.id) }
+                    : { kind: 'new', file: p.file }
+            )
+        })).submit(update(osmData));
     }
 </script>
 
@@ -92,7 +100,7 @@
 
                             <Field.Field>
                                 <Field.Label for="type"
-                                >Amenity type
+                                >Restaurant type
                                 </Field.Label
                                 >
                                 <ComboboxSelect
