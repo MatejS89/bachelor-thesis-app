@@ -14,11 +14,13 @@
     let {
         allergens,
         dietaryTags,
-        osmData
+        osmData,
+        maxPhotoSizeKb
     }: {
-        allergens: App.Data.AllergenData[];
-        dietaryTags: App.Data.DietaryTagData[];
+        allergens: App.Data.Allergen.AllergenData[];
+        dietaryTags: App.Data.DietaryTag.DietaryTagData[];
         osmData: App.Data.OsmData.OsmFeatureData;
+        maxPhotoSizeKb: number;
     } = $props();
 
     const form = useForm<{
@@ -186,7 +188,7 @@
                             bind:file={form.photo}
                             invalid={form.errors.photo}
                             disabled={form.processing}
-                            maxSizeMB={5}
+                            maxSizeMB={maxPhotoSizeKb / 1024}
                             onReject={(message) =>
                                 form.setError('photo', message)}
                         />
