@@ -3,7 +3,7 @@ import { hydrate, mount } from 'svelte';
 import '../css/app.css';
 import FullScreenLayout from '@/layouts/FullScreenLayout.svelte';
 import MapLayout from '@/layouts/MapLayout.svelte';
-import { initializeTheme } from '@/lib/theme.svelte';
+import { initializeTheme } from '@/state/theme.svelte.js';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
