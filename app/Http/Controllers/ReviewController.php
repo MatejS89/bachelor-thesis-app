@@ -23,6 +23,8 @@ class ReviewController extends Controller
 
         return Inertia::render('review/CreateReview', [
             'osmData' => OsmFeatureData::from($osmData),
+            'maxPhotos' => config('file-uploads.max_review_photos'),
+            'maxPhotoSizeKb' => config('file-uploads.max_photo_size_in_kb'),
         ]);
     }
 

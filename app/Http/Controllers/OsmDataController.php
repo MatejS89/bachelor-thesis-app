@@ -29,6 +29,8 @@ class OsmDataController extends Controller
 
         return Inertia::render('osmData/EditOsmData', [
             'osmData' => UpdateOsmDataData::from($osmData),
+            'maxPhotos' => config('file-uploads.max_osmdata_photos'),
+            'maxPhotoSizeKb' => config('file-uploads.max_photo_size_in_kb'),
         ]);
     }
 
@@ -61,6 +63,7 @@ class OsmDataController extends Controller
 
     public function show(OsmData $osmData): Response
     {
+
         $osmData->load('media');
         $osmData->loadAverageRating();
 
