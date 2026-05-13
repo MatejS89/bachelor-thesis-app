@@ -2,13 +2,12 @@
 
 namespace App\Actions\Utils;
 
-use Spatie\LaravelData\DataCollection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class SyncOrderedMediaAction
 {
-    public function execute(HasMedia $model, ?DataCollection $mediaItems, string $collectionName = 'photos'): HasMedia
+    public function execute(HasMedia $model, ?array $mediaItems, string $collectionName = 'photos'): HasMedia
     {
         $ownedIds = $model->getMedia($collectionName)->pluck('id')->map(fn ($id) => (int) $id)->all();
 
