@@ -1,10 +1,11 @@
 declare namespace App {
     namespace Data {
-        export type BoundingBox = {
-            readonly north: number;
-            readonly south: number;
-            readonly east: number;
-            readonly west: number;
+        export type EditPhotoItemData = {
+            kind: string;
+            id: number | null;
+            file: File | null;
+            url: string | null;
+            thumb_url: string | null;
         };
         export type GalleryImageData = {
             id: number;
@@ -60,26 +61,10 @@ declare namespace App {
                 average_rating: number | null;
                 photos?: App.Data.PhotoData[];
             };
-            export type OsmGeoJSONCollectionData = {
-                type: 'FeatureCollection';
-                features: App.Data.OsmData.OsmGeoJSONFeatureData[];
-            };
-            export type OsmGeoJSONFeatureData = {
-                type: 'Feature';
+            export type OsmSearchResultData = {
                 id: number;
-                geometry: { type: 'Point'; coordinates: [number, number] };
-                properties: App.Data.OsmData.OsmGeoJSONPropertiesData;
-            };
-            export type OsmGeoJSONPropertiesData = {
                 name: string;
-                total_items_count: number | null;
-                safe_items_count: number | null;
-                average_rating: number | null;
-                distance: number | null;
-                cuisine: string | null;
-                opening_hours: string | null;
-                amenity: string | null;
-                thumbnail_url: string | null;
+                geom: { type: 'Point'; coordinates: [number, number] };
             };
             export type SearchOsmDataData = {
                 search: string;
@@ -88,9 +73,9 @@ declare namespace App {
                 id: number;
                 name: string;
                 type: string | null;
-                cuisine: string[];
-                diet: Record<string, string | null>;
-                photos: Record<string, any>[];
+                cuisine: Array<any>;
+                diet: Array<any>;
+                photos: App.Data.EditPhotoItemData[] | null;
                 opening_hours: string | null;
             };
         }
@@ -105,12 +90,6 @@ declare namespace App {
             };
         }
         namespace User {
-            export type UserData = {
-                id: number;
-                name: string;
-                email: string;
-                reviews?: App.Data.Review.ReviewData[];
-            };
             export type UserMinData = {
                 name: string;
             };
