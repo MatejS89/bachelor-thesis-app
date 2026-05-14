@@ -56,7 +56,7 @@ declare namespace App {
                 osm_id: number;
                 name: string;
                 type: string | null;
-                tags: Record<string, any>;
+                tags: App.Data.OsmData.ParsedOsmTagsData;
                 geom: { type: 'Point'; coordinates: [number, number] };
                 average_rating: number | null;
                 photos?: App.Data.PhotoData[];
@@ -65,6 +65,15 @@ declare namespace App {
                 id: number;
                 name: string;
                 geom: { type: 'Point'; coordinates: [number, number] };
+            };
+            export type ParsedOsmTagsData = {
+                opening_hours: string | null;
+                cuisine: string[];
+                diet: Record<string, string>;
+                payment: Record<string, string>;
+                contact: Record<string, string>;
+                address: Record<string, string>;
+                other: Record<string, string>;
             };
             export type SearchOsmDataData = {
                 search: string;
