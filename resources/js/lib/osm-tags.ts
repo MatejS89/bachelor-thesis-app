@@ -66,19 +66,48 @@ export const osmCuisineValues = [
 ] as const;
 
 export const osmDietTags: OsmTagDefinition[] = [
-    { key: 'diet:vegetarian', label: 'Vegetarian' },
-    { key: 'diet:vegan', label: 'Vegan' },
-    { key: 'diet:gluten_free', label: 'Gluten-free' },
-    { key: 'diet:lactose_free', label: 'Lactose-free' },
-    { key: 'diet:dairy_free', label: 'Dairy-free' },
-    { key: 'diet:egg_free', label: 'Egg-free' },
-    { key: 'diet:sugar_free', label: 'Sugar-free' },
-    { key: 'diet:halal', label: 'Halal' },
-    { key: 'diet:kosher', label: 'Kosher' },
-    { key: 'diet:pescetarian', label: 'Pescetarian' },
-    { key: 'diet:raw', label: 'Raw' },
-    { key: 'diet:meat', label: 'Meat' },
-    { key: 'diet:non-vegetarian', label: 'Non-vegetarian' },
+    { key: 'vegetarian', label: 'Vegetarian' },
+    { key: 'vegan', label: 'Vegan' },
+    { key: 'gluten_free', label: 'Gluten-free' },
+    { key: 'lactose_free', label: 'Lactose-free' },
+    { key: 'dairy_free', label: 'Dairy-free' },
+    { key: 'egg_free', label: 'Egg-free' },
+    { key: 'sugar_free', label: 'Sugar-free' },
+    { key: 'halal', label: 'Halal' },
+    { key: 'kosher', label: 'Kosher' },
+    { key: 'pescetarian', label: 'Pescetarian' },
+    { key: 'raw', label: 'Raw' },
+    { key: 'meat', label: 'Meat' },
+    { key: 'non-vegetarian', label: 'Non-vegetarian' },
+];
+
+export const osmPaymentTags: OsmTagFieldDefinition[] = [
+    { key: 'cash', label: 'Cash', type: 'select', options: ['', 'yes', 'no'] },
+    {
+        key: 'cards',
+        label: 'Cards',
+        type: 'select',
+        options: ['', 'yes', 'no'],
+    },
+    {
+        key: 'contactless',
+        label: 'Contactless',
+        type: 'select',
+        options: ['', 'yes', 'no'],
+    },
+    { key: 'visa', label: 'Visa', type: 'select', options: ['', 'yes', 'no'] },
+    {
+        key: 'mastercard',
+        label: 'Mastercard',
+        type: 'select',
+        options: ['', 'yes', 'no'],
+    },
+    { key: 'amex', label: 'Amex', type: 'select', options: ['', 'yes', 'no'] },
+];
+
+export const osmContactTags: OsmTagFieldDefinition[] = [
+    { key: 'facebook', label: 'Facebook' },
+    { key: 'instagram', label: 'Instagram' },
 ];
 
 export const osmServiceTags: OsmTagFieldDefinition[] = [
@@ -259,58 +288,29 @@ export const osmFoodOptionTags: OsmTagFieldDefinition[] = [
     },
 ];
 
-export const osmContactTags: OsmTagFieldDefinition[] = [
-    { key: 'phone', label: 'Phone' },
-    { key: 'email', label: 'Email' },
-    { key: 'website', label: 'Website' },
-    { key: 'contact:facebook', label: 'Facebook' },
-    { key: 'contact:instagram', label: 'Instagram' },
-];
-
 export const osmIdentityTags: OsmTagFieldDefinition[] = [
     { key: 'brand', label: 'Brand' },
     { key: 'branch', label: 'Branch' },
     { key: 'operator', label: 'Operator' },
     { key: 'level', label: 'Floor / level' },
     { key: 'start_date', label: 'Started' },
-    { key: 'addr:full', label: 'Address', type: 'textarea' },
 ];
 
-export const osmPaymentTags: OsmTagFieldDefinition[] = [
-    {
-        key: 'payment:cash',
-        label: 'Cash',
-        type: 'select',
-        options: ['', 'yes', 'no'],
-    },
-    {
-        key: 'payment:cards',
-        label: 'Cards',
-        type: 'select',
-        options: ['', 'yes', 'no'],
-    },
-    {
-        key: 'payment:contactless',
-        label: 'Contactless',
-        type: 'select',
-        options: ['', 'yes', 'no'],
-    },
-    {
-        key: 'payment:visa',
-        label: 'Visa',
-        type: 'select',
-        options: ['', 'yes', 'no'],
-    },
-    {
-        key: 'payment:mastercard',
-        label: 'Mastercard',
-        type: 'select',
-        options: ['', 'yes', 'no'],
-    },
-    {
-        key: 'payment:amex',
-        label: 'Amex',
-        type: 'select',
-        options: ['', 'yes', 'no'],
-    },
+export const osmContactSingletonTags: OsmTagFieldDefinition[] = [
+    { key: 'phone', label: 'Phone' },
+    { key: 'email', label: 'Email' },
+    { key: 'website', label: 'Website' },
 ];
+
+export type OsmDisplayGroup =
+    | 'details'
+    | 'hours'
+    | 'contact'
+    | 'identity'
+    | 'food_option'
+    | 'service'
+    | 'facility'
+    | 'atmosphere'
+    | 'payment'
+    | 'notes'
+    | 'raw';
