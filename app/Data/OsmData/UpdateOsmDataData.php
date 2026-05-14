@@ -111,52 +111,10 @@ class UpdateOsmDataData extends Data
             id: $osmData->id,
             name: $osmData->name,
             type: $osmData->type,
-            cuisine: self::tagListFromString($tags['cuisine'] ?? null),
-            diet: self::tagsByPrefix($tags, 'diet:'),
+            cuisine: ParsedOsmTagsData::listFromString($tags['cuisine'] ?? null),
+            diet: ParsedOsmTagsData::byPrefix($tags, 'diet:'),
             photos: $photos,
             opening_hours: $tags['opening_hours'] ?? null,
         );
-    }
-
-    /**
-     * collect a tag array separated by ';' for example cuisine=italian;pizza => ['italian', 'pizza']
-     *
-     * @return array<int, string>
-     */
-    private static function tagListFromString(mixed $value, string $separator = ';'): array
-    {
-        if (! is_string($value)) {
-            return [];
-        }
-
-        return array_values(array_filter(array_map('trim', explode($separator, $value))));
-    }
-
-    /**
-     * collect tags whose key starts with the given prefix into an associative
-     * array keyed by the remainder of the key
-     * `diet:vegan=yes,diet:gluten_free=yes` =>
-     * `{
-     * "vegan": "yes",
-     * "gluten_free": "yes"
-     * }`.
-     *
-     * @param  array<string, mixed>  $tags
-     * @return array<string, string|null>
-     */
-    private static function tagsByPrefix(array $tags, string $prefix): array
-    {
-        $result = [];
-        $prefixLength = strlen($prefix);
-
-        foreach ($tags as $key => $value) {
-            if (! is_string($key) || ! str_starts_with($key, $prefix)) {
-                continue;
-            }
-
-            $result[substr($key, $prefixLength)] = is_string($value) ? $value : null;
-        }
-
-        return $result;
     }
 }
