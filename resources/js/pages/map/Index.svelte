@@ -56,7 +56,7 @@
 </nav>
 
 <ol
-    class="h-full w-full relative px-0.75 md:px-2 lg:overflow-y-auto will-change-transform bg-sidebar"
+    class="h-full w-full relative px-0.75 md:px-2 lg:overflow-y-auto will-change-transform bg-background"
     bind:this={virtualListElement}
     scroll-region=""
 >
