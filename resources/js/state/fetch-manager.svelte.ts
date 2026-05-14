@@ -5,7 +5,6 @@ import type { StateManager } from '@/state/state-manager.svelte';
 
 export type FetchManagerOptions = {
     stateManager: StateManager;
-    onSuccess: (data: FeatureCollection<Point>) => void;
 };
 
 export class FetchManager {
@@ -32,6 +31,26 @@ export class FetchManager {
         return this.http.processing;
     }
 
+    public get filteredFeatureCollection(): FeatureCollection<Point> {
+        const fc = this.featureData;
+        const { hideUnsafeRestaurants, allergenIDs } =
+            this.options.stateManager;
+
+        if (!hideUnsafeRestaurants || allergenIDs.length === 0) {
+            return fc;
+        }
+
+        return {
+            ...fc,
+            features: fc.features.filter((f) => {
+                const total = (f.properties?.total_items_count ?? 0) as number;
+                const safe = (f.properties?.safe_items_count ?? 0) as number;
+
+                return total === 0 || safe > 0;
+            }),
+        };
+    }
+
     public fetchFeaturesForCurrentBounds = () => {
         const { stateManager } = this.options;
         const bounds = stateManager.bounds;
@@ -53,10 +72,7 @@ export class FetchManager {
 
         this.http.post(filter().url, {
             onSuccess: (data) => {
-                const fc = data as FeatureCollection<Point>;
-
-                this.featureData = fc;
-                this.options.onSuccess(fc);
+                this.featureData = data as FeatureCollection<Point>;
             },
         });
     };
