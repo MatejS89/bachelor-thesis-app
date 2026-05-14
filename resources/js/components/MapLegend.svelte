@@ -27,10 +27,12 @@
     ];
 </script>
 
-<Card.Root class="z-100 w-max shadow-lg {className} p-2 border-primary border-2 bg-[color-mix(in_oklch,var(--color-accent)_60%,white)]
+<Card.Root class="z-100 text-base max-w-60 w-max shadow-lg {className} p-2 border-primary border-2 bg-[color-mix(in_oklch,var(--color-accent)_60%,white)]
            dark:bg-accent">
-    <Card.Content class="flex flex-col gap-1.5 p-0 text-accent-foreground text-sm lg:text-base">
-        <span class="wrap-break-word ">% of menu items without selected allergens</span>
+    <Card.Content class="flex flex-col gap-2 p-0 text-accent-foreground">
+        <p class="leading-snug text-balance">
+            Percentage of menu items without selected allergens
+        </p>
         {#each legendItems as item (item.label)}
             <div class="flex items-center gap-2">
                 <span
