@@ -1,4 +1,5 @@
 import type { BBox, Feature, Point } from 'geojson';
+import { SvelteMap } from 'svelte/reactivity';
 import { search as searchRoute } from '@/routes/map';
 
 const EXCLUDED_OSM_KEYS = ['amenity'];
@@ -92,7 +93,7 @@ export class SearchManager {
             ]);
 
             const formattedLocal: Feature<Point>[] = [];
-            const photonById = new Map<string, Feature<Point>>();
+            const photonById = new SvelteMap<string, Feature<Point>>();
 
             for (const dbItem of serverRes as App.Data.OsmData.OsmSearchResultData[]) {
                 const [lat, lng] = dbItem.geom.coordinates;
@@ -144,10 +145,6 @@ export class SearchManager {
 
             this.localResults = formattedLocal;
             this.photonResults = [...photonById.values()];
-
-            this.results = [...this.localResults, ...this.photonResults];
-
-            return [...this.localResults, ...this.photonResults];
         } catch (error) {
             console.error('Combined geocoding request failed:', error);
             this.clear();

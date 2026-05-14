@@ -1,10 +1,9 @@
 <script lang="ts">
     import { router } from '@inertiajs/svelte';
     import type { Feature } from 'geojson';
-    import { MapPin, Navigation, SearchX } from 'lucide-svelte';
+    import { MapPin, Navigation, SearchX, UtensilsCrossed } from 'lucide-svelte';
     import * as Command from '@/components/ui/command/index';
     import { Spinner } from '@/components/ui/spinner';
-    import getIconForFeature from '@/lib/get-osm_data-icons';
     import { show } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
     import { SearchManager } from '@/state/search-result-manager.svelte.js';
@@ -196,14 +195,12 @@
                             {#if searchManager.localResults.length > 0}
                                 <Command.Group heading="Restaurants">
                                     {#each searchManager.localResults as feature (feature.id)}
-                                        {@const FeatureIcon =
-                                            getIconForFeature(feature)}
                                         <Command.Item
                                             value={`local-${feature.id}`}
                                             onSelect={() =>
                                                 selectRestaurantResult(feature)}
                                         >
-                                            <FeatureIcon />
+                                            <UtensilsCrossed />
                                             <span class="truncate">
                                                 {feature?.properties
                                                     ?.display_name}
