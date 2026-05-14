@@ -21,15 +21,17 @@
     const mapManager = new MapManager({
         stateManager,
         onFeatureClick: showDetail,
-        triggerFetch: () => fetchManager.fetchFeaturesForCurrentBounds(),
+        triggerFetch: () => fetchManager.fetchFeaturesForCurrentBounds()
     });
 
-    const fetchManager = new FetchManager({
-        stateManager,
-        onSuccess: (data) => mapManager.setFeatures(data),
-    });
+    const fetchManager = new FetchManager({ stateManager });
+
 
     setAppContext({ mapManager, stateManager, fetchManager });
+
+    $effect(() => {
+        mapManager.setFeatures(fetchManager.filteredFeatureCollection);
+    });
 </script>
 
 <AppHead title="Map" />
