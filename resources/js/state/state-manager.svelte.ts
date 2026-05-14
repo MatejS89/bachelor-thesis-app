@@ -9,6 +9,8 @@ export class StateManager {
 
     mapShown: boolean = $state(false);
 
+    hideUnsafeRestaurants: boolean = $state(false);
+
     bounds: BoundingBox | undefined = $state();
 
     userLocation: { lat: number; lng: number } | null = $state(null);
