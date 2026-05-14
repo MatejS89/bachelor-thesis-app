@@ -1,4 +1,4 @@
-import type { FeatureCollection, Point, Feature, BBox } from 'geojson';
+import type { FeatureCollection, Point, BBox } from 'geojson';
 import maplibregl, {
     FullscreenControl,
     GeolocateControl,
@@ -10,7 +10,7 @@ import {
     getRatioColor,
     COLOR_CONFIG,
 } from '@/lib/get_color';
-import type { BoundingBox } from '@/types';
+import type { StateManager } from '@/state/state-manager.svelte';
 
 const SOURCES = {
     CUSTOM_FEATURES: 'custom-features',
@@ -25,14 +25,16 @@ const LAYERS = {
     SEARCH_RESULTS_CIRCLES: 'search-results-layer',
 } as const;
 
+export type MapManagerOptions = {
+    stateManager: StateManager;
+    onFeatureClick: (id: number) => void;
+    triggerFetch: () => void;
+};
+
 export class MapManager {
-    constructor(
-        private readonly onFeatureClick: (id: number) => void,
-        private readonly triggerFetch: () => void,
-    ) {}
+    constructor(private readonly options: MapManagerOptions) {}
 
     map: Map | undefined = $state<Map>();
-    userLocation: { lat: number; lng: number } | null = $state(null);
 
     private geolocateControl: GeolocateControl | undefined;
     private hoverMarker: maplibregl.Marker | null = null;
@@ -51,8 +53,20 @@ export class MapManager {
         }
     }
 
-    public handleGeolocate() {
-        this.triggerFetch();
+    private syncBounds(precision: number = 5): void {
+        if (!this.map) {
+            return;
+        }
+
+        const bounds = this.map.getBounds();
+        const round = (val: number) => Number(val.toFixed(precision));
+
+        this.options.stateManager.bounds = {
+            west: round(bounds.getWest()),
+            south: round(bounds.getSouth()),
+            north: round(bounds.getNorth()),
+            east: round(bounds.getEast()),
+        };
     }
 
     private fetchAfterMove() {
@@ -61,9 +75,9 @@ export class MapManager {
         }
 
         if (this.map.isMoving()) {
-            this.map.once('moveend', () => this.triggerFetch());
+            this.map.once('moveend', () => this.options.triggerFetch());
         } else {
-            this.triggerFetch();
+            this.options.triggerFetch();
         }
     }
 
@@ -88,21 +102,27 @@ export class MapManager {
         this.geolocateControl.on('geolocate', (e) => {
             const position = e as GeolocationPosition;
 
-            this.userLocation = {
+            this.options.stateManager.userLocation = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
             };
 
+            this.syncBounds();
             this.fetchAfterMove();
         });
 
         this.map.addControl(new FullscreenControl());
 
+        this.map.on('moveend', () => this.syncBounds());
+
         this.attachLayerInteractions(LAYERS.CUSTOM_FEATURES_CIRCLES);
         this.attachLayerInteractions(LAYERS.CUSTOM_FEATURES_LABELS);
         this.attachClusterInteractions();
 
-        this.triggerFetch();
+        this.map.once('load', () => {
+            this.syncBounds();
+            this.options.triggerFetch();
+        });
     }
 
     private attachClusterInteractions() {
@@ -157,7 +177,7 @@ export class MapManager {
                 const featureId = feature.id as number;
 
                 if (featureId !== null) {
-                    this.onFeatureClick(featureId);
+                    this.options.onFeatureClick(featureId);
                 }
             }
         });
@@ -349,100 +369,6 @@ export class MapManager {
         }
     }
 
-    displaySearchResults(features: Feature[]) {
-        if (!this.map) {
-            return;
-        }
-
-        const update = () => {
-            const featureCollection: FeatureCollection = {
-                type: 'FeatureCollection',
-                features: features,
-            };
-
-            const source = this.map!.getSource(
-                SOURCES.SEARCH_RESULTS,
-            ) as maplibregl.GeoJSONSource;
-
-            if (source) {
-                source.setData(featureCollection);
-            } else {
-                this.map!.addSource(SOURCES.SEARCH_RESULTS, {
-                    type: 'geojson',
-                    data: featureCollection,
-                });
-
-                this.map!.addLayer({
-                    id: LAYERS.SEARCH_RESULTS_CIRCLES,
-                    type: 'circle',
-                    source: SOURCES.SEARCH_RESULTS,
-                    paint: {
-                        'circle-radius': 8,
-                        'circle-color': '#3b82f6',
-                        'circle-stroke-width': 2,
-                        'circle-stroke-color': '#ffffff',
-                    },
-                });
-            }
-
-            if (features.length > 0) {
-                const bounds = new maplibregl.LngLatBounds();
-
-                features.forEach((feature: Feature) => {
-                    if (feature.bbox) {
-                        bounds.extend([
-                            feature.bbox[0],
-                            feature.bbox[1],
-                            feature.bbox[2],
-                            feature.bbox[3],
-                        ]);
-                    } else if (feature?.geometry.type === 'Point') {
-                        bounds.extend([
-                            feature.geometry.coordinates[0],
-                            feature.geometry.coordinates[1],
-                        ]);
-                    }
-                });
-
-                if (!bounds.isEmpty()) {
-                    this.map!.fitBounds(
-                        bounds,
-                        { padding: 50, maxZoom: 15 },
-                        { ignoreFetch: true },
-                    );
-                }
-            }
-
-            this.toggleCustomFeatures(false);
-            this.toggleSearchResults(true);
-        };
-
-        if (this.map.isStyleLoaded()) {
-            update();
-        } else {
-            this.map.once('load', update);
-        }
-    }
-
-    clearSearchResults() {
-        if (!this.map) {
-            return;
-        }
-
-        const source = this.map.getSource(
-            SOURCES.SEARCH_RESULTS,
-        ) as maplibregl.GeoJSONSource;
-
-        if (source) {
-            source.setData({
-                type: 'FeatureCollection',
-                features: [],
-            });
-        }
-
-        this.toggleCustomFeatures(true);
-    }
-
     destroy() {
         if (this.map) {
             this.map.remove();
@@ -455,7 +381,7 @@ export class MapManager {
             return;
         }
 
-        this.map.once('moveend', () => this.triggerFetch());
+        this.map.once('moveend', () => this.options.triggerFetch());
         this.map.flyTo({ center: [lng, lat], zoom });
     }
 
@@ -483,27 +409,5 @@ export class MapManager {
         } else {
             console.warn('Geolocate control is not initialized yet.');
         }
-    }
-
-    getBounds(precision: number = 5): BoundingBox | undefined {
-        if (!this.map) {
-            console.warn('Map is not initialized.');
-
-            return undefined;
-        }
-
-        const bounds = this.map.getBounds();
-        const round = (val: number) => Number(val.toFixed(precision));
-
-        return {
-            west: round(bounds.getWest()),
-            south: round(bounds.getSouth()),
-            north: round(bounds.getNorth()),
-            east: round(bounds.getEast()),
-        };
-    }
-
-    getUserLocation(): { lat: number; lng: number } | null {
-        return this.userLocation;
     }
 }

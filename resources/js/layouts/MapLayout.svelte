@@ -12,34 +12,24 @@
 
     let { children } = $props();
 
-
-    let mapManager: MapManager;
-    let fetchManager: FetchManager;
+    function showDetail(id: number) {
+        router.get(show(id), { ...stateManager.filters }, { replace: true });
+    }
 
     const stateManager = new StateManager();
 
-    mapManager = new MapManager(showDetail, () =>
-        fetchManager.fetchFeaturesForCurrentBounds()
-    );
-
-    fetchManager = new FetchManager(
-        () => stateManager.filters,
-        () => mapManager.getBounds(),
-        () => mapManager.getUserLocation(),
-        (data) => mapManager.setFeatures(data)
-    );
-
-    function showDetail(id: number) {
-        router.get(show(id), {
-            ...stateManager.filters
-        }, { replace: true });
-    }
-
-    setAppContext({
-        mapManager,
+    const mapManager = new MapManager({
         stateManager,
-        fetchManager
+        onFeatureClick: showDetail,
+        triggerFetch: () => fetchManager.fetchFeaturesForCurrentBounds(),
     });
+
+    const fetchManager = new FetchManager({
+        stateManager,
+        onSuccess: (data) => mapManager.setFeatures(data),
+    });
+
+    setAppContext({ mapManager, stateManager, fetchManager });
 </script>
 
 <AppHead title="Map" />

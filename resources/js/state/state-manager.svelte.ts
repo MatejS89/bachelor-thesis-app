@@ -1,5 +1,5 @@
 import { page } from '@inertiajs/svelte';
-import type { Filters } from '@/types';
+import type { BoundingBox, Filters } from '@/types';
 
 export class StateManager {
     allergenIDs: string[] = $state(
@@ -8,6 +8,10 @@ export class StateManager {
     );
 
     mapShown: boolean = $state(false);
+
+    bounds: BoundingBox | undefined = $state();
+
+    userLocation: { lat: number; lng: number } | null = $state(null);
 
     public get filters(): Filters {
         return {

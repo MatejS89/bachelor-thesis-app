@@ -1,7 +1,12 @@
 import { useHttp } from '@inertiajs/svelte';
 import type { FeatureCollection, Point } from 'geojson';
 import { filter } from '@/routes/map';
-import type { BoundingBox, Filters } from '@/types';
+import type { StateManager } from '@/state/state-manager.svelte';
+
+export type FetchManagerOptions = {
+    stateManager: StateManager;
+    onSuccess: (data: FeatureCollection<Point>) => void;
+};
 
 export class FetchManager {
     private http;
@@ -11,15 +16,7 @@ export class FetchManager {
         features: [],
     });
 
-    constructor(
-        private readonly getFilters: () => Filters,
-        private readonly getBounds: () => BoundingBox | undefined,
-        private readonly getUserLocation: () => {
-            lat: number;
-            lng: number;
-        } | null,
-        private readonly onSuccess: (data: FeatureCollection<Point>) => void,
-    ) {
+    constructor(private readonly options: FetchManagerOptions) {
         this.http = useHttp<App.Data.OsmData.FilterOsmDataData>({
             north: null,
             south: null,
@@ -36,14 +33,15 @@ export class FetchManager {
     }
 
     public fetchFeaturesForCurrentBounds = () => {
-        const bounds = this.getBounds();
+        const { stateManager } = this.options;
+        const bounds = stateManager.bounds;
 
         if (!bounds) {
             return;
         }
 
-        const filters = this.getFilters();
-        const userLocation = this.getUserLocation();
+        const filters = stateManager.filters;
+        const userLocation = stateManager.userLocation;
 
         this.http.north = bounds.north;
         this.http.south = bounds.south;
@@ -58,7 +56,7 @@ export class FetchManager {
                 const fc = data as FeatureCollection<Point>;
 
                 this.featureData = fc;
-                this.onSuccess(fc);
+                this.options.onSuccess(fc);
             },
         });
     };
