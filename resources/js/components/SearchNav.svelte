@@ -11,7 +11,7 @@
 
     const DEBOUNCE_MS = 300;
 
-    let { mapManager } = getAppContext();
+    let { mapManager, stateManager } = getAppContext();
 
     let containerEl: HTMLElement;
     let commandInputRef: HTMLInputElement | null = $state(null);
@@ -87,7 +87,7 @@
             return;
         }
 
-        await searchManager.search(mapManager.userLocation);
+        await searchManager.search(stateManager.userLocation);
 
         searchManager.showDropdown = true;
     }
