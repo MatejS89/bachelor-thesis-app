@@ -43,7 +43,7 @@
     <Collapsible.Trigger
         class="flex items-center justify-between w-full"
     >
-        <h4 class="text-sm md:text-base leading-none">Allergen Filters</h4>
+        <h4 class="text-base leading-none">Allergen Filters</h4>
 
         <span class="inline-flex items-center justify-center w-9 h-9">
             {#if allergenDropdownState.isOpen}
