@@ -38,7 +38,7 @@
 
     const hasResults = $derived(
         searchManager.localResults.length > 0 ||
-        searchManager.nominatimResults.length > 0
+        searchManager.photonResults.length > 0
     );
 
     const trimmedQuery = $derived(searchManager.query.trim());
@@ -58,7 +58,7 @@
 
         if (!q.trim()) {
             searchManager.localResults = [];
-            searchManager.nominatimResults = [];
+            searchManager.photonResults = [];
 
             return;
         }
@@ -213,13 +213,13 @@
                                 </Command.Group>
                             {/if}
 
-                            {#if searchManager.localResults.length > 0 && searchManager.nominatimResults.length > 0}
+                            {#if searchManager.localResults.length > 0 && searchManager.photonResults.length > 0}
                                 <Command.Separator />
                             {/if}
 
-                            {#if searchManager.nominatimResults.length > 0}
+                            {#if searchManager.photonResults.length > 0}
                                 <Command.Group heading="Addresses">
-                                    {#each searchManager.nominatimResults as feature (feature.id)}
+                                    {#each searchManager.photonResults as feature (feature.id)}
                                         <Command.Item
                                             value={`addr-${feature.id}`}
                                             onSelect={() =>

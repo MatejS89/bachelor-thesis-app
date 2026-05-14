@@ -46,7 +46,7 @@ function formatPhotonAddress(props: PhotonProps) {
 export class SearchManager {
     query = $state('');
     localResults = $state<Feature[]>([]);
-    nominatimResults = $state<Feature[]>([]);
+    photonResults = $state<Feature[]>([]);
     isSearching = $state(false);
     showDropdown = $state(false);
     results = $state<Feature[]>([]);
@@ -92,9 +92,9 @@ export class SearchManager {
             ]);
 
             const formattedLocal: Feature<Point>[] = [];
-            const formattedNominatim: Feature<Point>[] = [];
+            const photonById = new Map<string, Feature<Point>>();
 
-            for (const dbItem of serverRes as any[]) {
+            for (const dbItem of serverRes as App.Data.OsmData.OsmSearchResultData[]) {
                 const [lat, lng] = dbItem.geom.coordinates;
 
                 formattedLocal.push({
@@ -126,11 +126,13 @@ export class SearchManager {
                 const { name, secondary_info, display_name } =
                     formatPhotonAddress(props);
 
-                formattedNominatim.push({
+                const id = `${props.osm_type}${props.osm_id}`;
+
+                photonById.set(id, {
                     type: 'Feature',
                     geometry: feature.geometry as Point,
                     bbox,
-                    id: `${props.osm_type}${props.osm_id}`,
+                    id,
                     properties: {
                         ...props,
                         name,
@@ -141,11 +143,11 @@ export class SearchManager {
             }
 
             this.localResults = formattedLocal;
-            this.nominatimResults = formattedNominatim;
+            this.photonResults = [...photonById.values()];
 
-            this.results = [...this.localResults, ...this.nominatimResults];
+            this.results = [...this.localResults, ...this.photonResults];
 
-            return [...this.localResults, ...this.nominatimResults];
+            return [...this.localResults, ...this.photonResults];
         } catch (error) {
             console.error('Combined geocoding request failed:', error);
             this.clear();
@@ -158,7 +160,7 @@ export class SearchManager {
 
     clear() {
         this.localResults = [];
-        this.nominatimResults = [];
+        this.photonResults = [];
         this.query = '';
     }
 }
