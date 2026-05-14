@@ -141,10 +141,7 @@
                             <KeyValueTagInput
                                 id="tag-dietary"
                                 bind:value={form.diet}
-                                keys={osmDietTags.map((t) => ({
-                                    key: t.key.replace('diet:', ''),
-                                    label: t.label
-                                }))}
+                                keys={osmDietTags}
                                 valueOptions={osmBooleanValues}
                                 defaultValue="yes"
                                 placeholder="Add dietary option…"
