@@ -6,6 +6,7 @@
     import AllergenFilter from '@/components/AllergenFilter.svelte';
     import RestaurantCard from '@/components/RestaurantCard.svelte';
     import SearchNav from '@/components/SearchNav.svelte';
+    import { Checkbox } from '@/components/ui/checkbox';
     import * as Empty from '@/components/ui/empty/index';
     import { Spinner } from '@/components/ui/spinner';
     import { getAppContext } from '@/state/appState.svelte';
@@ -13,8 +14,8 @@
 
     let { allergens } = $props();
 
-    let { mapManager, fetchManager } = getAppContext();
-    let features = $derived(fetchManager.featureData?.features ?? []);
+    let { mapManager, stateManager, fetchManager } = getAppContext();
+    let features = $derived(fetchManager.filteredFeatureCollection.features);
 
     let virtualListElement = $state<HTMLElement | null>(null);
 
@@ -51,7 +52,12 @@
 >
     <SearchNav />
     <div class="px-4 py-2">
-    <AllergenFilter {allergens} />
+        <AllergenFilter {allergens} />
+
+        <label class="flex items-center gap-2 py-2 text-base cursor-pointer">
+            <Checkbox bind:checked={stateManager.hideUnsafeRestaurants} />
+            Hide restaurants with no safe menu items
+        </label>
     </div>
 </nav>
 
