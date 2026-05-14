@@ -23,8 +23,7 @@ class OsmFeatureData extends Data
 
     public ?string $type;
 
-    /** @var array<string, mixed> */
-    public array $tags;
+    public ParsedOsmTagsData $tags;
 
     public Point $geom;
 
@@ -41,7 +40,7 @@ class OsmFeatureData extends Data
             'osm_id' => $osmData->osm_id,
             'name' => $osmData->name,
             'type' => $osmData->type,
-            'tags' => $osmData->tags,
+            'tags' => ParsedOsmTagsData::fromTags($osmData->tags),
             'geom' => $osmData->geom,
             'average_rating' => $osmData->average_rating !== null
                 ? (float) $osmData->average_rating
