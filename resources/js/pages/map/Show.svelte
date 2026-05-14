@@ -10,6 +10,7 @@
     import * as Carousel from '@/components/ui/carousel/index';
     import * as Empty from '@/components/ui/empty/index';
     import * as Tabs from '@/components/ui/tabs/index';
+    import type { OsmDisplayGroup } from '@/lib/osm-tags';
     import { index, edit } from '@/routes/map';
     import { getAppContext } from '@/state/appState.svelte';
 
@@ -28,10 +29,20 @@
     } = $props();
 
     const address = $derived([
-        [restaurantData.tags['addr:street'], restaurantData.tags['addr:housenumber']].filter(Boolean).join(' '),
-        restaurantData.tags['addr:city'],
-        restaurantData.tags['addr:postcode'],
+        [restaurantData.tags.address.street, restaurantData.tags.address.housenumber].filter(Boolean).join(' '),
+        restaurantData.tags.address.city,
+        restaurantData.tags.address.postcode
     ].filter(Boolean).join(', '));
+
+    const detailGroups: OsmDisplayGroup[] = [
+        'details',
+        'hours',
+        'contact',
+        'payment',
+        'facility',
+        'identity',
+        'raw'
+    ];
 
     $effect(() => {
         stateManager.mapShown = false;
@@ -136,7 +147,7 @@
         {/if}
     </div>
 
-    <OsmDataDetailContainer {restaurantData} />
+    <OsmDataDetailContainer {restaurantData} groups={detailGroups} />
 
     <ActionNav {restaurantData} />
 
