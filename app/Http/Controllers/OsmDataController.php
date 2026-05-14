@@ -7,6 +7,7 @@ use App\Actions\OsmData\UpdateOsmDataAction;
 use App\Data\MenuItem\MenuItemData;
 use App\Data\OsmData\FilterOsmDataData;
 use App\Data\OsmData\OsmFeatureData;
+use App\Data\OsmData\OsmSearchResultData;
 use App\Data\OsmData\SearchOsmDataData;
 use App\Data\OsmData\UpdateOsmDataData;
 use App\Data\Review\ReviewData;
@@ -58,7 +59,7 @@ class OsmDataController extends Controller
             ->limit(3)
             ->get();
 
-        return response()->json($results);
+        return response()->json(OsmSearchResultData::collect($results));
     }
 
     public function show(OsmData $osmData): Response
