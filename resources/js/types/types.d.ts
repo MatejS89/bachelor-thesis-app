@@ -7,12 +7,6 @@ declare namespace App {
             url: string | null;
             thumb_url: string | null;
         };
-        export type GalleryImageData = {
-            id: number;
-            url: string;
-            thumb_url: string;
-            order: number;
-        };
         export type PhotoData = {
             id: string;
             url: string;
@@ -34,11 +28,11 @@ declare namespace App {
             export type MenuItemData = {
                 id: number;
                 name: string;
-                description: string;
+                description: string | null;
                 createdAt: string;
                 allergens?: App.Data.Allergen.AllergenData[];
                 dietaryTags?: App.Data.DietaryTag.DietaryTagData[];
-                photoUrl: string;
+                photoUrl: string | null;
             };
         }
         namespace OsmData {
