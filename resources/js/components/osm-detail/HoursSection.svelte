@@ -5,9 +5,13 @@
     import type { HoursEntry } from '@/lib/osm-tag-format';
 
     let {
-        tags
+        tags,
+        lat,
+        lon
     }: {
         tags: App.Data.OsmData.ParsedOsmTagsData;
+        lat: number;
+        lon: number;
     } = $props();
 
     const main = $derived(
@@ -50,7 +54,7 @@
             <Clock class="h-3.5 w-3.5" />
             Hours
         </h2>
-        <OpeningBadge hoursString={tags.opening_hours ?? undefined} />
+        <OpeningBadge hoursString={tags.opening_hours ?? undefined} {lat} {lon} />
     </div>
 
     {#if main.length > 0}
