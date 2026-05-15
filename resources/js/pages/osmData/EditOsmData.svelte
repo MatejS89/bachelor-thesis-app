@@ -17,6 +17,7 @@
         osmDietTags
     } from '@/lib/osm-tags';
     import { show, update } from '@/routes/map';
+    import { getAppContext } from '@/state/appState.svelte';
     import type { ImageItem } from '@/types/imageitem';
 
     let {
@@ -28,6 +29,8 @@
         maxPhotos: number;
         maxPhotoSizeKb: number;
     } = $props();
+
+    let { fetchManager } = getAppContext();
 
 
     function initialFormData() {
@@ -71,6 +74,8 @@
                     : { kind: 'new', file: p.file }
             )
         })).submit(update(osmData));
+
+        fetchManager.fetchFeaturesForCurrentBounds();
     }
 </script>
 
