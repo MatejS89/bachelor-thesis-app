@@ -35,7 +35,7 @@
         <Link
             {...props}
             href={logout()}
-            onclick={handleLogout(props.onclick)}
+            onclick={handleLogout(props.onclick as ((event: MouseEvent) => void) | undefined)}
             as="button"
             data-test="logout-button"
         >
