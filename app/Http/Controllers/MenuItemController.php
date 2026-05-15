@@ -11,15 +11,17 @@ use App\Models\Allergen;
 use App\Models\DietaryTag;
 use App\Models\MenuItem;
 use App\Models\OsmData;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class MenuItemController extends Controller
 {
     /**
      * Show the form for creating a new resource.
      */
-    public function create(OsmData $osmData)
+    public function create(OsmData $osmData): Response
     {
         Gate::authorize('create', MenuItem::class);
 
@@ -34,7 +36,7 @@ class MenuItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OsmData $osmData, StoreMenuItemRequest $request, StoreMenuItemAction $createMenuItemAction)
+    public function store(OsmData $osmData, StoreMenuItemRequest $request, StoreMenuItemAction $createMenuItemAction): RedirectResponse
     {
         Gate::authorize('create', MenuItem::class);
 
