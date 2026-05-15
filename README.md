@@ -49,6 +49,12 @@ See the [MenuItemSeeder.php](database/seeders/MenuItemSeeder.php) for the defaul
    docker compose exec app php artisan db:seed --class=MenuItemSeeder
 ```
 
+A similar seeder for reviews is available as well, see [ReviewSeeder.php](database/seeders/ReviewSeeder.php).
+
+```bash
+   docker compose exec app php artisan db:seed --class=ReviewSeeder
+```
+
 ### 4. Access the application
 
 The application will be available at http://localhost:8000.
