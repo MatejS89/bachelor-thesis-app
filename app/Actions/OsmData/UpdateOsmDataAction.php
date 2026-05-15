@@ -16,7 +16,7 @@ class UpdateOsmDataAction
         return DB::transaction(function () use ($osmData, $data) {
             $osmData->update($data->toModelAttributes($osmData));
 
-            $this->syncOrderedMediaAction->execute($osmData, $data->photos);
+            $this->syncOrderedMediaAction->execute($osmData, $data->photos ?? []);
 
             return $osmData;
         });
