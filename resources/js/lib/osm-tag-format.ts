@@ -1,4 +1,5 @@
 import {
+    Trees,
     Accessibility,
     Baby,
     Banknote,
@@ -20,7 +21,6 @@ import {
     Pizza,
     Sandwich,
     ShoppingBag,
-    Sparkles,
     Store,
     Toilet,
     Truck,
@@ -254,7 +254,7 @@ const FACILITY_ICONS: Record<string, IconComponent> = {
     wheelchair: Accessibility,
     toilets: Toilet,
     'toilets:wheelchair': Accessibility,
-    outdoor_seating: Sparkles,
+    outdoor_seating: Trees,
     indoor_seating: Building,
     internet_access: Wifi,
     air_conditioning: Wind,
