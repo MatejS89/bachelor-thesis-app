@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[Fillable(['rating', 'description', 'user_id', 'osm_data_id'])]
 class Review extends Model implements HasMedia
@@ -39,6 +40,13 @@ class Review extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('photos');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('carousel')
+            ->width(800)
+            ->nonQueued();
     }
 
     public function photoUrls(): Attribute

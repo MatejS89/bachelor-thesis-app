@@ -37,6 +37,10 @@ class OsmData extends Model implements HasMedia
             ->width(300)
             ->height(300)
             ->nonQueued();
+
+        $this->addMediaConversion('carousel')
+            ->width(1600)
+            ->nonQueued();
     }
 
     public function menuItems(): HasMany
