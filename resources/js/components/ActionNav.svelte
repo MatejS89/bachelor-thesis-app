@@ -12,7 +12,7 @@
     import { create as createMenuItem } from '@/routes/map/menuitem';
     import { create as createReview } from '@/routes/map/review';
 
-    let { restaurantData }: { restaurantData: App.Data.OsmFeatureData } =
+    let { restaurantData }: { restaurantData: App.Data.OsmData.OsmFeatureData } =
         $props();
 </script>
 
@@ -22,7 +22,7 @@
             variant: 'default',
             class: 'flex-1 flex-col h-auto py-3 gap-1.5',
         })}
-        href={createNavigationLink(...restaurantData.geom.coordinates)}
+        href={createNavigationLink(restaurantData.geom.coordinates[0], restaurantData.geom.coordinates[1])}
         target="_blank"
     >
         <ExternalLink class="h-5 w-5" />
