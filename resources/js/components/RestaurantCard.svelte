@@ -53,7 +53,7 @@
 
 <Item.Root
     variant="outline"
-    class={`gap-4 bg-sidebar px-1.5 py-1.5 border-2 ${borderClasses[status()]}`}
+    class={`gap-3 lg:gap-5 bg-sidebar px-1.5 py-1.5 border-2 ${borderClasses[status()]}`}
 >
     {#snippet child({ props })}
         <Link href={show(feature.id)} data={stateManager.filters} {...props}>
@@ -136,6 +136,8 @@
                                 <OpeningBadge
                                     hoursString={feature.properties
                                         .opening_hours}
+                                    lon={feature.geometry.coordinates[0]}
+                                    lat={feature.geometry.coordinates[1]}
                                 />
                             </dd>
                         </div>
