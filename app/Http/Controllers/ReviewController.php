@@ -8,16 +8,16 @@ use App\Http\Requests\Review\StoreReviewRequest;
 use App\Models\OsmData;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ReviewController extends Controller
 {
     /**
      * Show the form for creating a new resource.
      */
-    public function create(OsmData $osmData, Request $request)
+    public function create(OsmData $osmData): Response
     {
         Gate::authorize('create', Review::class);
 
