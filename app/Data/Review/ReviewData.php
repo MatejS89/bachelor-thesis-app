@@ -35,7 +35,7 @@ class ReviewData extends Data
             'rating' => $review->rating,
             'created_at' => $review->created_at,
             'user' => Lazy::whenLoaded('user', $review, fn () => UserMinData::from($review->user)),
-            'photos' => Lazy::whenLoaded('user', $review, fn () => PhotoData::collect($review->getMedia('photos'))),
+            'photos' => Lazy::whenLoaded('media', $review, fn () => PhotoData::collect($review->getMedia('photos'))),
         ]);
     }
 }
