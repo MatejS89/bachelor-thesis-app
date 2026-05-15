@@ -4,8 +4,15 @@
 
     let {
         hoursString,
+        lat,
+        lon,
         countryCode = 'cz'
-    }: { hoursString: string | undefined; countryCode?: string } = $props();
+    }: {
+        hoursString: string | undefined;
+        lat: number;
+        lon: number;
+        countryCode?: string;
+    } = $props();
 
     let status = $state<'open' | 'closed' | 'unknown' | 'error'>('unknown');
 
@@ -20,6 +27,8 @@
 
         try {
             const nominatimObj = {
+                lat,
+                lon,
                 address: {
                     country_code: countryCode.toLowerCase(),
                     state: ''
@@ -53,11 +62,7 @@
             } else {
                 timeDetail = isOpen ? '24/7' : '';
             }
-        } catch (error) {
-            // console.warn(
-            //     `failed to parse ${hoursString}`,
-            //     error,
-            // );
+        } catch {
             status = 'error';
         }
     });
