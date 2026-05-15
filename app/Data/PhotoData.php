@@ -12,6 +12,7 @@ class PhotoData extends Data
     public function __construct(
         public string $id,
         public string $url,
+        public string $carouselUrl,
     ) {}
 
     public static function fromModel(Media $media): self
@@ -19,6 +20,9 @@ class PhotoData extends Data
         return new self(
             id: (string) $media->id,
             url: $media->getUrl(),
+            carouselUrl: $media->hasGeneratedConversion('carousel')
+                ? $media->getUrl('carousel')
+                : $media->getUrl(),
         );
     }
 }
