@@ -16,6 +16,7 @@ declare namespace App {
         export type PhotoData = {
             id: string;
             url: string;
+            carouselUrl: string;
         };
         namespace Allergen {
             export type AllergenData = {
