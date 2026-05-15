@@ -17,7 +17,7 @@ class MenuItemData extends Data
 
     public string $name;
 
-    public string $description;
+    public ?string $description;
 
     public Carbon $createdAt;
 
@@ -27,5 +27,5 @@ class MenuItemData extends Data
     /** @var Collection<DietaryTagData>|Lazy */
     public Lazy|Collection $dietaryTags;
 
-    public string $photoUrl;
+    public ?string $photoUrl;
 }
