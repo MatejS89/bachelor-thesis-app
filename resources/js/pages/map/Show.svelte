@@ -110,7 +110,7 @@
                                     class="p-0 aspect-auto items-center justify-center rounded-xl overflow-hidden bg-muted"
                                 >
                                     <img
-                                        src={img.url}
+                                        src={img.carouselUrl}
                                         alt="Restaurant photo {i + 1}"
                                         loading="lazy"
                                         decoding="async"
