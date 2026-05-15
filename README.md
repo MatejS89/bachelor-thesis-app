@@ -57,4 +57,4 @@ A similar seeder for reviews is available as well, see [ReviewSeeder.php](databa
 
 ### 4. Access the application
 
-The application will be available at http://localhost:8000.
+The application will be available at http://localhost:8080.
