@@ -59,7 +59,11 @@
             {#if group === 'details'}
                 <DetailsSection type={restaurantData.type ?? undefined} {tags} />
             {:else if group === 'hours'}
-                <HoursSection {tags} />
+                <HoursSection
+                    {tags}
+                    lon={restaurantData.geom.coordinates[0]}
+                    lat={restaurantData.geom.coordinates[1]}
+                />
             {:else if group === 'contact'}
                 <ContactSection {tags} />
             {:else if group === 'identity'}
