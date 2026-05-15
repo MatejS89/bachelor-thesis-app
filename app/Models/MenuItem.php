@@ -44,15 +44,15 @@ class MenuItem extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-            ->width(300)
-            ->height(300)
+            ->width(500)
+            ->height(500)
             ->nonQueued();
     }
 
     public function photoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->getFirstMediaUrl('photo') ?: null
+            get: fn () => $this->getFirstMediaUrl('photo', 'thumb') ?: null
         );
     }
 
