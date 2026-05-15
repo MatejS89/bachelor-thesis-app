@@ -83,7 +83,7 @@
                     data-index={virtualRow.index}
                     class="absolute top-0 left-0 w-full"
                     style="transform: translateY({virtualRow.start}px);"
-                    onmouseenter={() => mapManager.highlightFeature(feature.id)}
+                    onmouseenter={() => mapManager.highlightFeature(typeof feature.id === 'number' ? feature.id : null)}
                     onmouseleave={() => mapManager.highlightFeature(null)}
                     {@attach (el) => {
                         $virtualizer.measureElement(el);
