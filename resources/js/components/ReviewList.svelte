@@ -13,8 +13,8 @@
         restaurantData,
         reviews
     }: {
-        restaurantData: App.Data.OsmFeatureData;
-        reviews: App.Data.ReviewData[];
+        restaurantData: App.Data.OsmData.OsmFeatureData;
+        reviews: App.Data.Review.ReviewData[];
     } = $props();
 </script>
 
@@ -62,7 +62,7 @@
                                                 class="overflow-hidden rounded-md border bg-muted"
                                             >
                                                 <img
-                                                    src={photo.url}
+                                                    src={photo.carouselUrl}
                                                     alt="Review photo {j + 1}"
                                                     loading="lazy"
                                                     class="h-32 w-full object-cover"
