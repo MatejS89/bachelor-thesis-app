@@ -6,6 +6,38 @@ This project uses Laravel on the backend and Svelte 5 on the frontend.
 The app docker container is build on top of the serversideup image https://serversideup.net/.
 The database container uses the offical PostgreSQL 18 image with PostGIS installed aditionally.
 
+## Screenshots
+
+[View the full desktop and mobile screenshot gallery](docs/gallery.md).
+
+### 1. Restaurant listings
+
+![Restaurant listings](docs/screenshots/desktop/light_index.png)
+
+### 2. Restaurant listings with filters
+
+![Restaurant listings with filters](docs/screenshots/desktop/light_index_filter.png)
+
+### 3. Restaurant details
+
+![Restaurant details](docs/screenshots/desktop/light_detail.png)
+
+
+### 4. Restaurant menu with filters 
+
+![Restaurant menu with filters ](docs/screenshots/desktop/light_menu_filter.png)
+
+
+### 5. Reviews
+
+![Restaurant reviews](docs/screenshots/desktop/light_reviews.png)
+
+### 6. Mobile view
+
+<img src="docs/screenshots/mobile/index_filters.png" alt="Mobile filter page" width="280">
+<img src="docs/screenshots/mobile/map.png" alt="Mobile map page" width="280">
+
+
 ## Requirements
 
 - [Docker](https://docs.docker.com/get-docker/) with Docker Compose
